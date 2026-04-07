@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 2 | Entorno PseInt</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --accent: #059669;
+            --accent-glow: rgba(5, 150, 105, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+
+        #themeToggle {
+            position: fixed; top: 2rem; right: 2rem;
+            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); padding: 0.75rem 1.25rem;
+            border-radius: 100px; cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); z-index: 100;
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] #themeToggle { border: 1px solid rgba(0, 0, 0, 0.1); }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;
+            animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        header { margin-bottom: 4rem; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--accent); text-decoration: none; font-weight: 600;
+            margin-bottom: 1.5rem; transition: var(--transition);
+        }
+        .back-link:hover { transform: translateX(-5px); }
+
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(to right, var(--text-main), var(--accent));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="light"] h1 { background-image: linear-gradient(to right, #0f172a, #059669) !important; }
+
+        .subtitle { font-size: 1.25rem; color: var(--text-dim); max-width: 600px; }
+
+        .content-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem;
+        }
+
+        .content-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.5rem; padding: 2.5rem;
+            text-decoration: none; color: inherit;
+            position: relative; overflow: hidden;
+            transition: var(--transition);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        [data-theme="light"] .content-card { border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+
+        .content-card:hover {
+            transform: translateY(-10px); border-color: var(--accent);
+            box-shadow: 0 20px 40px -15px var(--accent-glow);
+        }
+
+        .card-tag {
+            background: var(--accent-glow); color: var(--accent);
+            display: inline-block; padding: 0.25rem 0.75rem; border-radius: 100px;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; margin-bottom: 1.5rem;
+        }
+
+        .content-card h2 { font-size: 1.75rem; margin-bottom: 1rem; }
+        .content-card p { color: var(--text-dim); margin-bottom: 2rem; flex-grow: 1; }
+        .card-action { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--accent); }
+
+        /* Specific Colors for Cards */
+        .card-emerald { --accent: #34d399; --accent-glow: rgba(52, 211, 153, 0.2); border-color: rgba(52, 211, 153, 0.2); }
+        .card-amber { --accent: #fbbf24; --accent-glow: rgba(251, 191, 36, 0.2); border-color: rgba(251, 191, 36, 0.2); }
+        .card-violet { --accent: #a78bfa; --accent-glow: rgba(167, 139, 250, 0.2); border-color: rgba(167, 139, 250, 0.2); }
+        
+        [data-theme="light"] .card-emerald { --accent: #059669; }
+        [data-theme="light"] .card-amber { --accent: #d97706; }
+        [data-theme="light"] .card-violet { --accent: #7c3aed; }
+
+    </style>
+</head>
+<body>
+    <button id="themeToggle">☀️ Modo Claro</button>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Hub Principal
+            </a>
+            <h1>Módulo 2: Entorno PseInt</h1>
+            <p class="subtitle">Profundiza en la codificación en pseudocódigo comprendiendo su relación lineal con los diagramas de flujos de datos estructurados.</p>
+        </header>
+
+        <main class="content-grid">
+            <a href="pseint-concepto-variable.html" class="content-card card-emerald">
+                <div>
+                    <span class="card-tag">Concepto Base</span>
+                    <h2 style="color: var(--accent);">¿Qué es una Variable?</h2>
+                    <p>Entiende sus 3 partes fundamentales (nombre, tipo y valor) y visualiza cómo se almacenan los datos de tu algoritmo dentro de la memoria RAM.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-variables.html" class="content-card card-emerald">
+                <div>
+                    <span class="card-tag">Básico</span>
+                    <h2 style="color: var(--accent);">Declaración & Variables</h2>
+                    <p>Maneja la memoria. Comprende cómo reservar espacio con tipos de datos y cómo inyectar valores lógicos.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-tipos.html" class="content-card card-emerald">
+                <div>
+                    <span class="card-tag">Básico</span>
+                    <h2 style="color: var(--accent);">Tipos de Datos Primitivos</h2>
+                    <p>Entero, Real, Carácter y Lógico. Explora cómo definir la naturaleza estricta de la información que procesarás.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-condicionales.html" class="content-card card-amber">
+                <div>
+                    <span class="card-tag">Condicional</span>
+                    <h2 style="color: var(--accent);">Si entonces sino</h2>
+                    <p>Introduce ramas en tu comportamiento lineal. Aprende la directiva (If-Else) y cómo se grafica con rombos de decisión.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-segun.html" class="content-card card-amber">
+                <div>
+                    <span class="card-tag">Condicional</span>
+                    <h2 style="color: var(--accent);">Según (Switch)</h2>
+                    <p>Evalúa una sola variable contra múltiples casos posibles. Evita el uso de decenas de sentencias Si-Sino anidadas.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-ciclos.html" class="content-card card-violet">
+                <div>
+                    <span class="card-tag">Repetición</span>
+                    <h2 style="color: var(--accent);">Mientras (While)</h2>
+                    <p>Evalúa la condición ANTES de entrar al ciclo. Si desde el inicio es falsa, puede que el código no se ejecute nunca.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-repetir.html" class="content-card card-violet">
+                <div>
+                    <span class="card-tag">Repetición</span>
+                    <h2 style="color: var(--accent);">Repetir hasta</h2>
+                    <p>Evalúa la condición DESPUÉS de ejecutar. Garantiza que las instrucciones ocurran por lo menos una vez.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+
+            <a href="pseint-para.html" class="content-card card-violet">
+                <div>
+                    <span class="card-tag">Repetición</span>
+                    <h2 style="color: var(--accent);">Para (For)</h2>
+                    <p>Ideal cuando conoces de antemano la cantidad exacta de repeticiones. Condensa contador, fin y paso iterativo.</p>
+                </div>
+                <div class="card-action">Aprender <span>&rarr;</span></div>
+            </a>
+        </main>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+    </script>
+</body>
+</html>

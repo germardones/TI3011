@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PseInt: Si entonces sino | TI3011</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --panel-bg: #111827;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #fbbf24;
+            --flow-line: #475569;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --panel-bg: #f1f5f9;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --accent: #d97706;
+            --flow-line: #cbd5e1;
+            --kw-light: #7c3aed;
+            --var-light: #e11d48;
+            --str-light: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        nav {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] nav {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .theme-btn {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex-grow: 1;
+            min-height: calc(100vh - 60px);
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            .term-panel {
+                padding: 1.5rem;
+            }
+
+            .diagram-panel {
+                padding: 1.5rem;
+                overflow-x: auto;
+                align-items: flex-start;
+            }
+
+            .diagram-panel h2 {
+                align-self: center;
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .flowchart {
+                margin: 1rem auto;
+                padding: 0 100px;
+                width: max-content;
+            }
+        }
+
+        .term-panel {
+            padding: 2.5rem;
+            background-color: var(--bg-color);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] .term-panel {
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .term-panel h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .term-panel p {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .terminal {
+            background-color: var(--panel-bg);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="light"] .terminal {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .terminal-header {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] .terminal-header {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .mac-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .kw {
+            color: #c678dd;
+            font-weight: bold;
+        }
+
+        .fn {
+            color: #61afef;
+        }
+
+        .str {
+            color: #98c379;
+        }
+
+        .var {
+            color: #e06c75;
+        }
+
+        .num {
+            color: #d19a66;
+        }
+
+        .op {
+            color: #56b6c2;
+        }
+
+        [data-theme="light"] .kw {
+            color: var(--kw-light);
+        }
+
+        [data-theme="light"] .fn {
+            color: #2563eb;
+        }
+
+        [data-theme="light"] .str {
+            color: var(--str-light);
+        }
+
+        [data-theme="light"] .var {
+            color: var(--var-light);
+        }
+
+        [data-theme="light"] .num {
+            color: #d97706;
+        }
+
+        [data-theme="light"] .op {
+            color: #0f172a;
+        }
+
+        .code-line {
+            display: inline-block;
+            width: 100%;
+            border-radius: 4px;
+            border-left: 3px solid transparent;
+            padding-left: 5px;
+            cursor: crosshair;
+            transition: all 0.2s ease;
+            margin-left: -8px;
+            padding-right: 8px;
+        }
+
+        .code-line:hover {
+            background: rgba(251, 191, 36, 0.15);
+            border-left-color: var(--accent);
+        }
+
+        [data-theme="light"] .code-line:hover {
+            background: rgba(217, 119, 6, 0.1);
+        }
+
+        .diagram-panel {
+            padding: 2.5rem;
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .line-v {
+            width: 2px;
+            height: 25px;
+            background: var(--flow-line);
+        }
+
+        .shape {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+            padding: 10px 15px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: help;
+        }
+
+        .shape.highlight {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px var(--accent);
+            filter: brightness(1.2);
+            z-index: 10;
+        }
+
+        .shape-terminal {
+            width: 180px;
+            background: #64748b;
+            border-radius: 30px;
+            min-height: 40px;
+        }
+
+        [data-theme="light"] .shape-terminal {
+            background: #475569;
+        }
+
+        .shape-io {
+            width: max-content;
+            padding: 10px 35px;
+            background: #10b981;
+            min-height: 40px;
+            transform: skew(-20deg);
+        }
+
+        .shape-io.highlight {
+            transform: skew(-20deg) scale(1.1);
+        }
+
+        .shape-io span {
+            transform: skew(20deg);
+            display: block;
+        }
+
+        [data-theme="light"] .shape-io {
+            background: #059669;
+        }
+
+        .shape-leer {
+            background: #e06c75 !important;
+        }
+
+        [data-theme="light"] .shape-leer {
+            background: #be123c !important;
+        }
+
+        .shape-decision {
+            width: 180px;
+            height: 90px;
+            background: #c678dd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+
+        .shape.highlight.shape-decision {
+            transform: scale(1.1);
+        }
+
+        .shape-decision span {
+            display: block;
+            padding: 5px;
+            line-height: 1.2;
+        }
+
+        [data-theme="light"] .shape-decision {
+            background: #a855f7;
+        }
+
+        .shape-process {
+            width: max-content;
+            padding: 10px 25px;
+            background: #eab308;
+            border-radius: 4px;
+            min-height: 40px;
+        }
+
+        [data-theme="light"] .shape-process {
+            background: #d97706;
+        }
+
+        .branch-container {
+            display: flex;
+            width: 350px;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 0;
+        }
+
+        .bridge {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: var(--flow-line);
+            z-index: 1;
+        }
+
+        .branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            z-index: 2;
+        }
+
+        .branch-label {
+            background: var(--card-bg);
+            color: var(--text-dim);
+            padding: 0 5px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .merge-container {
+            display: flex;
+            width: 350px;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .merge-bridge {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: var(--flow-line);
+            z-index: 1;
+        }
+
+        /* Floating Tooltip Custom Design */
+        .tooltip-box {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(5px);
+            color: #f8fafc;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 9999;
+            border: 1px solid var(--accent);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 250px;
+            text-align: center;
+        }
+
+        [data-theme="light"] .tooltip-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f172a;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="clase2.html" class="back-link">&larr; Volver a Módulo 2</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <div class="term-panel">
+            <h1>Si entonces sino</h1>
+            <p>Pasa el mouse sobre el código o sobre el diagrama para observar la ramificación y los detalles técnicos
+                de cada etapa.</p>
+
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="mac-btn" style="background:#ef4444"></div>
+                    <div class="mac-btn" style="background:#eab308"></div>
+                    <div class="mac-btn" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim); margin-left:1rem; font-size:0.8rem">pseint -
+                        Condicional.psc</span>
+                </div>
+                <div class="terminal-body" id="codebox">
+                    <pre><span class="kw code-line" data-target="t-term1">Algoritmo DeterminarPar</span>
+  
+<span class="code-line" data-target="t-def1">  <span class="kw">Definir</span> <span class="var">num</span> <span class="kw">Como</span> Entero;</span>
+<span class="code-line" data-target="t-io1">  <span class="fn">Escribir</span> <span class="str">"Ingrese numero:"</span>;</span>
+<span class="code-line" data-target="t-leer1">  <span class="fn">Leer</span> <span class="var">num</span>;</span>
+  
+<span class="kw code-line" data-target="t-decis">  <span class="kw">Si</span> <span class="var">num</span> <span class="op">MOD 2 == 0</span> <span class="kw">Entonces</span></span>
+<span class="code-line" data-target="t-proc-true">    <span class="fn">Escribir</span> <span class="str">"Es par"</span>;</span>
+<span class="kw code-line" data-target="t-proc-false">  <span class="kw">Sino</span>
+    <span class="fn">Escribir</span> <span class="str">"Es impar"</span>;</span>
+<span class="kw">  FinSi</span>
+
+<span class="kw code-line" data-target="t-term2">FinAlgoritmo</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-panel">
+            <h2 style="color: var(--text-dim); margin-bottom: 1rem;">Diagrama de Flujo</h2>
+            <div class="flowchart">
+                <div id="t-term1" class="shape shape-terminal"
+                    data-tooltip="Punto inicial. Comienza la evaluación lineal de la lógica.">Algoritmo DeterminarPar
+                </div>
+                <div class="line-v"></div>
+                <div id="t-def1" class="shape shape-process"
+                    data-tooltip="Instrucción de proceso. Define la variable en memoria.">Definir num Como Entero</div>
+                <div class="line-v"></div>
+                <div id="t-io1" class="shape shape-io"
+                    data-tooltip="Romboide de salida verde. Muestra un mensaje en pantalla."><span>Escribir "Ingrese
+                        numero:"</span></div>
+                <div class="line-v"></div>
+                <div id="t-leer1" class="shape shape-io shape-leer"
+                    data-tooltip="Romboide de lectura rosa/rojo. Atrapa la respuesta del teclado del usuario y la guarda.">
+                    <span>Leer num</span></div>
+                <div class="line-v"></div>
+
+                <div id="t-decis" class="shape shape-decision"
+                    data-tooltip="Rombo condicional. Evalúa (MOD 2 == 0). Aquí se divide el flujo lineal en dos caminos.">
+                    <span>num MOD 2 = 0</span></div>
+                
+                <div class="line-v" style="height: 15px;"></div>
+
+                <div class="branch-container">
+                    <div class="bridge"></div>
+                    <div class="branch">
+                        <div class="branch-label">Falso</div>
+                        <div class="line-v" style="height: 15px; margin-top: -10px;"></div>
+                        <div id="t-proc-false" class="shape shape-io" style="font-size:0.8rem"
+                            data-tooltip="Se ejecuta si la evaluación es FALSA (bloque Sino)."><span>Escribir "Es
+                                impar"</span></div>
+                        <div class="line-v" style="height: 25px;"></div>
+                    </div>
+
+                    <div class="branch">
+                        <div class="branch-label">Verdadero</div>
+                        <div class="line-v" style="height: 15px; margin-top: -10px;"></div>
+                        <div id="t-proc-true" class="shape shape-io" style="font-size:0.8rem"
+                            data-tooltip="Se ejecuta si la condición principal dio un resultado VERDADERO.">
+                            <span>Escribir "Es par"</span></div>
+                        <div class="line-v" style="height: 25px;"></div>
+                    </div>
+                </div>
+
+                <div class="merge-container">
+                    <div class="merge-bridge"></div>
+                </div>
+
+                <div class="line-v"></div>
+                <div id="t-term2" class="shape shape-terminal"
+                    data-tooltip="Comando obligatorio que finaliza toda interacción del sistema.">FinAlgoritmo</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip-box';
+        document.body.appendChild(tooltip);
+
+        document.querySelectorAll('.code-line').forEach(line => {
+            line.addEventListener('mouseenter', function () {
+                const targetId = this.getAttribute('data-target');
+                if (targetId) { const targetEl = document.getElementById(targetId); if (targetEl) targetEl.classList.add('highlight'); }
+            });
+            line.addEventListener('mouseleave', function () {
+                const targetId = this.getAttribute('data-target');
+                if (targetId) { const targetEl = document.getElementById(targetId); if (targetEl) targetEl.classList.remove('highlight'); }
+            });
+        });
+
+        document.querySelectorAll('.shape[data-tooltip]').forEach(shape => {
+            shape.addEventListener('mouseenter', function (e) {
+                tooltip.textContent = this.getAttribute('data-tooltip');
+                tooltip.style.opacity = '1';
+                tooltip.style.left = (e.pageX) + 'px';
+                tooltip.style.top = (e.pageY - 15) + 'px';
+                tooltip.style.transform = 'translate(-50%, -100%)';
+            });
+            shape.addEventListener('mousemove', function (e) {
+                tooltip.style.left = (e.pageX) + 'px';
+                tooltip.style.top = (e.pageY - 15) + 'px';
+            });
+            shape.addEventListener('mouseleave', function () { tooltip.style.opacity = '0'; });
+        });
+    </script>
+</body>
+
+</html>

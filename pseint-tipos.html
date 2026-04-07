@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PseInt: Tipos de Datos Primitivos | TI3011</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --panel-bg: #111827;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #34d399;
+            --flow-line: #475569;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --panel-bg: #f1f5f9;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --accent: #059669;
+            --flow-line: #cbd5e1;
+            --kw-light: #7c3aed;
+            --var-light: #e11d48;
+            --str-light: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        nav {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] nav {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .theme-btn {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex-grow: 1;
+            min-height: calc(100vh - 60px);
+            min-width: 0;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            .term-panel {
+                padding: 1.5rem;
+            }
+
+            .diagram-panel {
+                padding: 1.5rem;
+                overflow-x: auto;
+                align-items: flex-start;
+            }
+
+            .diagram-panel h2 {
+                align-self: center;
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .flowchart {
+                margin: 1rem auto;
+                padding: 0 100px;
+                width: max-content;
+            }
+        }
+
+        .term-panel {
+            padding: 2.5rem;
+            background-color: var(--bg-color);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] .term-panel {
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .term-panel h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .term-panel p {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        .terminal {
+            background-color: var(--panel-bg);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Fira Code', monospace;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="light"] .terminal {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .terminal-header {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] .terminal-header {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .mac-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; }
+        .str { color: #98c379; }
+        .var { color: #e06c75; }
+        .num { color: #d19a66; }
+        .op { color: #56b6c2; }
+        .bool { color: #d19a66; font-style: italic; }
+        .comment { color: #5c6370; font-style: italic; }
+
+        [data-theme="light"] .kw { color: var(--kw-light); }
+        [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .str { color: var(--str-light); }
+        [data-theme="light"] .var { color: var(--var-light); }
+        [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .bool { color: #d97706; }
+        [data-theme="light"] .op { color: #0f172a; }
+        [data-theme="light"] .comment { color: #94a3b8; }
+
+        .code-line {
+            display: inline-block;
+            width: 100%;
+            border-radius: 4px;
+            border-left: 3px solid transparent;
+            padding-left: 5px;
+            cursor: crosshair;
+            transition: all 0.2s ease;
+            margin-left: -8px;
+            padding-right: 8px;
+        }
+
+        .code-line:hover {
+            background: rgba(52, 211, 153, 0.15);
+            border-left-color: var(--accent);
+        }
+
+        [data-theme="light"] .code-line:hover {
+            background: rgba(5, 150, 105, 0.1);
+        }
+
+        .diagram-panel {
+            padding: 2.5rem;
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        /* Reducimos la línea para compactar el diagrama */
+        .line {
+            width: 2px;
+            height: 12px;
+            background: var(--flow-line);
+        }
+
+        .shape {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+            padding: 8px 20px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: help;
+            border-radius: 4px;
+        }
+
+        .shape.highlight {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px var(--accent);
+            filter: brightness(1.2);
+            z-index: 10;
+        }
+
+        .type-card {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .type-card.highlight {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent);
+            border-color: var(--accent) !important;
+            z-index: 10;
+        }
+
+        .shape-terminal { width: 220px; background: #64748b; border-radius: 30px; min-height: 40px; }
+        [data-theme="light"] .shape-terminal { background: #475569; }
+
+        .shape-process { width: 250px; background: #eab308; min-height: 35px; }
+        [data-theme="light"] .shape-process { background: #d97706; }
+
+
+        /* Floating Tooltip Custom Design */
+        .tooltip-box {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(5px);
+            color: #f8fafc;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 9999;
+            border: 1px solid var(--accent);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 250px;
+            text-align: center;
+        }
+
+        [data-theme="light"] .tooltip-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f172a;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="clase2.html" class="back-link">&larr; Volver a Módulo 2</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <div class="term-panel">
+            <h1>Tipos de Datos Primitivos</h1>
+            <p>Pasa el mouse sobre el código o la memoria para entender las diferencias entre <strong>Entero</strong>, <strong>Real</strong>, <strong>Caracter</strong> y <strong>Lógico</strong>.</p>
+            
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="mac-btn" style="background:#ef4444"></div>
+                    <div class="mac-btn" style="background:#eab308"></div>
+                    <div class="mac-btn" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim); margin-left:1rem; font-size:0.8rem">pseint - TiposBasicos.psc</span>
+                </div>
+                <div class="terminal-body" id="codebox">
+                    <pre><span class="kw">Algoritmo TiposBasicos</span>
+  
+<span class="comment">  // Fase 1: Creación de variables en memoria</span>
+<span class="code-line" data-target="card-entero">  <span class="kw">Definir</span> <span class="var">edad</span> <span class="kw">Como Entero</span>;</span>
+<span class="code-line" data-target="card-real">  <span class="kw">Definir</span> <span class="var">precio</span> <span class="kw">Como Real</span>;</span>
+<span class="code-line" data-target="card-caracter">  <span class="kw">Definir</span> <span class="var">letra</span> <span class="kw">Como Caracter</span>;</span>
+<span class="code-line" data-target="card-logico">  <span class="kw">Definir</span> <span class="var">esNoche</span> <span class="kw">Como Logico</span>;</span>
+  
+<span class="comment">  // Fase 2: Inyectar datos en las variables</span>
+<span class="code-line" data-target="card-entero">  <span class="var">edad</span> <span class="op">&lt;-</span> <span class="num">25</span>;</span>
+<span class="code-line" data-target="card-real">  <span class="var">precio</span> <span class="op">&lt;-</span> <span class="num">19.99</span>;</span>
+<span class="code-line" data-target="card-caracter">  <span class="var">letra</span> <span class="op">&lt;-</span> <span class="str">'A'</span>;</span>
+<span class="code-line" data-target="card-logico">  <span class="var">esNoche</span> <span class="op">&lt;-</span> <span class="bool">Verdadero</span>;</span>
+
+<span class="kw">FinAlgoritmo</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-panel">
+            <h2 style="color: var(--text-dim); margin-bottom: 1rem;">Tipos de Variables</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 500px; margin-top: 2rem;">
+                <div id="card-entero" class="type-card" style="background: var(--panel-bg); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main);">Entero</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-dim);">Números sin decimales.<br>Ej: <code class="num">25</code>, <code class="num">-10</code></p>
+                </div>
+                <div id="card-real" class="type-card" style="background: var(--panel-bg); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main);">Real</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-dim);">Números fraccionarios.<br>Ej: <code class="num">19.99</code>, <code class="num">3.14</code></p>
+                </div>
+                <div id="card-caracter" class="type-card" style="background: var(--panel-bg); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main);">Caracter</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-dim);">Símbolo, letra o texto.<br>Ej: <code class="str">'A'</code>, <code class="str">"Hola"</code></p>
+                </div>
+                <div id="card-logico" class="type-card" style="background: var(--panel-bg); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main);">Lógico</h3>
+                    <p style="font-size: 0.95rem; color: var(--text-dim);">Estados booleanos de verdad.<br>Ej: <code class="bool">Verdadero</code>, <code class="bool">Falso</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip-box';
+        document.body.appendChild(tooltip);
+
+        // Hover Logic Code -> Diagram
+        document.querySelectorAll('.code-line').forEach(line => {
+            line.addEventListener('mouseenter', function () {
+                const targetId = this.getAttribute('data-target');
+                if (targetId) {
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) targetEl.classList.add('highlight');
+                }
+            });
+            line.addEventListener('mouseleave', function () {
+                const targetId = this.getAttribute('data-target');
+                if (targetId) {
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) targetEl.classList.remove('highlight');
+                }
+            });
+        });
+
+        // Hover Logic Diagram -> Tooltip
+        document.querySelectorAll('.shape[data-tooltip]').forEach(shape => {
+            shape.addEventListener('mouseenter', function (e) {
+                tooltip.textContent = this.getAttribute('data-tooltip');
+                tooltip.style.opacity = '1';
+                tooltip.style.left = (e.pageX) + 'px';
+                tooltip.style.top = (e.pageY - 15) + 'px';
+                tooltip.style.transform = 'translate(-50%, -100%)';
+            });
+            shape.addEventListener('mousemove', function (e) {
+                tooltip.style.left = (e.pageX) + 'px';
+                tooltip.style.top = (e.pageY - 15) + 'px';
+            });
+            shape.addEventListener('mouseleave', function () {
+                tooltip.style.opacity = '0';
+            });
+        });
+    </script>
+</body>
+
+</html>

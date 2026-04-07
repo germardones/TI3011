@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PseInt: ¿Qué es una Variable? | TI3011</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --panel-bg: #111827;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --ram-board: #064e3b;
+            --ram-chip: #0f172a;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --panel-bg: #f1f5f9;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --accent: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.2);
+            --ram-board: #10b981;
+            --ram-chip: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        nav {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] nav {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        [data-theme="light"] .theme-btn {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex-grow: 1;
+            min-height: calc(100vh - 60px);
+            min-width: 0;
+        }
+
+        @media (max-width: 1000px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .info-panel, .visual-panel {
+                padding: 2rem !important;
+            }
+        }
+
+        .info-panel {
+            padding: 3.5rem;
+            background-color: var(--bg-color);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] .info-panel {
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .info-panel h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            line-height: 1.1;
+        }
+
+        .info-panel p {
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .concept-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            cursor: crosshair;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .concept-card {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .concept-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: translateX(5px);
+        }
+
+        .concept-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .number-badge {
+            background: var(--accent);
+            color: white;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        .visual-panel {
+            padding: 3.5rem;
+            background-color: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* RAM Visual Metaphor */
+        .ram-stick {
+            background: var(--ram-board);
+            width: 100%;
+            max-width: 500px;
+            height: 140px;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 20px;
+            border-bottom: 12px solid #fbbf24; /* Gold Pins */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 4rem;
+        }
+
+        .ram-stick::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            width: 20px;
+            height: 12px;
+            background: var(--card-bg);
+        }
+
+        .chip {
+            background: var(--ram-chip);
+            width: 50px;
+            height: 70px;
+            border-radius: 4px;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .chip-active {
+            background: rgba(59, 130, 246, 0.3);
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        [data-theme="light"] .chip-active {
+            background: rgba(37, 99, 235, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+        }
+
+        /* The Box Visual */
+        .box-container {
+            position: relative;
+            width: 280px;
+            height: 220px;
+            perspective: 800px;
+        }
+
+        .box {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            background: rgba(255,255,255,0.02);
+            border: 3px dashed var(--text-dim);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        [data-theme="light"] .box {
+            background: rgba(0,0,0,0.02);
+            border: 3px dashed #cbd5e1;
+        }
+
+        /* Elements inside exactly mapping to definitions */
+        
+        .box-name {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-main);
+            color: var(--bg-color);
+            padding: 8px 24px;
+            font-family: 'Fira Code', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .box-type {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: absolute;
+            bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .box-value {
+            font-family: 'Fira Code', monospace;
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-shadow: 0 0 30px var(--accent-glow);
+            transition: all 0.3s;
+            z-index: 5;
+        }
+
+        /* Hover states from left panel */
+        .highlight-name .box-name {
+            background: var(--accent);
+            color: white;
+            transform: translateX(-50%) scale(1.1);
+        }
+        
+        .highlight-type .box {
+            border-style: solid;
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+        .highlight-type .box-type {
+            color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .highlight-value .box-value {
+            transform: scale(1.2);
+            color: #fff;
+            background: var(--accent);
+            padding: 0 20px;
+            border-radius: 12px;
+        }
+
+        /* Connecting Line */
+        .connector {
+            position: absolute;
+            width: 2px;
+            height: 80px;
+            background: dashed 2px var(--accent);
+            top: 140px;
+            left: 50%;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="clase2.html" class="back-link">&larr; Volver a Módulo 2</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <div class="info-panel">
+            <h1>¿Qué es una Variable?</h1>
+            <p>Piensa en la Memoria RAM de la computadora como una inmensa pared llena de casilleros o cajas. Una
+                <strong>variable</strong> es simplemente una de esas cajas que tú "reservas" para guardar un dato
+                específico y volver a usarlo cuando lo necesites.</p>
+
+            <p>Toda variable debe tener obligatoriamente tres componentes. Pasa el cursor por cada uno para ver su rol en la caja de memoria:</p>
+
+            <div class="concept-card" id="card-name" data-target="name">
+                <h3><span class="number-badge">1</span> Nombre (Identificador)</h3>
+                <p>Es la etiqueta que le pones a la caja por fuera. Debe ser un nombre claro que referencie el dato (Ej:
+                    <code>Puntaje</code>, <code>Edad</code>). En vez de buscar el dato por su código ilegible de memoria, lo buscas por este nombre.
+                </p>
+            </div>
+
+            <div class="concept-card" id="card-type" data-target="type">
+                <h3><span class="number-badge">2</span> Tipo de Dato</h3>
+                <p>Es la forma y el límite de la caja. Si la declaras como <code>Entero</code>, la computadora moldea una caja donde solo caben números sin decimales. Si intentas meter texto, rebotará o dará error.</p>
+            </div>
+
+            <div class="concept-card" id="card-value" data-target="value">
+                <h3><span class="number-badge">3</span> Valor</h3>
+                <p>Es el contenido exacto que está almacenado dentro de la caja en un momento dado. A diferencia del nombre o el tipo que no cambian, este número puede variar durante la ejecución de tu programa.</p>
+            </div>
+        </div>
+
+        <div class="visual-panel">
+            
+            <h2 style="color: var(--text-dim); margin-bottom: 2rem;">Memoria RAM del Sistema</h2>
+            
+            <div class="ram-stick">
+                <div class="chip"></div>
+                <div class="chip"></div>
+                <div class="chip"></div>
+                <div class="chip chip-active"></div>
+                <div class="chip"></div>
+                <div class="chip"></div>
+                <div class="chip"></div>
+            </div>
+
+            <div class="connector" style="border-left: 2px dashed var(--accent); background: transparent;"></div>
+
+            <div class="box-container">
+                <div class="box" id="variable-box">
+                    <div class="box-name" id="v-name">Puntaje</div>
+                    <div class="box-value" id="v-value">100</div>
+                    <div class="box-type" id="v-type">Entero</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+
+        // Interactive logic
+        const container = document.querySelector('.visual-panel');
+        document.querySelectorAll('.concept-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const target = card.getAttribute('data-target');
+                container.classList.add(`highlight-${target}`);
+            });
+            card.addEventListener('mouseleave', () => {
+                const target = card.getAttribute('data-target');
+                container.classList.remove(`highlight-${target}`);
+            });
+        });
+    </script>
+</body>
+
+</html>

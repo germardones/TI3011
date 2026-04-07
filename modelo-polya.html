@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1.1.2 Modelo de Polya | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #fb7185; 
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --accent: #e11d48;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2 { font-family: 'Outfit', sans-serif; }
+
+        .back-link {
+            position: absolute; top: 2rem; left: 2rem;
+            color: var(--text-dim); text-decoration: none; font-weight: 600;
+        }
+        .back-link:hover { color: var(--accent); }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        h1 { font-size: 2.5rem; color: var(--accent); margin-bottom: 2rem; }
+
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 25px; left: 0; right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            z-index: 0;
+        }
+
+        [data-theme="light"] .stepper::before { background: rgba(0,0,0,0.1); }
+
+        .step {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 25%;
+        }
+
+        .step-circle {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 4px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        [data-theme="light"] .step-circle { border: 4px solid rgba(0,0,0,0.1); }
+
+        .step-label {
+            margin-top: 1rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+
+        .step.active .step-circle {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 20px rgba(251, 113, 133, 0.4);
+        }
+        
+        .step.active .step-label { color: var(--accent); }
+
+        .content-box {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.05);
+            min-height: 250px;
+            animation: fadeIn 0.5s ease-in-out;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="light"] .content-box { border: 1px solid rgba(0,0,0,0.1); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-title { font-size: 2rem; margin-bottom: 1rem; color: var(--text-main); }
+        .content-desc { color: var(--text-dim); line-height: 1.7; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+    <a href="clase1.html" class="back-link">&larr; Volver</a>
+
+    <div class="container">
+        <h1>Método de Polya</h1>
+        <p style="color: var(--text-dim); margin-bottom: 3rem;">El matemático George Pólya estructuró 4 pasos lógicos fundamentales para la resolución sistemática de problemas.</p>
+        
+        <div class="stepper">
+            <div class="step active" onclick="showStep(1)">
+                <div class="step-circle">1</div>
+                <div class="step-label">Entender</div>
+            </div>
+            <div class="step" onclick="showStep(2)">
+                <div class="step-circle">2</div>
+                <div class="step-label">Planificar</div>
+            </div>
+            <div class="step" onclick="showStep(3)">
+                <div class="step-circle">3</div>
+                <div class="step-label">Ejecutar</div>
+            </div>
+            <div class="step" onclick="showStep(4)">
+                <div class="step-circle">4</div>
+                <div class="step-label">Validar</div>
+            </div>
+        </div>
+
+        <div class="content-box" id="info-box">
+            <h2 class="content-title">1. Entender el Problema</h2>
+            <div class="content-desc">
+                En esta fase inicial es crucial identificar qué se está pidiendo. 
+                <br><br>
+                <strong>Acciones Clave:</strong>
+                <ul>
+                    <li>Identificar la incógnita (¿Qué debo resolver?).</li>
+                    <li>Reconocer los datos disponibles (Inputs).</li>
+                    <li>Determinar las restricciones y condiciones del problema.</li>
+                    <li>Saber si la información es suficiente o si hay datos ocultos.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+
+        const data = {
+            1: {
+                title: "1. Entender el Problema",
+                desc: `En esta fase inicial es crucial identificar qué se está pidiendo. <br><br>
+                       <strong>Acciones Clave:</strong>
+                       <ul>
+                           <li>Identificar la incógnita (¿Qué debo resolver?).</li>
+                           <li>Reconocer los datos (Inputs).</li>
+                           <li>Determinar restricciones del problema.</li>
+                       </ul>`
+            },
+            2: {
+                title: "2. Configurar un Plan",
+                desc: `Tras entender el problema, debemos plantear estrategias algorítmicas o matemáticas.<br><br>
+                       <strong>Estrategias Comunes:</strong>
+                       <ul>
+                           <li>Buscar paralelismos: ¿He visto un problema similar antes?</li>
+                           <li>Dividir y Vencerás: Romper el gran problema en partes más chicas.</li>
+                           <li>Modelar con diagramas de flujo de datos.</li>
+                       </ul>`
+            },
+            3: {
+                title: "3. Ejecutar el Plan",
+                desc: `El paso donde se implementa el diseño realizado. Aquí es donde se codifica en lenguajes como PseInt o un lenguaje moderno.<br><br>
+                       <strong>Regla de Oro:</strong>
+                       Comprobar cada paso lógico y matemático para asegurar que no nos desviamos del flujo algorítmico principal.`
+            },
+            4: {
+                title: "4. Mirar hacia Atrás (Validar)",
+                desc: `El paso que a menudo se omite. Se trata de comprobar el resultado con pruebas exhaustivas.<br><br>
+                       <strong>Validación:</strong>
+                       <ul>
+                           <li>¿Se puede verificar la respuesta arrojada? (Testeo)</li>
+                           <li>¿Funciona para todos los casos límite (edge cases)?</li>
+                           <li>¿Podría haber una solución más óptima? (Refactorización)</li>
+                       </ul>`
+            }
+        };
+
+        function showStep(stepIndex) {
+            // Update Active Classes
+            document.querySelectorAll('.step').forEach((el, index) => {
+                if(index + 1 === stepIndex) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+
+            // Update Content
+            const box = document.getElementById('info-box');
+            box.style.animation = 'none';
+            setTimeout(() => {
+                box.innerHTML = `<h2 class="content-title">${data[stepIndex].title}</h2>
+                                 <div class="content-desc">${data[stepIndex].desc}</div>`;
+                box.style.animation = 'fadeIn 0.4s ease-in-out';
+            }, 50);
+        }
+    </script>
+</body>
+</html>
