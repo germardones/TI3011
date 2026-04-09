@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lenguajes Interpretados | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --panel-bg: #111827;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #60a5fa;
+            --accent-glow: rgba(96,165,250,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #e2e8f0;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #2563eb; --accent-glow: rgba(37,99,235,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.75rem; }
+        header p { color: var(--text-dim); max-width: 620px; margin: 0 auto; font-size: 1.05rem; line-height: 1.7; }
+
+        /* ===== PROCESS COMPARISON ===== */
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+        @media (max-width: 768px) { .comparison { grid-template-columns: 1fr; } }
+
+        .process-card {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+        }
+        [data-theme="light"] .process-card { border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .process-card:hover { border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); }
+
+        .process-card h2 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .process-card.interpreted h2 { color: #60a5fa; }
+        .process-card.compiled h2 { color: #f87171; }
+        .process-card > p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+        .flow-steps { display: flex; flex-direction: column; gap: 0; }
+        .flow-step {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 0.75rem;
+            position: relative;
+        }
+        [data-theme="light"] .flow-step { background: rgba(0,0,0,0.02); }
+        .flow-step .step-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .interpreted .step-icon { background: rgba(96,165,250,0.15); }
+        .compiled   .step-icon { background: rgba(248,113,113,0.15); }
+        .flow-step .step-text { font-size: 0.88rem; }
+        .flow-step .step-name { font-weight: 700; color: var(--text-main); display: block; }
+        .flow-step .step-desc { color: var(--text-dim); }
+
+        .flow-arrow {
+            text-align: center; color: var(--text-dim); font-size: 1.2rem; line-height: 1; padding: 0.2rem 0;
+        }
+
+        /* ===== EXAMPLES GRID ===== */
+        .section-title { font-size: 1.6rem; margin-bottom: 1.5rem; color: var(--text-main); }
+        .section-title span { color: var(--accent); }
+
+        .languages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .lang-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: default;
+        }
+        [data-theme="light"] .lang-card { border: 1px solid rgba(0,0,0,0.07); }
+        .lang-card:hover { transform: translateY(-5px); border-color: var(--c); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .lang-card .lang-icon { font-size: 2.2rem; display: block; margin-bottom: 0.5rem; }
+        .lang-card .lang-name { font-weight: 700; font-size: 0.95rem; color: var(--text-main); display: block; }
+        .lang-card .lang-use  { font-size: 0.75rem; color: var(--text-dim); }
+
+        /* ===== VENTAJAS / DESVENTAJAS ===== */
+        .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 600px) { .pros-cons { grid-template-columns: 1fr; } }
+
+        .pros-cons-card { background: var(--card-bg); border-radius: 1.25rem; padding: 1.75rem; border: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .pros-cons-card { border: 1px solid rgba(0,0,0,0.07); }
+        .pros-cons-card h3 { font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .pros-cons-card.pros h3 { color: #34d399; }
+        .pros-cons-card.cons h3 { color: #f87171; }
+        .pros-cons-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+        .pros-cons-card ul li { font-size: 0.88rem; color: var(--text-dim); padding-left: 1.5rem; position: relative; line-height: 1.5; }
+        .pros-cons-card ul li::before { content: ''; position: absolute; left: 0; top: 0.55rem; width: 8px; height: 8px; border-radius: 50%; }
+        .pros li::before  { background: #34d399; }
+        .cons li::before  { background: #f87171; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase3.html" class="back-link">← Volver a Módulo 3</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>️ Lenguajes Interpretados</h1>
+            <p>Comprende cómo los lenguajes interpretados ejecutan el código de forma diferente a los compilados, y por qué Python es uno de los más populares de esta categoría.</p>
+        </header>
+
+        <!-- Comparación de procesos -->
+        <div class="comparison">
+            <div class="process-card interpreted">
+                <h2> Interpretado</h2>
+                <p>El código fuente se traduce y ejecuta línea por línea en tiempo real mediante un <strong>intérprete</strong>.</p>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="step-icon"></div>
+                        <div class="step-text"><span class="step-name">Código Fuente (.py)</span><span class="step-desc">El programador escribe el código</span></div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="step-icon"></div>
+                        <div class="step-text"><span class="step-name">Intérprete Python</span><span class="step-desc">Lee, analiza y ejecuta línea a línea</span></div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="step-icon"></div>
+                        <div class="step-text"><span class="step-name">Bytecode (.pyc)</span><span class="step-desc">Representación intermedia optimizada</span></div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="step-icon">️</div>
+                        <div class="step-text"><span class="step-name">Máquina Virtual (PVM)</span><span class="step-desc">Ejecuta instrucciones en el hardware</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="process-card compiled" style="--accent: #f87171; --accent-glow: rgba(248,113,113,0.2);">
+                <h2> Compilado</h2>
+                <p>El código fuente se transforma por completo a código máquina <strong>antes</strong> de ejecutarse mediante un <strong>compilador</strong>.</p>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="step-icon"></div>
+                        <div class="step-text"><span class="step-name">Código Fuente (.c)</span><span class="step-desc">El programador escribe el código</span></div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="step-icon"></div>
+                        <div class="step-text"><span class="step-name">Compilador</span><span class="step-desc">Traduce TODO el código de una vez</span></div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="step-icon"></div>
+                        <div class="step-text"><span class="step-name">Ejecutable (.exe / bin)</span><span class="step-desc">Archivo binario listo para correr</span></div>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-step">
+                        <div class="step-icon">️</div>
+                        <div class="step-text"><span class="step-name">CPU Directo</span><span class="step-desc">Ejecución nativa, máxima velocidad</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ejemplos de lenguajes interpretados -->
+        <h2 class="section-title">Lenguajes <span>interpretados</span> populares</h2>
+        <div class="languages-grid">
+            <div class="lang-card" style="--c: #3b82f6;">
+                <span class="lang-icon"></span>
+                <span class="lang-name">Python</span>
+                <span class="lang-use">IA, Data Science, Web</span>
+            </div>
+            <div class="lang-card" style="--c: #f0db4f;">
+                <span class="lang-icon">JS</span>
+                <span class="lang-name">JavaScript</span>
+                <span class="lang-use">Web, Node.js, Apps</span>
+            </div>
+            <div class="lang-card" style="--c: #cc342d;">
+                <span class="lang-icon"></span>
+                <span class="lang-name">Ruby</span>
+                <span class="lang-use">Web, Rails, Scripts</span>
+            </div>
+            <div class="lang-card" style="--c: #777bb4;">
+                <span class="lang-icon"></span>
+                <span class="lang-name">PHP</span>
+                <span class="lang-use">Web Backend, CMS</span>
+            </div>
+            <div class="lang-card" style="--c: #4ec9b0;">
+                <span class="lang-icon"></span>
+                <span class="lang-name">R</span>
+                <span class="lang-use">Estadística, Data</span>
+            </div>
+            <div class="lang-card" style="--c: #f0a500;">
+                <span class="lang-icon"></span>
+                <span class="lang-name">Lua</span>
+                <span class="lang-use">Videojuegos, Scripts</span>
+            </div>
+        </div>
+
+        <!-- Ventajas y Desventajas -->
+        <h2 class="section-title">Ventajas y <span>desventajas</span></h2>
+        <div class="pros-cons">
+            <div class="pros-cons-card pros">
+                <h3> Ventajas</h3>
+                <ul>
+                    <li>Desarrollo más rápido y ágil — no es necesario compilar para probar cambios.</li>
+                    <li>Portabilidad — el mismo código corre en cualquier sistema donde esté el intérprete instalado.</li>
+                    <li>Depuración más sencilla — los errores se muestran en la línea exacta donde ocurren.</li>
+                    <li>Interactividad — se puede ejecutar código en tiempo real desde la consola (REPL).</li>
+                    <li>Tipado dinámico — no es necesario declarar explícitamente los tipos de variables.</li>
+                </ul>
+            </div>
+            <div class="pros-cons-card cons">
+                <h3> Desventajas</h3>
+                <ul>
+                    <li>Velocidad de ejecución menor — la traducción en tiempo real agrega sobrecarga.</li>
+                    <li>Mayor uso de memoria — el intérprete debe estar cargado en RAM durante la ejecución.</li>
+                    <li>No apto para tareas de tiempo real crítico (sistemas embebidos de baja latencia).</li>
+                    <li>El código fuente está expuesto — no genera un ejecutable binario nativo.</li>
+                    <li>Errores de tipo solo se detectan en ejecución, no en compilación.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        });
+    </script>
+</body>
+</html>

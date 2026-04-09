@@ -35,6 +35,15 @@ TI3011/
     ├── pseint-ciclos.html              # Mientras (While)
     ├── pseint-repetir.html             # Repetir Hasta (Do-While)
     └── pseint-para.html                # Para (For)
+└── clase3/                 # Módulo 3: Introducción a Python
+    ├── clase3.html             # Hub del Módulo 3
+    ├── python-interpretados.html       # Lenguajes Interpretados
+    ├── python-intro.html               # Características de Python
+    ├── python-tipos.html               # Tipos de Datos & Variables
+    ├── python-operadores.html          # Operadores
+    ├── python-control.html             # Estructuras de Control
+    ├── python-funciones.html           # Funciones
+    └── python-consola.html             # Consola Interactiva (Pyodide/WASM)
 ```
 
 ---
@@ -64,6 +73,19 @@ Profundiza en la codificación en pseudocódigo con visualización dual: código
 | `pseint-repetir.html` | Repetir Hasta (Do-While) | Bucle con condición post-evaluada |
 | `pseint-para.html` | Para (For) | Bucle con contador, paso e incremento |
 
+### Módulo 3 — Introducción a Python
+Entorno de programación real en el navegador mediante WebAssembly para aprender la sintaxis de Python 3.
+
+| Página | Tema | Características |
+|--------|------|-----------------|
+| `python-interpretados.html` | Lenguajes Interpretados | Comparativa visual vs lenguajes compilados |
+| `python-intro.html` | Fundamentos | Historia, tipado dinámico y ecosistema |
+| `python-tipos.html` | Datos y Variables | Literales, enteros, flotantes y cadenas |
+| `python-operadores.html` | Operadores | Calculadora aritmética, lógica y comparativa |
+| `python-control.html` | Flujo de Control | Diagramas de flujo para if/for/while |
+| `python-funciones.html` | Funciones | Estructura def, parámetros y retorno |
+| `python-consola.html` | **Laboratorio Python** | REPL avanzado con Matplotlib y Desafíos |
+
 ---
 
 ## 🎨 Sistema de Diseño
@@ -75,6 +97,7 @@ Profundiza en la codificación en pseudocódigo con visualización dual: código
 - **Color por módulo:**
   - Módulo 1: Índigo `#818cf8` · Rosa `#fb7185` · Cyan `#22d3ee`
   - Módulo 2: Esmeralda `#34d399` · Ámbar `#fbbf24` · Violeta `#a78bfa`
+  - Módulo 3: Azul `#3b82f6` · Violeta `#a78bfa` · Ámbar `#fbbf24` (Avanzado)
 
 ### Interactividad en Módulo 2
 Cada página de PseInt implementa un layout dividido **50/50**:
@@ -90,6 +113,8 @@ Cada página de PseInt implementa un layout dividido **50/50**:
 | HTML5 Semántico | Estructura de todas las páginas |
 | CSS3 Vanilla | Diseño completo, animaciones, modo oscuro/claro |
 | JavaScript (ES6+) | Lógica de tema, interactividad código↔diagrama, tooltips |
+| Pyodide (WASM) | Motor de Python 3 para el Laboratorio Interactivo |
+| Matplotlib | Visualización de gráficos en el navegador |
 | Google Fonts | `Inter`, `Outfit`, `Fira Code` |
 | CSS Custom Properties | Sistema de tokens de diseño (colores, transiciones) |
 | `localStorage` | Persistencia del tema seleccionado por el usuario |

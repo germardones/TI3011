@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Características de Python | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #818cf8; --accent-glow: rgba(129,140,248,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #e2e8f0;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #4338ca; --accent-glow: rgba(67,56,202,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.75rem; }
+        header p { color: var(--text-dim); max-width: 620px; margin: 0 auto; font-size: 1.05rem; line-height: 1.7; }
+
+        /* Timeline historia */
+        .timeline { position: relative; margin-bottom: 3.5rem; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), transparent); }
+        .timeline-item { position: relative; padding: 0.4rem 0 1.5rem 2rem; }
+        .timeline-item::before { content: ''; position: absolute; left: -0.45rem; top: 0.55rem; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+        .timeline-item .year { font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
+        .timeline-item h3 { font-size: 1rem; margin: 0.2rem 0; }
+        .timeline-item p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.5; }
+        .section-title { font-size: 1.6rem; margin-bottom: 1.5rem; }
+        .section-title span { color: var(--accent); }
+
+        /* Feature cards */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 3rem; }
+        .feature-card {
+            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.25rem; padding: 1.75rem;
+            transition: var(--transition); cursor: default;
+            border-top: 3px solid var(--c, var(--accent));
+        }
+        [data-theme="light"] .feature-card { border: 1px solid rgba(0,0,0,0.07); border-top: 3px solid var(--c, var(--accent)); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .feature-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .feature-card .icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+        .feature-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--c, var(--accent)); }
+        .feature-card p { font-size: 0.86rem; color: var(--text-dim); line-height: 1.6; }
+
+        /* Usos de Python */
+        .uses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .use-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 1rem; padding: 1.25rem; text-align: center; transition: var(--transition); }
+        [data-theme="light"] .use-card { border: 1px solid rgba(0,0,0,0.07); }
+        .use-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .use-card .use-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+        .use-card .use-name { font-weight: 700; font-size: 0.9rem; color: var(--text-main); display: block; }
+        .use-card .use-libs { font-size: 0.75rem; color: var(--accent); }
+
+        /* Code snippet */
+        .code-block { background: var(--panel-bg); border-radius: 1rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .code-block { border: 1px solid rgba(0,0,0,0.1); }
+        .code-header { background: rgba(255,255,255,0.04); padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .code-header { background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .code-body { padding: 1.5rem; font-size: 0.9rem; line-height: 1.8; }
+        .cm { color: #5c6370; }
+        .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; }
+        .st { color: #98c379; }
+        .num { color: #d19a66; }
+        .var { color: #e06c75; }
+        [data-theme="light"] .kw { color: #7c3aed; }
+        [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; }
+        [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .var { color: #e11d48; }
+        [data-theme="light"] .cm { color: #94a3b8; }
+
+        @media(max-width:768px){ header h1 { font-size: 2rem; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase3.html" class="back-link">← Volver a Módulo 3</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+    <div class="container">
+        <header>
+            <h1> Características de Python</h1>
+            <p>Conoce la historia, filosofía y características clave que hacen de Python uno de los lenguajes más poderosos y amados del mundo de la programación.</p>
+        </header>
+
+        <h2 class="section-title">Historia <span>breve</span></h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="year">1989</span>
+                <h3>Guido van Rossum comienza el desarrollo</h3>
+                <p>Buscando un lenguaje de scripting más potente que el intérprete ABC, durante sus vacaciones de Navidad.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="year">1991</span>
+                <h3>Python 0.9.0 — Primera versión pública</h3>
+                <p>Incluye manejo de excepciones, funciones y los tipos de datos centrales: list, dict, str, int.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="year">2000</span>
+                <h3>Python 2.0 — Comprensiones de listas</h3>
+                <p>Se incorpora el recolector de basura y las comprensiones. Crece su adopción en el mundo académico.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="year">2008</span>
+                <h3>Python 3.0 — Rediseño completo</h3>
+                <p>Rompe compatibilidad con Python 2 para eliminar inconsistencias. Unicode nativo, print como función.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="year">Hoy</span>
+                <h3>Python lidera en IA y Data Science</h3>
+                <p>Con librerías como NumPy, Pandas, TensorFlow y PyTorch, domina el machine learning global.</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Características <span>clave</span></h2>
+        <div class="features-grid">
+            <div class="feature-card" style="--c: #60a5fa;">
+                <span class="icon"></span>
+                <h3>Legibilidad</h3>
+                <p>La sintaxis de Python imita al pseudocódigo. Usa indentación obligatoria en lugar de llaves, forzando código limpio y estructurado.</p>
+            </div>
+            <div class="feature-card" style="--c: #34d399;">
+                <span class="icon"></span>
+                <h3>Tipado Dinámico</h3>
+                <p>No necesitas declarar el tipo de una variable. Python lo infiere automáticamente en tiempo de ejecución.</p>
+            </div>
+            <div class="feature-card" style="--c: #f59e0b;">
+                <span class="icon"></span>
+                <h3>Multiparadigma</h3>
+                <p>Soporta programación orientada a objetos, funcional e imperativa. Tú eliges el estilo según el problema.</p>
+            </div>
+            <div class="feature-card" style="--c: #a78bfa;">
+                <span class="icon"></span>
+                <h3>Baterías incluidas</h3>
+                <p>La librería estándar cubre desde manejo de archivos hasta servidores web, expresiones regulares y más.</p>
+            </div>
+            <div class="feature-card" style="--c: #fb923c;">
+                <span class="icon"></span>
+                <h3>Portabilidad</h3>
+                <p>Corre en Windows, macOS, Linux y más sin modificar el código fuente. Un intérprete por plataforma.</p>
+            </div>
+            <div class="feature-card" style="--c: #f87171;">
+                <span class="icon"></span>
+                <h3>Comunidad masiva</h3>
+                <p>Más de 500.000 paquetes en PyPI, documentación extensa y una comunidad activa que resuelve problemas.</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">¿Para qué se <span>usa</span>?</h2>
+        <div class="uses-grid">
+            <div class="use-card"><span class="use-icon"></span><span class="use-name">Inteligencia Artificial</span><span class="use-libs">TensorFlow, PyTorch</span></div>
+            <div class="use-card"><span class="use-icon"></span><span class="use-name">Ciencia de Datos</span><span class="use-libs">Pandas, NumPy</span></div>
+            <div class="use-card"><span class="use-icon"></span><span class="use-name">Desarrollo Web</span><span class="use-libs">Django, FastAPI</span></div>
+            <div class="use-card"><span class="use-icon"></span><span class="use-name">Automatización</span><span class="use-libs">Selenium, Playwright</span></div>
+            <div class="use-card"><span class="use-icon"></span><span class="use-name">Ciberseguridad</span><span class="use-libs">Scapy, Requests</span></div>
+        </div>
+
+        <h2 class="section-title">Tu primer programa en <span>Python</span></h2>
+        <div class="code-block">
+            <div class="code-header">
+                <div class="dot" style="background:#ef4444"></div>
+                <div class="dot" style="background:#eab308"></div>
+                <div class="dot" style="background:#10b981"></div>
+                <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.8rem">hola_mundo.py</span>
+            </div>
+            <div class="code-body"><pre><span class="cm"># Mi primer programa en Python</span>
+
+<span class="var">nombre</span> = <span class="fn">input</span>(<span class="st">"¿Cómo te llamas? "</span>)
+<span class="var">edad</span>   = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"¿Cuántos años tienes? "</span>))
+
+<span class="fn">print</span>(<span class="st">f"Hola, </span><span class="var">{nombre}</span><span class="st">! Tienes </span><span class="var">{edad}</span><span class="st"> años."</span>)
+
+<span class="kw">if</span> <span class="var">edad</span> >= <span class="num">18</span>:
+    <span class="fn">print</span>(<span class="st">"Eres mayor de edad. "</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"Eres menor de edad."</span>)</pre></div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        });
+    </script>
+</body>
+</html>

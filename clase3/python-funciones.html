@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funciones Python | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #a78bfa; --accent-glow: rgba(167,139,250,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #7c3aed; --accent-glow: rgba(124,58,237,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.5rem; }
+        header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+        .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .section-title span { color: var(--accent); }
+
+        /* ANATOMY */
+        .anatomy-wrapper { background: var(--card-bg); border-radius: 1.5rem; padding: 2rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 3rem; }
+        [data-theme="light"] .anatomy-wrapper { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .anatomy-wrapper h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--text-dim); }
+
+        .anatomy-code { font-family: 'Fira Code', monospace; font-size: 1rem; line-height: 2.2; background: var(--panel-bg); border-radius: 1rem; padding: 1.75rem 2rem; border: 1px solid rgba(255,255,255,0.07); position: relative; }
+        [data-theme="light"] .anatomy-code { border: 1px solid rgba(0,0,0,0.09); }
+
+        .an-part { position: relative; display: inline; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: all 0.2s; }
+        .an-part:hover { opacity: 1 !important; }
+        .an-def    { background: rgba(198,120,221,0.2); border: 1px solid rgba(198,120,221,0.4); color: #c678dd; }
+        .an-name   { background: rgba(97,175,239,0.2);  border: 1px solid rgba(97,175,239,0.4);  color: #61afef; }
+        .an-param  { background: rgba(224,108,117,0.2); border: 1px solid rgba(224,108,117,0.4); color: #e06c75; }
+        .an-body   { background: rgba(209,154,102,0.2); border: 1px solid rgba(209,154,102,0.4); color: #d19a66; }
+        .an-return { background: rgba(152,195,121,0.2); border: 1px solid rgba(152,195,121,0.4); color: #98c379; }
+        .an-call   { background: rgba(167,139,250,0.2); border: 1px solid rgba(167,139,250,0.4); color: #a78bfa; }
+        [data-theme="light"] .an-def    { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.3); color: #7c3aed; }
+        [data-theme="light"] .an-name   { background: rgba(37,99,235,0.1);  border-color: rgba(37,99,235,0.3);  color: #2563eb; }
+        [data-theme="light"] .an-param  { background: rgba(225,29,72,0.1);  border-color: rgba(225,29,72,0.3);  color: #e11d48; }
+        [data-theme="light"] .an-body   { background: rgba(217,119,6,0.1);  border-color: rgba(217,119,6,0.3);  color: #d97706; }
+        [data-theme="light"] .an-return { background: rgba(5,150,105,0.1);  border-color: rgba(5,150,105,0.3);  color: #059669; }
+        [data-theme="light"] .an-call   { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.2); color: #7c3aed; }
+
+        /* Legend */
+        .legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; cursor: pointer; padding: 0.3rem 0.75rem; border-radius: 100px; transition: var(--transition); }
+        .legend-item:hover { background: rgba(255,255,255,0.05); }
+        [data-theme="light"] .legend-item:hover { background: rgba(0,0,0,0.04); }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+        /* Info card */
+        .info-card { background: var(--panel-bg); border-radius: 1rem; padding: 1.25rem; margin-top: 1.25rem; border: 1px solid rgba(255,255,255,0.06); min-height: 80px; transition: var(--transition); }
+        [data-theme="light"] .info-card { border: 1px solid rgba(0,0,0,0.08); }
+        .info-card h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+        .info-card p  { font-size: 0.87rem; color: var(--text-dim); line-height: 1.6; }
+
+        /* EXAMPLES GRID */
+        .examples-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .example-card { background: var(--card-bg); border-radius: 1.25rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); }
+        [data-theme="light"] .example-card { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .example-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .example-header { padding: 1rem 1.25rem; background: rgba(167,139,250,0.08); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .example-header { background: rgba(124,58,237,0.05); border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .example-header h3 { font-size: 0.95rem; color: var(--accent); }
+        .example-header p  { font-size: 0.8rem; color: var(--text-dim); }
+        .code-block { font-family: 'Fira Code', monospace; font-size: 0.82rem; padding: 1.25rem; line-height: 1.8; }
+        .cm{color:#5c6370} .kw{color:#c678dd;font-weight:bold} .fn{color:#61afef} .st{color:#98c379} .num{color:#d19a66} .va{color:#e06c75} .op{color:#56b6c2}
+        [data-theme="light"] .kw{color:#7c3aed} [data-theme="light"] .fn{color:#2563eb} [data-theme="light"] .st{color:#059669}
+        [data-theme="light"] .num{color:#d97706} [data-theme="light"] .va{color:#e11d48} [data-theme="light"] .op{color:#0891b2} [data-theme="light"] .cm{color:#94a3b8}
+        .output-line { background: rgba(52,211,153,0.08); border-left: 3px solid #34d399; padding: 0.5rem 1rem; font-family: 'Fira Code', monospace; font-size: 0.82rem; color: #34d399; }
+        [data-theme="light"] .output-line { background: rgba(5,150,105,0.06); border-left-color: #059669; color: #059669; }
+
+        /* FLOW */
+        .flow-diagram { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin-bottom: 3rem; }
+        .flow-box { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; padding: 1.25rem; text-align: center; min-width: 120px; }
+        [data-theme="light"] .flow-box { border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .flow-box .fb-icon { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+        .flow-box .fb-name { font-size: 0.8rem; font-weight: 700; color: var(--text-main); }
+        .flow-box .fb-desc { font-size: 0.72rem; color: var(--text-dim); }
+        .flow-box.caller   { border-color: rgba(97,175,239,0.4); }
+        .flow-box.func     { border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.05); }
+        .flow-box.returned { border-color: rgba(152,195,121,0.4); }
+        .flow-arrow { font-size: 1.5rem; color: var(--text-dim); padding: 0 0.5rem; }
+
+        @media(max-width:700px){ .flow-diagram { flex-direction: column; } .flow-arrow { transform: rotate(90deg); } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase3.html" class="back-link">← Volver a Módulo 3</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+    <div class="container">
+        <header>
+            <h1> Funciones en Python</h1>
+            <p>Crea bloques de código reutilizables. Explora la anatomía de una función, sus parámetros, argumentos y valores de retorno de forma interactiva.</p>
+        </header>
+
+        <!-- ANATOMY -->
+        <h2 class="section-title">Anatomía de una <span>función</span></h2>
+        <div class="anatomy-wrapper">
+            <h2>Haz clic en cada parte para aprender su rol</h2>
+            <div class="anatomy-code">
+                <span class="an-part an-def" onclick="showInfo('def')">def</span> <span class="an-part an-name" onclick="showInfo('name')">calcular_promedio</span>(<span class="an-part an-param" onclick="showInfo('param')">nota1, nota2, nota3</span>):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="an-part an-body" onclick="showInfo('body')">suma = nota1 + nota2 + nota3<br>&nbsp;&nbsp;&nbsp;&nbsp;promedio = suma / 3</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="an-part an-return" onclick="showInfo('return')">return promedio</span><br><br>
+                <span class="cm"># Llamada a la función</span><br>
+                <span class="an-part an-call" onclick="showInfo('call')">resultado = calcular_promedio(85, 92, 78)</span><br>
+                <span class="fn">print</span>(<span class="st">f"Promedio: </span>{resultado}<span class="st">"</span>) <span class="cm"># 85.0</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item" onclick="showInfo('def')"><div class="legend-dot" style="background:#c678dd"></div>Palabra clave def</div>
+                <div class="legend-item" onclick="showInfo('name')"><div class="legend-dot" style="background:#61afef"></div>Nombre función</div>
+                <div class="legend-item" onclick="showInfo('param')"><div class="legend-dot" style="background:#e06c75"></div>Parámetros</div>
+                <div class="legend-item" onclick="showInfo('body')"><div class="legend-dot" style="background:#d19a66"></div>Cuerpo</div>
+                <div class="legend-item" onclick="showInfo('return')"><div class="legend-dot" style="background:#98c379"></div>return</div>
+                <div class="legend-item" onclick="showInfo('call')"><div class="legend-dot" style="background:#a78bfa"></div>Llamada</div>
+            </div>
+            <div class="info-card" id="infoCard">
+                <h3 style="color:var(--accent)"> Haz clic en cualquier parte del código</h3>
+                <p>Cada elemento de la función tiene un rol específico. Selecciona una parte para ver su descripción detallada.</p>
+            </div>
+        </div>
+
+        <!-- FLUJO DE LLAMADA -->
+        <h2 class="section-title">Flujo de <span>llamada</span></h2>
+        <div class="flow-diagram">
+            <div class="flow-box caller">
+                <span class="fb-icon">️</span>
+                <span class="fb-name">Código Principal</span>
+                <span class="fb-desc">Envía argumentos: 85, 92, 78</span>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box func">
+                <span class="fb-icon"></span>
+                <span class="fb-name">calcular_promedio()</span>
+                <span class="fb-desc">Recibe parámetros y procesa</span>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box returned">
+                <span class="fb-icon">↩️</span>
+                <span class="fb-name">Valor retornado</span>
+                <span class="fb-desc">Devuelve 85.0 al llamador</span>
+            </div>
+        </div>
+
+        <!-- EJEMPLOS -->
+        <h2 class="section-title">Tipos de <span>funciones</span></h2>
+        <div class="examples-grid">
+            <div class="example-card">
+                <div class="example-header"><h3>Sin parámetros ni retorno</h3><p>Ejecuta una acción simple, sin recibir ni devolver datos.</p></div>
+                <div class="code-block"><pre><span class="kw">def</span> <span class="fn">saludar</span>():
+    <span class="fn">print</span>(<span class="st">"¡Hola, Python!"</span>)
+
+<span class="cm"># Llamada:</span>
+<span class="fn">saludar</span>()  <span class="cm"># No retorna nada</span></pre></div>
+                <div class="output-line"> ¡Hola, Python!</div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-header"><h3>Con parámetros, sin retorno</h3><p>Recibe datos via parámetros y los usa internamente.</p></div>
+                <div class="code-block"><pre><span class="kw">def</span> <span class="fn">saludar_persona</span>(<span class="va">nombre</span>, <span class="va">edad</span>):
+    <span class="fn">print</span>(<span class="st">f"Hola </span><span class="va">{nombre}</span><span class="st">, tienes </span><span class="va">{edad}</span><span class="st"> años"</span>)
+
+<span class="cm"># Llamada con argumentos:</span>
+<span class="fn">saludar_persona</span>(<span class="st">"Ana"</span>, <span class="num">22</span>)</pre></div>
+                <div class="output-line"> Hola Ana, tienes 22 años</div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-header"><h3>Con parámetros y retorno</h3><p>Recibe datos, los procesa y devuelve un resultado.</p></div>
+                <div class="code-block"><pre><span class="kw">def</span> <span class="fn">potencia</span>(<span class="va">base</span>, <span class="va">exp</span>):
+    <span class="va">resultado</span> = <span class="va">base</span> <span class="op">**</span> <span class="va">exp</span>
+    <span class="kw">return</span> <span class="va">resultado</span>
+
+<span class="va">r</span> = <span class="fn">potencia</span>(<span class="num">2</span>, <span class="num">10</span>)
+<span class="fn">print</span>(<span class="va">r</span>)</pre></div>
+                <div class="output-line"> 1024</div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-header"><h3>Parámetros por defecto</h3><p>Los parámetros puede tener un valor predeterminado opcional.</p></div>
+                <div class="code-block"><pre><span class="kw">def</span> <span class="fn">conectar</span>(<span class="va">host</span>, <span class="va">puerto</span>=<span class="num">80</span>):
+    <span class="fn">print</span>(<span class="st">f"Conectando a </span><span class="va">{host}</span><span class="st">:</span><span class="va">{puerto}</span><span class="st">"</span>)
+
+<span class="fn">conectar</span>(<span class="st">"google.com"</span>)         <span class="cm"># usa 80</span>
+<span class="fn">conectar</span>(<span class="st">"google.com"</span>, <span class="num">443</span>)    <span class="cm"># usa 443</span></pre></div>
+                <div class="output-line"> Conectando a google.com:80<br> Conectando a google.com:443</div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-header"><h3>Múltiples valores de retorno</h3><p>Python puede retornar varios valores como tupla.</p></div>
+                <div class="code-block"><pre><span class="kw">def</span> <span class="fn">min_max</span>(<span class="va">lista</span>):
+    <span class="kw">return</span> <span class="fn">min</span>(<span class="va">lista</span>), <span class="fn">max</span>(<span class="va">lista</span>)
+
+<span class="va">minimo</span>, <span class="va">maximo</span> = <span class="fn">min_max</span>([<span class="num">3</span>, <span class="num">1</span>, <span class="num">9</span>, <span class="num">5</span>])
+<span class="fn">print</span>(<span class="va">minimo</span>, <span class="va">maximo</span>)</pre></div>
+                <div class="output-line"> 1 &nbsp; 9</div>
+            </div>
+
+            <div class="example-card">
+                <div class="example-header"><h3>Parámetros nombrados (kwargs)</h3><p>Puedes pasar argumentos por nombre en cualquier orden.</p></div>
+                <div class="code-block"><pre><span class="kw">def</span> <span class="fn">crear_perfil</span>(<span class="va">nombre</span>, <span class="va">edad</span>, <span class="va">ciudad</span>):
+    <span class="kw">return</span> <span class="st">f"</span><span class="va">{nombre}</span><span class="st">, </span><span class="va">{edad}</span><span class="st">, </span><span class="va">{ciudad}</span><span class="st">"</span>
+
+<span class="cm"># Orden no importa con kwargs:</span>
+<span class="fn">crear_perfil</span>(<span class="va">ciudad</span>=<span class="st">"Iquique"</span>, <span class="va">nombre</span>=<span class="st">"Ana"</span>, <span class="va">edad</span>=<span class="num">22</span>)</pre></div>
+                <div class="output-line"> Ana, 22, Iquique</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        });
+
+        const infos = {
+            def:    { color: '#c678dd', title: ' Palabra clave <code>def</code>', body: 'Indica a Python que lo que sigue es la <strong>definición de una función</strong>. Es obligatoria y siempre va al inicio. Sin ella, Python trataría el nombre como una variable.' },
+            name:   { color: '#61afef', title: '️ Nombre de la función', body: 'Identifica la función de forma única. Debe ser descriptivo (usa snake_case). Con este nombre la invocarás más adelante. Por convención, los nombres de funciones en Python usan minúsculas separadas por guiones bajos.' },
+            param:  { color: '#e06c75', title: ' Parámetros', body: 'Son variables locales que reciben los datos enviados al llamar la función. Se definen dentro de los paréntesis. La función puede tener cero o más parámetros separados por comas.' },
+            body:   { color: '#d19a66', title: ' Cuerpo de la función', body: 'Contiene las instrucciones que se ejecutan al llamar la función. <strong>Debe estar indentado</strong> con 4 espacios. Aquí se usan los parámetros para procesar los datos.' },
+            return: { color: '#98c379', title: '↩️ Sentencia <code>return</code>', body: 'Devuelve un valor al código que llamó la función y <strong>termina su ejecución inmediatamente</strong>. Si se omite, la función retorna <code>None</code> implícitamente. Puede retornar múltiples valores separados por comas.' },
+            call:   { color: '#a78bfa', title: ' Llamada a la función', body: 'Ejecuta la función con valores concretos llamados <strong>argumentos</strong>. Los argumentos se mapean en orden a los parámetros. El resultado devuelto por <code>return</code> puede guardarse en una variable.' }
+        };
+
+        function showInfo(key) {
+            const info = infos[key];
+            const card = document.getElementById('infoCard');
+            card.innerHTML = `<h3 style="color:${info.color};margin-bottom:0.5rem">${info.title}</h3><p>${info.body}</p>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consola Python Avanzada | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Pyodide v0.29.3 — WebAssembly -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --nav-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --term-bg: #0d1117;
+            --term-border: #30363d;
+            --input-bg: #161b22;
+            --lab-bg: #111827;
+            --text: #f8fafc;
+            --text-dim: #8b949e;
+            --accent: #a78bfa;
+            --accent-glow: rgba(167,139,250,0.2);
+            --green: #3fb950;
+            --red: #f85149;
+            --blue: #58a6ff;
+            --yellow: #e3b341;
+            --prompt: #3fb950;
+            --output: #cdd9e5;
+            --error-color: #f85149;
+            --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        [data-theme="light"] {
+            --bg: #f6f8fa;
+            --nav-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --term-bg: #0d1117;
+            --term-border: #30363d;
+            --input-bg: #161b22;
+            --lab-bg: #f6f8fa;
+            --text: #1f2328;
+            --text-dim: #656d76;
+            --accent: #7c3aed;
+            --accent-glow: rgba(124,58,237,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+
+        /* ===== NAV ===== */
+        nav {
+            background: var(--nav-bg);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .nav-left { display: flex; align-items: center; gap: 1rem; }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; font-size: 0.875rem; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .nav-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--text); }
+        .nav-badge { background: rgba(167,139,250,0.15); color: var(--accent); border: 1px solid rgba(167,139,250,0.3); padding: 0.2rem 0.6rem; border-radius: 100px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+        
+        /* ===== STATUS BAR ===== */
+        .statusbar {
+            background: var(--sidebar-bg);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0.4rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        /* ===== WORKSPACE LAYOUT ===== */
+        .workspace {
+            display: grid;
+            grid-template-columns: 280px 1fr 380px;
+            flex: 1;
+            overflow: hidden;
+        }
+        @media (max-width: 1200px) {
+            .workspace { grid-template-columns: 240px 1fr; }
+            .lab-pane { display: none; }
+        }
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+        }
+
+        /* ===== SIDEBAR PANELS ===== */
+        .sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.1);
+            padding: 0.25rem;
+            gap: 0.25rem;
+        }
+        .sidebar-tab {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        .sidebar-tab.active {
+            background: var(--card-bg);
+            color: var(--accent);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .sidebar-content::-webkit-scrollbar { width: 4px; }
+        .sidebar-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+        /* ===== TERMINAL PANE ===== */
+        .terminal-pane {
+            display: flex;
+            flex-direction: column;
+            background: var(--term-bg);
+            position: relative;
+        }
+        .history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding-bottom: 5rem; /* Espacio extra al final para que no tope con el borde */
+        }
+        .history-entry { margin-bottom: 0.75rem; animation: entryIn 0.2s ease; }
+        @keyframes entryIn { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
+        .entry-input { color: var(--prompt); border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 0.25rem; }
+        .entry-input .prompt { color: var(--accent); font-weight: bold; }
+        .entry-output { color: var(--output); white-space: pre-wrap; padding: 0.5rem 0 0.5rem 1.25rem; }
+        .entry-error { color: var(--red); white-space: pre-wrap; padding: 0.5rem 0 0.5rem 1.25rem; border-left: 2px solid var(--red); }
+        .entry-info { color: var(--text-dim); font-style: italic; font-size: 0.8rem; margin: 1rem 0; opacity: 0.8; }
+        
+        .input-area {
+            background: var(--input-bg);
+            border-top: 1px solid var(--term-border);
+            padding: 1rem 1.5rem;
+        }
+        #codeInput {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            min-height: 40px;
+            max-height: 300px;
+        }
+
+        /* ===== LAB PANE (Visual) ===== */
+        .lab-pane {
+            background: var(--lab-bg);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .lab-header {
+            padding: 0.75rem 1rem;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .lab-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-dim); display: flex; align-items: center; gap: 0.5rem; }
+        
+        .lab-scroll { flex: 1; overflow-y: auto; padding: 1rem; }
+        .lab-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .lab-card-title { font-size: 0.75rem; font-weight: 700; color: var(--accent); margin-bottom: 0.75rem; text-transform: uppercase; }
+        
+        /* Matplotlib Canvas Area */
+        #plot-output {
+            width: 100%;
+            min-height: 200px;
+            background: #fff; /* Plots usually have white bg */
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #plot-output canvas { max-width: 100%; height: auto !important; }
+
+        /* File Explorer */
+        .file-list { display: flex; flex-direction: column; gap: 2px; }
+        .file-item {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.4rem 0.6rem; border-radius: 4px;
+            font-size: 0.8rem; font-family: 'Fira Code', monospace;
+            cursor: pointer; transition: 0.2s;
+        }
+        .file-item:hover { background: rgba(255,255,255,0.05); }
+        .file-icon { width: 16px; height: 16px; opacity: 0.6; }
+
+        /* Challenge UI */
+        .challenge-box {
+            background: linear-gradient(135deg, rgba(167,139,250,0.1), transparent);
+            border: 1px solid rgba(167,139,250,0.2);
+            padding: 1rem; border-radius: 12px; margin-bottom: 1rem;
+        }
+        .challenge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .challenge-status { font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 100px; background: rgba(0,0,0,0.3); }
+        .challenge-status.solved { color: var(--green); border: 1px solid var(--green); }
+        .challenge-body { font-size: 0.85rem; line-height: 1.5; color: var(--text); }
+        .challenge-goal { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.75rem; padding-left: 0.75rem; border-left: 2px solid var(--accent); }
+
+        /* Overlay */
+        .loading-overlay {
+            position: absolute; inset: 0; background: rgba(13,17,23,0.9);
+            z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: var(--transition);
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(167,139,250,0.1); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .btn-run {
+            background: var(--accent); color: white; border: none; padding: 0.6rem 1.5rem;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-run:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-run:disabled { background: #334155; cursor: not-allowed; transform: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="clase3.html" class="back-link">← Hub Clase 3</a>
+            <span style="color:rgba(255,255,255,0.1)">|</span>
+            <span class="nav-title">Laboratorio Python Avanzado</span>
+            <span class="nav-badge">WASM / Pyodide</span>
+        </div>
+        <div class="nav-right">
+            <button class="btn-run" id="btnRun" disabled onclick="runCode()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                EJECUTAR
+            </button>
+        </div>
+    </nav>
+
+    <div class="statusbar">
+        <div id="statusDot" style="width:8px; height:8px; border-radius:50%; background:var(--yellow)"></div>
+        <span id="statusText">Iniciando entorno WebAssembly...</span>
+        <span id="pyVersion" style="margin-left:auto; font-family:'Fira Code'">Cargando...</span>
+    </div>
+
+    <div class="workspace">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab active" onclick="switchTab('challenges')">Desafíos</button>
+                <button class="sidebar-tab" onclick="switchTab('libraries')">Librerías</button>
+                <button class="sidebar-tab" onclick="switchTab('examples')">Ejemplos</button>
+            </div>
+            <div class="sidebar-content" id="sidebar-challenges">
+                <div id="challenges-list"></div>
+            </div>
+            <div class="sidebar-content" id="sidebar-libraries" style="display:none">
+                <p style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1rem;">Carga librerías avanzadas directamente en el navegador:</p>
+                <div id="lib-buttons" style="display:grid; grid-template-columns: 1fr; gap: 0.5rem;"></div>
+            </div>
+            <div class="sidebar-content" id="sidebar-examples" style="display:none">
+                <div id="examples-list"></div>
+            </div>
+        </aside>
+
+        <!-- MAIN TERMINAL -->
+        <main class="terminal-pane">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                <div style="margin-top:1rem; font-weight:600; color:var(--accent)">Compilando CPython a WASM...</div>
+                <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.5rem">Esto toma ~10-15 segundos la primera vez</div>
+            </div>
+            <div class="history" id="history">
+                <div class="entry-info">Bienvenido al Laboratorio Avanzado de Python. <br>Aquí puedes graficar con <b>Matplotlib</b>, gestionar archivos virtuales y completar desafíos interactivos.</div>
+            </div>
+            <div class="input-area">
+                <textarea id="codeInput" placeholder=">>> Escribe tu código aquí... (Ctrl+Enter para ejecutar)" disabled></textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem">
+                    <span style="font-size:0.7rem; color:var(--text-dim)">Ctrl+Enter para ejecutar | Ctrl+L para limpiar</span>
+                    <button style="background:transparent; border:none; color:var(--text-dim); cursor:pointer; font-size:0.75rem" onclick="clearTerminal()">Limpiar Consola</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- VISUAL LAB -->
+        <section class="lab-pane">
+            <div class="lab-header">
+                <span class="lab-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    Salida Gráfica
+                </span>
+                <button onclick="clearPlots()" style="background:transparent; border:none; color:var(--text-dim); font-size:0.6rem; cursor:pointer">RESET</button>
+            </div>
+            <div class="lab-scroll">
+                <div class="lab-card">
+                    <div class="lab-card-title">Matplotlib / Plots</div>
+                    <div id="plot-output">
+                        <span style="color:var(--text-dim); font-size:0.7rem; font-style:italic">No hay gráficos para mostrar todavía.</span>
+                    </div>
+                </div>
+
+                <div class="lab-card">
+                    <div class="lab-header" style="background:transparent; border:none; padding:0; margin-bottom:0.75rem">
+                        <span class="lab-title" style="color:var(--accent)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            Archivos Virtuales
+                        </span>
+                        <button onclick="refreshFS()" style="background:transparent; border:none; color:var(--text-dim); font-size:0.6rem; cursor:pointer">REFRESCAR</button>
+                    </div>
+                    <div id="file-explorer" class="file-list">
+                        <div style="color:var(--text-dim); font-size:0.7rem; font-style:italic">Cargando sistema de archivos...</div>
+                    </div>
+                    <div style="margin-top:1rem; font-size:0.65rem; color:var(--text-dim); background:rgba(0,0,0,0.2); padding:0.5rem; border-radius:6px">
+                        <b>Tip:</b> Usa <code>with open('mi_archivo.txt', 'w') as f:</code> para crear archivos en este panel.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL FEEDBACK (Hidden by default) -->
+    <div id="feedback-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:1000; background:var(--card-bg); padding:2rem; border-radius:20px; box-shadow:0 0 100px rgba(0,0,0,0.5); border:2px solid var(--green); text-align:center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)">
+        <div style="font-size:3rem">🏆</div>
+        <h2 style="color:var(--green); margin:1rem 0">¡Excelente Trabajo!</h2>
+        <p id="feedback-msg" style="color:var(--text-main); margin-bottom:1.5rem"></p>
+        <button class="btn-run" onclick="document.getElementById('feedback-modal').style.display='none'" style="margin:0 auto">Continuar</button>
+    </div>
+    <style> @keyframes popIn { from { transform: translate(-50%, -50%) scale(0.5); opacity:0; } to { transform: translate(-50%, -50%) scale(1); opacity:1; } } </style>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN Y ESTADO
+        // ==========================================
+        let pyodide = null;
+        let isRunning = false;
+        let historyIdx = -1;
+        let cmdHistory = JSON.parse(localStorage.getItem('pyHistory') || '[]');
+
+        const LIBS = [
+            { id: 'numpy', name: 'NumPy', desc: 'Computación numérica' },
+            { id: 'pandas', name: 'Pandas', desc: 'Análisis de datos' },
+            { id: 'matplotlib', name: 'Matplotlib', desc: 'Visualización 2D' },
+            { id: 'scipy', name: 'SciPy', desc: 'Algoritmos científicos' },
+            { id: 'sympy', name: 'SymPy', desc: 'Matemática simbólica' }
+        ];
+
+        const CHALLENGES = [
+            {
+                id: 'chal-1',
+                title: 'Desafío 1: El Área',
+                body: 'Crea una variable llamada <code>base</code> con valor 10 y otra llamada <code>altura</code> con valor 5. Calcula el área de un triángulo y guárdala en <code>area</code>.',
+                goal: 'El valor de la variable <code>area</code> debe ser 25.0',
+                test: 'area == 25.0',
+                hint: 'La fórmula es (base * altura) / 2'
+            },
+            {
+                id: 'chal-2',
+                title: 'Desafío 2: Listas',
+                body: 'Crea una lista llamada <code>numeros</code> que contenga los números del 1 al 5. Luego, añade el número 6 al final.',
+                goal: 'La lista <code>numeros</code> debe ser [1, 2, 3, 4, 5, 6]',
+                test: 'numeros == [1, 2, 3, 4, 5, 6]',
+                hint: 'Usa el método .append()'
+            },
+            {
+                id: 'chal-3',
+                title: 'Desafío 3: Archivos',
+                body: 'Crea un archivo llamado <code>mensaje.txt</code> y escribe dentro la palabra "Hola Python".',
+                goal: 'El archivo <code>mensaje.txt</code> debe existir en el explorador.',
+                test: 'os.path.exists("mensaje.txt")',
+                hint: 'Usa with open("mensaje.txt", "w") as f:'
+            }
+        ];
+
+        let activeChallenge = null;
+        let solvedChallenges = JSON.parse(localStorage.getItem('solvedPy') || '[]');
+
+        // ==========================================
+        // INICIALIZACIÓN PYODIDE
+        // ==========================================
+        async function init() {
+            try {
+                pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/" });
+                
+                // Redirigir stdout/stderr
+                await pyodide.runPythonAsync(`
+import sys, io, os
+from io import StringIO
+class Capture:
+    def __init__(self): self.buf = []
+    def write(self, t): self.buf.append(t)
+    def flush(self): pass
+    def get(self): return "".join(self.buf)
+    def clear(self): self.buf = []
+sys.stdout = Capture()
+sys.stderr = Capture()
+`);
+                
+                // Configurar Matplotlib backend para el canvas de Pyodide
+                await pyodide.loadPackage(['matplotlib']);
+                await pyodide.runPythonAsync(`
+import matplotlib
+matplotlib.use("module://matplotlib.backends.html5_canvas_backend")
+from matplotlib import pyplot as plt
+`);
+
+                const ver = pyodide.runPython("sys.version.split()[0]");
+                document.getElementById('pyVersion').textContent = `Python ${ver}`;
+                document.getElementById('statusDot').style.background = 'var(--green)';
+                document.getElementById('statusText').textContent = 'Entorno listo';
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                document.getElementById('codeInput').disabled = false;
+                document.getElementById('btnRun').disabled = false;
+                
+                renderSidebar();
+                refreshFS();
+            } catch(e) {
+                document.getElementById('statusText').textContent = 'Error al cargar WASM';
+                console.error(e);
+            }
+        }
+
+        // ==========================================
+        // MOTOR DE EJECUCIÓN
+        // ==========================================
+        async function runCode() {
+            if (isRunning) return;
+            const code = document.getElementById('codeInput').value.trim();
+            if (!code) return;
+
+            isRunning = true;
+            document.getElementById('btnRun').disabled = true;
+            appendEntry('input', code);
+            
+            // Guardar en historial
+            cmdHistory.unshift(code);
+            localStorage.setItem('pyHistory', JSON.stringify(cmdHistory.slice(0, 50)));
+            historyIdx = -1;
+            
+            try {
+                pyodide.runPython("sys.stdout.clear(); sys.stderr.clear()");
+                
+                // Auto-cargar paquetes si se detecta import
+                await pyodide.loadPackagesFromImports(code);
+                
+                // Ejecutar
+                await pyodide.runPythonAsync(code);
+                
+                const out = pyodide.runPython("sys.stdout.get()");
+                const err = pyodide.runPython("sys.stderr.get()");
+                
+                if (out) appendEntry('output', out);
+                if (err) appendEntry('error', err);
+                if (!out && !err) appendEntry('output', '(ejecutado sin salida de texto)');
+
+                // Chequear si hay un gráfico nuevo
+                checkPlots();
+                // Refrescar archivos
+                refreshFS();
+                // Validar desafío activo
+                if (activeChallenge) checkChallenge();
+
+            } catch(e) {
+                appendEntry('error', e.message);
+            }
+
+            document.getElementById('codeInput').value = '';
+            document.getElementById('btnRun').disabled = false;
+            isRunning = false;
+            scrollHistory();
+        }
+
+        function checkPlots() {
+            // Un pequeño truco para ver si plt.show() fue llamado
+            // En Pyodide actual, matplotlib suele inyectar el canvas en un div específico si está configurado.
+            // Si no, podemos forzar un renderizado básico aquí.
+        }
+
+        async function checkChallenge() {
+            try {
+                const isCorrect = await pyodide.runPythonAsync(`
+try:
+    ${activeChallenge.test}
+except:
+    False
+`);
+                if (isCorrect) {
+                    if (!solvedChallenges.includes(activeChallenge.id)) {
+                        solvedChallenges.push(activeChallenge.id);
+                        localStorage.setItem('solvedPy', JSON.stringify(solvedChallenges));
+                        showFeedback(`¡Has superado el ${activeChallenge.title}!`);
+                        renderSidebar();
+                    }
+                }
+            } catch(e) {}
+        }
+
+        // ==========================================
+        // UI HELPERS
+        // ==========================================
+        function appendEntry(type, text) {
+            const div = document.createElement('div');
+            div.className = `history-entry entry-${type}`;
+            if (type === 'input') {
+                div.innerHTML = `<span class="prompt">>>> </span><span>${text.replace(/\n/g, '<br>... ')}</span>`;
+            } else {
+                div.textContent = text;
+            }
+            document.getElementById('history').appendChild(div);
+            scrollHistory();
+        }
+
+        function scrollHistory() {
+            const historyEl = document.getElementById('history');
+            setTimeout(() => {
+                historyEl.scrollTo({
+                    top: historyEl.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
+
+        function renderSidebar() {
+            // Challenges
+            const cList = document.getElementById('challenges-list');
+            cList.innerHTML = '';
+            CHALLENGES.forEach(c => {
+                const isSolved = solvedChallenges.includes(c.id);
+                const div = document.createElement('div');
+                div.className = 'challenge-box';
+                div.style.borderLeft = isSolved ? '4px solid var(--green)' : '4px solid var(--accent)';
+                div.innerHTML = `
+                    <div class="challenge-header">
+                        <span style="font-weight:700; font-size:0.8rem">${c.title}</span>
+                        <span class="challenge-status ${isSolved?'solved':''}">${isSolved?'RESUELTO':'PENDIENTE'}</span>
+                    </div>
+                    <div class="challenge-body">${c.body}</div>
+                    <div class="challenge-goal"><b>Meta:</b> ${c.goal}</div>
+                    <button onclick="setChallenge('${c.id}')" style="margin-top:10px; width:100%; padding:0.4rem; border-radius:6px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:0.7rem; cursor:pointer">
+                        ${activeChallenge?.id === c.id ? '🎯 EN CURSO' : 'ACEPTAR DESAFÍO'}
+                    </button>
+                `;
+                cList.appendChild(div);
+            });
+
+            // Libs
+            const libList = document.getElementById('lib-buttons');
+            libList.innerHTML = '';
+            LIBS.forEach(l => {
+                const btn = document.createElement('button');
+                btn.className = 'sidebar-tab';
+                btn.style.textAlign = 'left';
+                btn.style.background = 'rgba(255,255,255,0.03)';
+                btn.style.marginBottom = '5px';
+                btn.innerHTML = `<div style="color:var(--text)">${l.name}</div><div style="font-size:0.6rem; color:var(--text-dim)">${l.desc}</div>`;
+                btn.onclick = () => loadLibrary(l.id);
+                libList.appendChild(btn);
+            });
+            
+            // Examples
+            const eList = document.getElementById('examples-list');
+            eList.innerHTML = '';
+            [
+                { t: 'Gráfico simple', c: 'import matplotlib.pyplot as plt\nplt.plot([1, 4, 9, 16])\nplt.ylabel("Potencia de 2")\nplt.show()' },
+                { t: 'Escribir Archivo', c: 'with open("test.txt", "w") as f:\n    for i in range(10):\n        f.write(f"Linea {i}\\n")\nprint("Archivo creado!")' },
+                { t: 'Leer Archivo', c: 'with open("test.txt", "r") as f:\n    print(f.read())' },
+                { t: 'NumPy Array', c: 'import numpy as np\na = np.arange(15).reshape(3, 5)\nprint(a)' }
+            ].forEach(ex => {
+                const btn = document.createElement('button');
+                btn.className = 'sidebar-tab';
+                btn.style.width = '100%';
+                btn.style.textAlign = 'left';
+                btn.style.marginBottom = '5px';
+                btn.textContent = ex.t;
+                btn.onclick = () => { document.getElementById('codeInput').value = ex.c; document.getElementById('codeInput').focus(); };
+                eList.appendChild(btn);
+            });
+        }
+
+        async function loadLibrary(id) {
+            document.getElementById('statusText').textContent = `Cargando ${id}...`;
+            await pyodide.loadPackage(id);
+            document.getElementById('statusText').textContent = `${id} cargado`;
+            appendEntry('info', `Librería '${id}' cargada con éxito en el entorno WASM.`);
+        }
+
+        function setChallenge(id) {
+            activeChallenge = CHALLENGES.find(c => c.id === id);
+            renderSidebar();
+            appendEntry('info', `Iniciando ${activeChallenge.title}. Tu código será evaluado automáticamente al ejecutar.`);
+        }
+
+        function showFeedback(msg) {
+            document.getElementById('feedback-msg').textContent = msg;
+            document.getElementById('feedback-modal').style.display = 'block';
+        }
+
+        function refreshFS() {
+            const explorer = document.getElementById('file-explorer');
+            explorer.innerHTML = '';
+            try {
+                // List files in current dir (home)
+                const files = pyodide.FS.readdir('.').filter(f => f !== '.' && f !== '..');
+                if (files.length === 0) {
+                    explorer.innerHTML = '<div style="color:var(--text-dim); font-size:0.7rem">Directorio vacío</div>';
+                    return;
+                }
+                files.forEach(f => {
+                    const div = document.createElement('div');
+                    div.className = 'file-item';
+                    div.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg> ${f}`;
+                    div.onclick = () => loadFileToTerminal(f);
+                    explorer.appendChild(div);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        function loadFileToTerminal(name) {
+            document.getElementById('codeInput').value = `with open("${name}", "r") as f:\n    print(f.read())`;
+            document.getElementById('codeInput').focus();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.sidebar-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('sidebar-' + tab).style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        function clearTerminal() { document.getElementById('history').innerHTML = ''; }
+        function clearPlots() { document.getElementById('plot-output').innerHTML = '<span style="color:var(--text-dim); font-size:0.7rem; font-style:italic">No hay gráficos para mostrar todavía.</span>'; }
+
+        // Atajos de teclado
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 'Enter') runCode();
+            if (e.ctrlKey && e.key === 'l') clearTerminal();
+        });
+
+        init();
+    </script>
+</body>
+</html>

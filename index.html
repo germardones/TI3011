@@ -189,66 +189,42 @@
             color: var(--primary);
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
+        .card-number { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; color: #a855f7; }
+        .class-card h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .class-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; }
 
-        .class-card h2 {
-            font-size: 1.4rem;
-            margin: 0 0 10px 0;
-            font-weight: 600;
+        /* Locked Card Styles */
+        .class-card.locked {
+            filter: grayscale(0.8) opacity(0.7);
+            cursor: not-allowed;
+            pointer-events: none;
+            border-style: dashed;
+            border-color: var(--text-dim) !important;
         }
-
-        .class-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin: 0;
-            flex-grow: 1;
+        .class-card.locked .card-footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-dim) !important;
         }
+        .class-card .lock-icon {
+            position: absolute; top: 1.5rem; right: 1.5rem;
+            font-size: 1.2rem; display: none;
+        }
+        .class-card.locked .lock-icon { display: block; }
+        .class-card.locked h2, .class-card.locked .card-number { color: var(--text-dim) !important; }
 
         .card-footer {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: 600;
+            margin-top: 2rem;
+            display: flex; align-items: center; gap: 0.5rem;
+            font-weight: 700; font-size: 0.9rem;
+            color: #a855f7; transition: var(--transition);
         }
 
         .card-footer.active {
             color: var(--accent);
         }
 
-        .card-footer.active i {
-            margin-left: 5px;
-            transition: transform 0.3s;
-        }
-
         .class-card:hover .card-footer.active i {
             transform: translateX(5px);
-        }
-
-        .class-card.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .badge-soon {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 15px;
-            align-self: flex-start;
-        }
-        
-        [data-theme="light"] .badge-soon {
-            background: rgba(0, 0, 0, 0.1);
-            color: #111;
         }
 
         footer {
@@ -332,6 +308,16 @@
                             Ver contenido <i aria-hidden="true">&rarr;</i>
                         </div>
                     </a>
+
+                    <a href="clase3/clase3.html" id="card-modulo3" class="class-card locked" style="animation-delay:0.6s">
+                        <div class="lock-icon">🔒</div>
+                        <div class="card-number" id="num-modulo3">Módulo 03</div>
+                        <h2>Introducción a Python</h2>
+                        <p>Lenguajes interpretados, tipos de datos, operadores, estructuras de control y funciones en Python con ejemplos visuales e interactivos.</p>
+                        <div class="card-footer" id="footer-modulo3">
+                            <span id="label-modulo3">Disponible el 13 de Abril</span> <i aria-hidden="true">&rarr;</i>
+                        </div>
+                    </a>
                 </div>
             </section>
         </div>
@@ -355,12 +341,28 @@
                 root.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'dark');
                 toggleBtn.innerHTML = '☀️ Modo Claro';
-            } else {
-                root.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-                toggleBtn.innerHTML = '🌙 Modo Oscuro';
-            }
+            } else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
         });
+
+        // Lógica de desbloqueo automático del Módulo 3
+        function checkModuleAccess() {
+            const RELEASE_DATE = new Date('2026-04-13T00:00:00');
+            const now = new Date();
+            const card = document.getElementById('card-modulo3');
+            const label = document.getElementById('label-modulo3');
+            const footer = document.getElementById('footer-modulo3');
+
+            if (now >= RELEASE_DATE) {
+                card.classList.remove('locked');
+                card.style.pointerEvents = 'auto';
+                card.style.cursor = 'pointer';
+                label.textContent = 'Ver contenido';
+                footer.classList.add('active');
+            }
+        }
+        checkModuleAccess();
+        // Verificar cada minuto por si el usuario deja la página abierta
+        setInterval(checkModuleAccess, 60000);
     </script>
 </body>
 

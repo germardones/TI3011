@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operadores Python | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #2dd4bf; --accent-glow: rgba(45,212,191,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #0d9488; --accent-glow: rgba(13,148,136,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.5rem; }
+        header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
+        .tab { padding: 0.5rem 1.5rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .tab { border: 1px solid rgba(0,0,0,0.1); }
+        .tab.active { background: var(--c, var(--accent)); color: #fff; border-color: var(--c, var(--accent)); }
+        .tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.25); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* OPERADORES TABLE */
+        .ops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .op-card {
+            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); border-radius: 1rem;
+            overflow: hidden; transition: var(--transition);
+        }
+        [data-theme="light"] .op-card { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .op-card:hover { transform: translateY(-4px); border-color: var(--c); }
+        .op-header { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 0.75rem; }
+        [data-theme="light"] .op-header { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .op-symbol { font-family: 'Fira Code', monospace; font-size: 1.5rem; font-weight: 700; color: var(--c); min-width: 50px; text-align: center; }
+        .op-name { font-weight: 700; font-size: 0.95rem; color: var(--text-main); }
+        .op-desc { font-size: 0.8rem; color: var(--text-dim); }
+        .op-example { padding: 0.75rem 1.25rem; font-family: 'Fira Code', monospace; font-size: 0.82rem; background: var(--panel-bg); display: flex; justify-content: space-between; align-items: center; }
+        [data-theme="light"] .op-example { background: rgba(0,0,0,0.03); }
+        .op-result { color: #34d399; font-weight: 700; }
+        [data-theme="light"] .op-result { color: #059669; }
+        .op-expr { color: var(--text-dim); }
+
+        /* CALCULATOR */
+        .calc-wrapper { background: var(--card-bg); border-radius: 1.5rem; padding: 2rem; border: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .calc-wrapper { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .calc-wrapper h2 { font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--text-main); }
+        .calc-inputs { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .calc-input { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1.1rem; font-family: 'Fira Code', monospace; width: 120px; text-align: center; outline: none; }
+        [data-theme="light"] .calc-input { border: 1px solid rgba(0,0,0,0.1); background: #f1f5f9; }
+        .calc-input:focus { border-color: var(--accent); }
+        .calc-op-select { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--accent); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1.2rem; font-family: 'Fira Code', monospace; font-weight: 700; outline: none; cursor: pointer; }
+        [data-theme="light"] .calc-op-select { border: 1px solid rgba(0,0,0,0.1); background: #f1f5f9; }
+        .calc-result { background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.3); border-radius: 0.75rem; padding: 1rem 1.5rem; font-family: 'Fira Code', monospace; font-size: 1.1rem; color: var(--accent); min-height: 50px; display: flex; align-items: center; }
+        [data-theme="light"] .calc-result { background: rgba(13,148,136,0.05); border: 1px solid rgba(13,148,136,0.2); }
+        .calc-result .res-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 1rem; }
+
+        /* PRECEDENCIA */
+        .prec-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .prec-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--card-bg); border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.04); }
+        [data-theme="light"] .prec-item { border: 1px solid rgba(0,0,0,0.06); }
+        .prec-rank { font-size: 0.75rem; font-weight: 700; background: rgba(255,255,255,0.07); border-radius: 6px; padding: 0.2rem 0.6rem; min-width: 30px; text-align: center; color: var(--text-dim); }
+        [data-theme="light"] .prec-rank { background: rgba(0,0,0,0.05); }
+        .prec-ops { font-family: 'Fira Code', monospace; font-weight: 700; color: var(--accent); font-size: 0.95rem; flex: 1; }
+        .prec-name { color: var(--text-dim); font-size: 0.85rem; }
+
+        @media(max-width:700px){ .calc-inputs { flex-direction: column; align-items: stretch; } .calc-input { width: 100%; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase3.html" class="back-link">← Volver a Módulo 3</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+    <div class="container">
+        <header>
+            <h1> Operadores en Python</h1>
+            <p>Explora los tres grupos de operadores principales: aritméticos, de comparación y lógicos. Prueba la calculadora interactiva para ver resultados en tiempo real.</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" style="--c:#fbbf24" onclick="switchTab('aritmeticos')"> Aritméticos</button>
+            <button class="tab" style="--c:#60a5fa" onclick="switchTab('comparacion')">️ Comparación</button>
+            <button class="tab" style="--c:#f87171" onclick="switchTab('logicos')"> Lógicos</button>
+            <button class="tab" style="--c:#34d399" onclick="switchTab('calculadora')"> Calculadora</button>
+        </div>
+
+        <!-- ARITMÉTICOS -->
+        <div class="tab-content active" id="tab-aritmeticos">
+            <div class="ops-grid">
+                <div class="op-card" style="--c:#fbbf24"><div class="op-header"><div class="op-symbol">+</div><div><div class="op-name">Suma</div><div class="op-desc">Suma dos valores numéricos o concatena strings</div></div></div><div class="op-example"><span class="op-expr">10 + 3</span><span class="op-result">= 13</span></div></div>
+                <div class="op-card" style="--c:#fbbf24"><div class="op-header"><div class="op-symbol">-</div><div><div class="op-name">Resta</div><div class="op-desc">Sustrae el segundo operando del primero</div></div></div><div class="op-example"><span class="op-expr">10 - 3</span><span class="op-result">= 7</span></div></div>
+                <div class="op-card" style="--c:#fbbf24"><div class="op-header"><div class="op-symbol">*</div><div><div class="op-name">Multiplicación</div><div class="op-desc">Multiplica dos valores. También repite strings.</div></div></div><div class="op-example"><span class="op-expr">10 * 3</span><span class="op-result">= 30</span></div></div>
+                <div class="op-card" style="--c:#fbbf24"><div class="op-header"><div class="op-symbol">/</div><div><div class="op-name">División</div><div class="op-desc">Siempre retorna float, incluso entre enteros</div></div></div><div class="op-example"><span class="op-expr">10 / 3</span><span class="op-result">= 3.333…</span></div></div>
+                <div class="op-card" style="--c:#fb923c"><div class="op-header"><div class="op-symbol">//</div><div><div class="op-name">División Entera</div><div class="op-desc">Retorna solo la parte entera del cociente</div></div></div><div class="op-example"><span class="op-expr">10 // 3</span><span class="op-result">= 3</span></div></div>
+                <div class="op-card" style="--c:#fb923c"><div class="op-header"><div class="op-symbol">%</div><div><div class="op-name">Módulo (Resto)</div><div class="op-desc">Retorna el residuo de la división</div></div></div><div class="op-example"><span class="op-expr">10 % 3</span><span class="op-result">= 1</span></div></div>
+                <div class="op-card" style="--c:#a78bfa"><div class="op-header"><div class="op-symbol">**</div><div><div class="op-name">Potencia</div><div class="op-desc">Eleva la base al exponente indicado</div></div></div><div class="op-example"><span class="op-expr">2 ** 8</span><span class="op-result">= 256</span></div></div>
+            </div>
+        </div>
+
+        <!-- COMPARACIÓN -->
+        <div class="tab-content" id="tab-comparacion">
+            <div class="ops-grid">
+                <div class="op-card" style="--c:#60a5fa"><div class="op-header"><div class="op-symbol">==</div><div><div class="op-name">Igual a</div><div class="op-desc">Verdadero si ambos valores son iguales</div></div></div><div class="op-example"><span class="op-expr">5 == 5</span><span class="op-result">True</span></div></div>
+                <div class="op-card" style="--c:#60a5fa"><div class="op-header"><div class="op-symbol">!=</div><div><div class="op-name">Distinto de</div><div class="op-desc">Verdadero si los valores son diferentes</div></div></div><div class="op-example"><span class="op-expr">5 != 3</span><span class="op-result">True</span></div></div>
+                <div class="op-card" style="--c:#60a5fa"><div class="op-header"><div class="op-symbol">&gt;</div><div><div class="op-name">Mayor que</div><div class="op-desc">Verdadero si izquierda es mayor que derecha</div></div></div><div class="op-example"><span class="op-expr">7 &gt; 3</span><span class="op-result">True</span></div></div>
+                <div class="op-card" style="--c:#60a5fa"><div class="op-header"><div class="op-symbol">&lt;</div><div><div class="op-name">Menor que</div><div class="op-desc">Verdadero si izquierda es menor que derecha</div></div></div><div class="op-example"><span class="op-expr">3 &lt; 7</span><span class="op-result">True</span></div></div>
+                <div class="op-card" style="--c:#2dd4bf"><div class="op-header"><div class="op-symbol">&gt;=</div><div><div class="op-name">Mayor o igual</div><div class="op-desc">Verdadero si es mayor o exactamente igual</div></div></div><div class="op-example"><span class="op-expr">18 &gt;= 18</span><span class="op-result">True</span></div></div>
+                <div class="op-card" style="--c:#2dd4bf"><div class="op-header"><div class="op-symbol">&lt;=</div><div><div class="op-name">Menor o igual</div><div class="op-desc">Verdadero si es menor o exactamente igual</div></div></div><div class="op-example"><span class="op-expr">5 &lt;= 10</span><span class="op-result">True</span></div></div>
+            </div>
+        </div>
+
+        <!-- LÓGICOS -->
+        <div class="tab-content" id="tab-logicos">
+            <div class="ops-grid">
+                <div class="op-card" style="--c:#f87171"><div class="op-header"><div class="op-symbol">and</div><div><div class="op-name">Y lógico</div><div class="op-desc">True solo si AMBAS condiciones son verdaderas</div></div></div><div class="op-example"><span class="op-expr">True and False</span><span class="op-result" style="color:#f87171">False</span></div></div>
+                <div class="op-card" style="--c:#f87171"><div class="op-header"><div class="op-symbol">or</div><div><div class="op-name">O lógico</div><div class="op-desc">True si AL MENOS UNA condición es verdadera</div></div></div><div class="op-example"><span class="op-expr">True or False</span><span class="op-result">True</span></div></div>
+                <div class="op-card" style="--c:#f87171"><div class="op-header"><div class="op-symbol">not</div><div><div class="op-name">Negación</div><div class="op-desc">Invierte el valor booleano de la expresión</div></div></div><div class="op-example"><span class="op-expr">not True</span><span class="op-result" style="color:#f87171">False</span></div></div>
+            </div>
+            <!-- Tabla de verdad -->
+            <div style="background:var(--card-bg);border-radius:1rem;padding:1.75rem;border:1px solid rgba(255,255,255,0.05);margin-top:1rem;">
+                <h3 style="margin-bottom:1.25rem;font-size:1.1rem">Tabla de Verdad Completa</h3>
+                <table style="width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:0.85rem;">
+                    <thead><tr style="color:var(--text-dim);text-align:center;border-bottom:1px solid rgba(255,255,255,0.08)"><th style="padding:0.5rem">A</th><th style="padding:0.5rem">B</th><th style="padding:0.5rem;color:#60a5fa">A and B</th><th style="padding:0.5rem;color:#34d399">A or B</th><th style="padding:0.5rem;color:#f87171">not A</th></tr></thead>
+                    <tbody>
+                        <tr style="text-align:center"><td style="padding:0.5rem;color:#34d399">True</td><td style="padding:0.5rem;color:#34d399">True</td><td style="color:#34d399">True</td><td style="color:#34d399">True</td><td style="color:#f87171">False</td></tr>
+                        <tr style="text-align:center;background:rgba(255,255,255,0.02)"><td style="padding:0.5rem;color:#34d399">True</td><td style="padding:0.5rem;color:#f87171">False</td><td style="color:#f87171">False</td><td style="color:#34d399">True</td><td style="color:#f87171">False</td></tr>
+                        <tr style="text-align:center"><td style="padding:0.5rem;color:#f87171">False</td><td style="padding:0.5rem;color:#34d399">True</td><td style="color:#f87171">False</td><td style="color:#34d399">True</td><td style="color:#34d399">True</td></tr>
+                        <tr style="text-align:center;background:rgba(255,255,255,0.02)"><td style="padding:0.5rem;color:#f87171">False</td><td style="padding:0.5rem;color:#f87171">False</td><td style="color:#f87171">False</td><td style="color:#f87171">False</td><td style="color:#34d399">True</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CALCULADORA -->
+        <div class="tab-content" id="tab-calculadora">
+            <div class="calc-wrapper">
+                <h2> Calculadora Interactiva</h2>
+                <div class="calc-inputs">
+                    <input class="calc-input" type="number" id="val1" value="10" oninput="calculate()">
+                    <select class="calc-op-select" id="op" onchange="calculate()">
+                        <option>+</option><option>-</option><option>*</option>
+                        <option>/</option><option>//</option><option>%</option><option>**</option>
+                    </select>
+                    <input class="calc-input" type="number" id="val2" value="3" oninput="calculate()">
+                </div>
+                <div class="calc-result">
+                    <span class="res-label">Resultado</span>
+                    <span id="result">= 13</span>
+                </div>
+                <p style="color:var(--text-dim);font-size:0.82rem;margin-top:1rem" id="result-type"></p>
+            </div>
+            <br>
+            <h2 style="font-size:1.3rem;margin-bottom:1rem">Precedencia de Operadores</h2>
+            <div class="prec-list">
+                <div class="prec-item"><span class="prec-rank">1°</span><span class="prec-ops">**</span><span class="prec-name">Potencia (derecha a izquierda)</span></div>
+                <div class="prec-item"><span class="prec-rank">2°</span><span class="prec-ops">+x &nbsp; -x</span><span class="prec-name">Positivo / Negativo unario</span></div>
+                <div class="prec-item"><span class="prec-rank">3°</span><span class="prec-ops">* &nbsp; / &nbsp; // &nbsp; %</span><span class="prec-name">Multiplicación, División, Módulo</span></div>
+                <div class="prec-item"><span class="prec-rank">4°</span><span class="prec-ops">+ &nbsp; -</span><span class="prec-name">Suma y Resta</span></div>
+                <div class="prec-item"><span class="prec-rank">5°</span><span class="prec-ops">== &nbsp; != &nbsp; &lt; &nbsp; &gt; &nbsp; &lt;= &nbsp; &gt;=</span><span class="prec-name">Comparación</span></div>
+                <div class="prec-item"><span class="prec-rank">6°</span><span class="prec-ops">not</span><span class="prec-name">Negación lógica</span></div>
+                <div class="prec-item"><span class="prec-rank">7°</span><span class="prec-ops">and</span><span class="prec-name">Y lógico</span></div>
+                <div class="prec-item"><span class="prec-rank">8°</span><span class="prec-ops">or</span><span class="prec-name">O lógico (menor precedencia)</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        });
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            document.querySelector(`[onclick="switchTab('${id}')"]`).classList.add('active');
+        }
+
+        function calculate() {
+            const a = parseFloat(document.getElementById('val1').value);
+            const b = parseFloat(document.getElementById('val2').value);
+            const op = document.getElementById('op').value;
+            let res, typeStr;
+            try {
+                if (op === '+') res = a + b;
+                else if (op === '-') res = a - b;
+                else if (op === '*') res = a * b;
+                else if (op === '/') { if (b === 0) { document.getElementById('result').textContent = 'Error: División por 0'; return; } res = a / b; }
+                else if (op === '//') { if (b === 0) { document.getElementById('result').textContent = 'Error: División por 0'; return; } res = Math.trunc(a / b); }
+                else if (op === '%') { if (b === 0) { document.getElementById('result').textContent = 'Error: División por 0'; return; } res = a % b; }
+                else if (op === '**') res = Math.pow(a, b);
+                typeStr = Number.isInteger(res) && op !== '/' ? 'int' : 'float';
+                document.getElementById('result').textContent = `= ${Number.isFinite(res) ? res.toFixed(10).replace(/\.?0+$/, '') : res}`;
+                document.getElementById('result-type').textContent = `type(${a} ${op} ${b}) → <class '${typeStr}'>`;
+            } catch(e) { document.getElementById('result').textContent = 'Error'; }
+        }
+        calculate();
+    </script>
+</body>
+</html>

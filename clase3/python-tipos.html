@@ -1,0 +1,366 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tipos de Datos y Variables | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #fbbf24; --accent-glow: rgba(251,191,36,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #d97706; --accent-glow: rgba(217,119,6,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+
+        .workspace { display: grid; grid-template-columns: 1fr 1fr; flex-grow: 1; min-height: calc(100vh - 57px); }
+        @media(max-width:900px) { .workspace { grid-template-columns: 1fr; } }
+
+        /* LEFT PANEL */
+        .left-panel { padding: 2.5rem; border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        [data-theme="light"] .left-panel { border-right: 1px solid rgba(0,0,0,0.08); }
+        .left-panel h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .left-panel > p { color: var(--text-dim); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        /* Type selector tabs */
+        .type-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .type-tab {
+            padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: var(--text-dim); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+        }
+        [data-theme="light"] .type-tab { border: 1px solid rgba(0,0,0,0.1); }
+        .type-tab.active { color: var(--c); border-color: var(--c); background: rgba(255,255,255,0.05); }
+        .type-tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+        /* Terminal */
+        .terminal { background: var(--panel-bg); border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .terminal { border: 1px solid rgba(0,0,0,0.1); }
+        .term-header { background: rgba(255,255,255,0.04); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .term-header { background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .term-body { padding: 1.5rem; line-height: 1.9; font-size: 0.88rem; }
+        .cm { color: #5c6370; }
+        .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; }
+        .st { color: #98c379; }
+        .num { color: #d19a66; }
+        .va { color: #e06c75; }
+        .op { color: #56b6c2; }
+        [data-theme="light"] .kw { color: #7c3aed; } [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; } [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .va { color: #e11d48; } [data-theme="light"] .op { color: #0891b2; }
+        [data-theme="light"] .cm { color: #94a3b8; }
+
+        .code-section { display: none; }
+        .code-section.active { display: block; }
+
+        /* RIGHT PANEL */
+        .right-panel { padding: 2.5rem; background: var(--card-bg); overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .type-info { display: none; flex-direction: column; gap: 1.25rem; }
+        .type-info.active { display: flex; }
+
+        .info-header { border-radius: 1rem; padding: 1.5rem; }
+        .info-header h2 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+        .info-header .tag { font-size: 0.8rem; font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; }
+        .info-header p { font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem; }
+
+        .memory-viz { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1.25rem; }
+        [data-theme="light"] .memory-viz { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+        .memory-viz h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 1rem; }
+        .mem-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+        .mem-name { font-family: 'Fira Code', monospace; font-size: 0.85rem; min-width: 80px; color: var(--va-c, #e06c75); font-weight: 600; }
+        .mem-arrow { color: var(--text-dim); font-size: 0.8rem; }
+        .mem-box { border-radius: 8px; padding: 0.4rem 0.9rem; font-family: 'Fira Code', monospace; font-size: 0.9rem; font-weight: 600; }
+        .mem-type { font-size: 0.7rem; color: var(--text-dim); font-family: 'Inter', sans-serif; }
+
+        .values-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .value-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; font-size: 0.85rem; }
+        [data-theme="light"] .value-row { background: rgba(0,0,0,0.02); }
+        .value-row .v-name { color: var(--text-dim); }
+        .value-row .v-val  { font-family: 'Fira Code', monospace; color: var(--text-main); font-weight: 600; }
+
+        /* Type() block */
+        .type-fn { background: var(--panel-bg); border-radius: 0.75rem; padding: 1rem 1.25rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.06); }
+        [data-theme="light"] .type-fn { border: 1px solid rgba(0,0,0,0.08); }
+        .type-fn .output { color: #34d399; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase3.html" class="back-link">← Volver a Módulo 3</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <!-- LEFT: Código Python -->
+        <div class="left-panel">
+            <h1> Tipos de Datos</h1>
+            <p>Selecciona un tipo de dato para ver su código y visualización en memoria.</p>
+
+            <div class="type-tabs">
+                <button class="type-tab active" style="--c: #fbbf24" data-type="int" onclick="switchType('int')">int</button>
+                <button class="type-tab" style="--c: #60a5fa" data-type="float" onclick="switchType('float')">float</button>
+                <button class="type-tab" style="--c: #34d399" data-type="str" onclick="switchType('str')">str</button>
+                <button class="type-tab" style="--c: #f87171" data-type="bool" onclick="switchType('bool')">bool</button>
+                <button class="type-tab" style="--c: #a78bfa" data-type="type" onclick="switchType('type')">type()</button>
+            </div>
+
+            <div class="terminal">
+                <div class="term-header">
+                    <div class="dot" style="background:#ef4444"></div>
+                    <div class="dot" style="background:#eab308"></div>
+                    <div class="dot" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">tipos_int.py</span>
+                </div>
+                <div class="term-body">
+                    <div class="code-section active" id="code-int"><pre><span class="cm"># Tipo: Entero (int)</span>
+<span class="cm"># Números sin decimales. Positivos, negativos o cero.</span>
+
+<span class="va">edad</span>        = <span class="num">22</span>
+<span class="va">temperatura</span> = <span class="op">-</span><span class="num">5</span>
+<span class="va">año</span>         = <span class="num">2026</span>
+<span class="va">cero</span>        = <span class="num">0</span>
+
+<span class="cm"># Operaciones comunes con enteros</span>
+<span class="va">suma</span>    = <span class="va">edad</span> <span class="op">+</span> <span class="num">10</span>         <span class="cm"># 32</span>
+<span class="va">doble</span>   = <span class="va">edad</span> <span class="op">*</span> <span class="num">2</span>          <span class="cm"># 44</span>
+<span class="va">entero</span>  = <span class="num">17</span> <span class="op">//</span> <span class="num">5</span>          <span class="cm"># 3  (división entera)</span>
+<span class="va">residuo</span> = <span class="num">17</span> <span class="op">%</span>  <span class="num">5</span>          <span class="cm"># 2  (módulo)</span>
+<span class="va">potencia</span>= <span class="num">2</span>  <span class="op">**</span> <span class="num">8</span>          <span class="cm"># 256</span>
+
+<span class="fn">print</span>(<span class="va">edad</span>, <span class="fn">type</span>(<span class="va">edad</span>))  <span class="cm"># 22 &lt;class 'int'&gt;</span></pre></div>
+
+                    <div class="code-section" id="code-float"><pre><span class="cm"># Tipo: Flotante (float)</span>
+<span class="cm"># Números con decimales. Alta precisión.</span>
+
+<span class="va">precio</span>   = <span class="num">9.99</span>
+<span class="va">pi</span>       = <span class="num">3.14159</span>
+<span class="va">negativo</span> = <span class="op">-</span><span class="num">0.5</span>
+<span class="va">notacion</span> = <span class="num">1.5e3</span>    <span class="cm"># 1500.0 (notación científica)</span>
+
+<span class="cm"># División normal siempre retorna float</span>
+<span class="va">resultado</span> = <span class="num">10</span> <span class="op">/</span> <span class="num">3</span>     <span class="cm"># 3.3333...</span>
+
+<span class="cm"># Conversión entre tipos</span>
+<span class="va">num_int</span>   = <span class="fn">int</span>(<span class="num">3.7</span>)    <span class="cm"># 3  (trunca, no redondea)</span>
+<span class="va">num_round</span> = <span class="fn">round</span>(<span class="num">3.7</span>) <span class="cm"># 4  (redondeo estándar)</span>
+
+<span class="fn">print</span>(<span class="va">precio</span>, <span class="fn">type</span>(<span class="va">precio</span>)) <span class="cm"># 9.99 &lt;class 'float'&gt;</span></pre></div>
+
+                    <div class="code-section" id="code-str"><pre><span class="cm"># Tipo: Cadena (str)</span>
+<span class="cm"># Texto. Secuencia inmutable de caracteres.</span>
+
+<span class="va">nombre</span>  = <span class="st">"Germán"</span>
+<span class="va">curso</span>   = <span class="st">'TI3011'</span>
+<span class="va">multiline</span>= <span class="st">"""Hola,
+Mundo."""</span>
+
+<span class="cm"># F-strings (interpolación moderna)</span>
+<span class="va">saludo</span>  = <span class="st">f"Hola, </span><span class="va">{nombre}</span><span class="st">!"</span>  <span class="cm"># "Hola, Germán!"</span>
+
+<span class="cm"># Métodos de cadena</span>
+<span class="va">mayus</span>   = <span class="va">nombre</span>.<span class="fn">upper</span>()      <span class="cm"># "GERMÁN"</span>
+<span class="va">longitud</span>= <span class="fn">len</span>(<span class="va">nombre</span>)         <span class="cm"># 6</span>
+<span class="va">contiene</span>= <span class="st">"á"</span> <span class="kw">in</span> <span class="va">nombre</span>      <span class="cm"># True</span>
+<span class="va">trozo</span>   = <span class="va">nombre</span>[<span class="num">0</span>:<span class="num">3</span>]         <span class="cm"># "Ger" (slicing)</span>
+
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="va">nombre</span>))  <span class="cm"># &lt;class 'str'&gt;</span></pre></div>
+
+                    <div class="code-section" id="code-bool"><pre><span class="cm"># Tipo: Booleano (bool)</span>
+<span class="cm"># Solo dos valores: True o False.</span>
+
+<span class="va">es_mayor</span>  = <span class="kw">True</span>
+<span class="va">tiene_saldo</span> = <span class="kw">False</span>
+
+<span class="cm"># Resultado de operaciones de comparación</span>
+<span class="va">mayor_edad</span> = <span class="num">22</span> <span class="op">>=</span> <span class="num">18</span>   <span class="cm"># True</span>
+<span class="va">iguales</span>    = <span class="num">5</span>  <span class="op">==</span> <span class="num">5</span>    <span class="cm"># True</span>
+<span class="va">distintos</span>  = <span class="num">3</span>  <span class="op">!=</span> <span class="num">4</span>    <span class="cm"># True</span>
+
+<span class="cm"># Booleanos en condicionales</span>
+<span class="kw">if</span> <span class="va">es_mayor</span> <span class="kw">and</span> <span class="va">tiene_saldo</span>:
+    <span class="fn">print</span>(<span class="st">"Puede comprar"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"No puede comprar"</span>)
+
+<span class="cm"># int(True)=1, int(False)=0</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="va">es_mayor</span>))  <span class="cm"># &lt;class 'bool'&gt;</span></pre></div>
+
+                    <div class="code-section" id="code-type"><pre><span class="cm"># Función type() — inspecciona el tipo</span>
+
+<span class="va">a</span> = <span class="num">42</span>
+<span class="va">b</span> = <span class="num">3.14</span>
+<span class="va">c</span> = <span class="st">"hola"</span>
+<span class="va">d</span> = <span class="kw">True</span>
+
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="va">a</span>))  <span class="cm"># &lt;class 'int'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="va">b</span>))  <span class="cm"># &lt;class 'float'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="va">c</span>))  <span class="cm"># &lt;class 'str'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="va">d</span>))  <span class="cm"># &lt;class 'bool'&gt;</span>
+
+<span class="cm"># Conversión de tipos (casting)</span>
+<span class="fn">print</span>(<span class="fn">int</span>(<span class="st">"100"</span>))    <span class="cm"># 100 (str → int)</span>
+<span class="fn">print</span>(<span class="fn">float</span>(<span class="num">5</span>))      <span class="cm"># 5.0 (int → float)</span>
+<span class="fn">print</span>(<span class="fn">str</span>(<span class="num">3.14</span>))     <span class="cm"># "3.14" (float → str)</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="num">0</span>))       <span class="cm"># False (0 = False)</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="num">42</span>))      <span class="cm"># True (≠0 = True)</span></pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Visualización -->
+        <div class="right-panel">
+            <!-- INT -->
+            <div class="type-info active" id="info-int">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(251,191,36,0.05)); border: 1px solid rgba(251,191,36,0.3); color: #fbbf24;">
+                    <h2>int</h2>
+                    <span class="tag">Número Entero</span>
+                    <p style="color: var(--text-dim);">Almacena valores enteros sin decimales. En Python 3 no tiene límite de tamaño.</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Visualización en Memoria</h3>
+                    <div class="mem-row"><span class="mem-name" style="color:#fbbf24">edad</span><span class="mem-arrow">→</span><div class="mem-box" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4)">22</div><span class="mem-type">int</span></div>
+                    <div class="mem-row"><span class="mem-name" style="color:#fbbf24">temperatura</span><span class="mem-arrow">→</span><div class="mem-box" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4)">-5</div><span class="mem-type">int</span></div>
+                    <div class="mem-row"><span class="mem-name" style="color:#fbbf24">año</span><span class="mem-arrow">→</span><div class="mem-box" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.4)">2026</div><span class="mem-type">int</span></div>
+                </div>
+                <div class="type-fn"><code><span class="fn">type</span>(<span class="num">22</span>) <span class="op">=&gt;</span></code><div class="output">&lt;class 'int'&gt;</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">Valores válidos</span><span class="v-val">…, -2, -1, 0, 1, 2, …</span></div>
+                    <div class="value-row"><span class="v-name">Sin límite de tamaño</span><span class="v-val"> Python 3</span></div>
+                    <div class="value-row"><span class="v-name">Representaciones</span><span class="v-val">0b1010 · 0xFF · 0o17</span></div>
+                </div>
+            </div>
+
+            <!-- FLOAT -->
+            <div class="type-info" id="info-float">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(96,165,250,0.2), rgba(96,165,250,0.05)); border: 1px solid rgba(96,165,250,0.3);">
+                    <h2 style="color:#60a5fa">float</h2>
+                    <span class="tag">Número Flotante</span>
+                    <p style="color: var(--text-dim);">Representa números reales con parte decimal. Usa 64 bits (doble precisión IEEE 754).</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Visualización en Memoria</h3>
+                    <div class="mem-row"><span class="mem-name" style="color:#60a5fa">precio</span><span class="mem-arrow">→</span><div class="mem-box" style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.4)">9.99</div><span class="mem-type">float</span></div>
+                    <div class="mem-row"><span class="mem-name" style="color:#60a5fa">pi</span><span class="mem-arrow">→</span><div class="mem-box" style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.4)">3.14159</div><span class="mem-type">float</span></div>
+                </div>
+                <div class="type-fn"><code><span class="fn">type</span>(<span class="num">3.14</span>) <span class="op">=&gt;</span></code><div class="output">&lt;class 'float'&gt;</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">10 / 3</span><span class="v-val">3.3333333333333335</span></div>
+                    <div class="value-row"><span class="v-name">1.5e3</span><span class="v-val">1500.0</span></div>
+                    <div class="value-row"><span class="v-name">round(3.14159, 2)</span><span class="v-val">3.14</span></div>
+                </div>
+            </div>
+
+            <!-- STR -->
+            <div class="type-info" id="info-str">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(52,211,153,0.05)); border: 1px solid rgba(52,211,153,0.3);">
+                    <h2 style="color:#34d399">str</h2>
+                    <span class="tag">Cadena de Texto</span>
+                    <p style="color: var(--text-dim);">Secuencia inmutable de caracteres Unicode. Se puede definir con comillas simples, dobles o triples.</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Indexación de Caracteres</h3>
+                    <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <div style="text-align:center;font-family:'Fira Code',monospace;font-size:0.8rem;">
+                            <div style="background:rgba(52,211,153,0.2);border:1px solid rgba(52,211,153,0.4);border-radius:4px;padding:0.3rem 0.5rem;color:#34d399">G</div>
+                            <div style="color:var(--text-dim);font-size:0.7rem">0</div>
+                        </div>
+                        <div style="text-align:center;font-family:'Fira Code',monospace;font-size:0.8rem;"><div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:0.3rem 0.5rem;">e</div><div style="color:var(--text-dim);font-size:0.7rem">1</div></div>
+                        <div style="text-align:center;font-family:'Fira Code',monospace;font-size:0.8rem;"><div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:0.3rem 0.5rem;">r</div><div style="color:var(--text-dim);font-size:0.7rem">2</div></div>
+                        <div style="text-align:center;font-family:'Fira Code',monospace;font-size:0.8rem;"><div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:0.3rem 0.5rem;">m</div><div style="color:var(--text-dim);font-size:0.7rem">3</div></div>
+                        <div style="text-align:center;font-family:'Fira Code',monospace;font-size:0.8rem;"><div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:0.3rem 0.5rem;">á</div><div style="color:var(--text-dim);font-size:0.7rem">4</div></div>
+                        <div style="text-align:center;font-family:'Fira Code',monospace;font-size:0.8rem;"><div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:0.3rem 0.5rem;">n</div><div style="color:var(--text-dim);font-size:0.7rem">5</div></div>
+                    </div>
+                </div>
+                <div class="type-fn"><code><span class="fn">type</span>(<span class="st">"hola"</span>) <span class="op">=&gt;</span></code><div class="output">&lt;class 'str'&gt;</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">"Germán".upper()</span><span class="v-val">"GERMÁN"</span></div>
+                    <div class="value-row"><span class="v-name">len("Germán")</span><span class="v-val">6</span></div>
+                    <div class="value-row"><span class="v-name">"Germán"[0:3]</span><span class="v-val">"Ger"</span></div>
+                </div>
+            </div>
+
+            <!-- BOOL -->
+            <div class="type-info" id="info-bool">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(248,113,113,0.2), rgba(248,113,113,0.05)); border: 1px solid rgba(248,113,113,0.3);">
+                    <h2 style="color:#f87171">bool</h2>
+                    <span class="tag">Booleano</span>
+                    <p style="color: var(--text-dim);">Subclase de int. True equivale a 1 y False a 0. Resultado de evaluar expresiones lógicas.</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Tabla de Verdad Básica</h3>
+                    <div class="values-list">
+                        <div class="value-row"><span class="v-name">True and True</span><span class="v-val" style="color:#34d399">True</span></div>
+                        <div class="value-row"><span class="v-name">True and False</span><span class="v-val" style="color:#f87171">False</span></div>
+                        <div class="value-row"><span class="v-name">True or False</span><span class="v-val" style="color:#34d399">True</span></div>
+                        <div class="value-row"><span class="v-name">not True</span><span class="v-val" style="color:#f87171">False</span></div>
+                    </div>
+                </div>
+                <div class="type-fn"><code><span class="fn">type</span>(<span class="kw">True</span>) <span class="op">=&gt;</span></code><div class="output">&lt;class 'bool'&gt;</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">bool(0)</span><span class="v-val" style="color:#f87171">False</span></div>
+                    <div class="value-row"><span class="v-name">bool("")</span><span class="v-val" style="color:#f87171">False (vacío)</span></div>
+                    <div class="value-row"><span class="v-name">bool(42)</span><span class="v-val" style="color:#34d399">True</span></div>
+                </div>
+            </div>
+
+            <!-- TYPE() -->
+            <div class="type-info" id="info-type">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(167,139,250,0.05)); border: 1px solid rgba(167,139,250,0.3);">
+                    <h2 style="color:#a78bfa">type()</h2>
+                    <span class="tag">Función Built-in</span>
+                    <p style="color: var(--text-dim);">Retorna el tipo de un objeto. Fundamental para depurar y entender el comportamiento dinámico de Python.</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Conversión entre tipos</h3>
+                    <div class="values-list">
+                        <div class="value-row"><span class="v-name">int("100")</span><span class="v-val">100</span></div>
+                        <div class="value-row"><span class="v-name">float(5)</span><span class="v-val">5.0</span></div>
+                        <div class="value-row"><span class="v-name">str(3.14)</span><span class="v-val">"3.14"</span></div>
+                        <div class="value-row"><span class="v-name">bool(0)</span><span class="v-val" style="color:#f87171">False</span></div>
+                        <div class="value-row"><span class="v-name">bool(1)</span><span class="v-val" style="color:#34d399">True</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        });
+
+        const filenames = { int: 'tipos_int.py', float: 'tipos_float.py', str: 'tipos_str.py', bool: 'tipos_bool.py', type: 'tipo_conversion.py' };
+
+        function switchType(type) {
+            document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-info').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('code-' + type).classList.add('active');
+            document.getElementById('info-' + type).classList.add('active');
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            document.getElementById('filename').textContent = filenames[type];
+        }
+    </script>
+</body>
+</html>
