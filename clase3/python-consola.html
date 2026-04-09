@@ -278,7 +278,8 @@
             <span class="nav-title">Laboratorio Python Avanzado</span>
             <span class="nav-badge">WASM / Pyodide</span>
         </div>
-        <div class="nav-right">
+        <div class="nav-right" style="display:flex; align-items:center; gap:1rem">
+            <button id="themeToggle" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); padding:0.4rem 0.8rem; border-radius:100px; cursor:pointer; font-size:0.75rem; font-weight:600">☀️ Modo Claro</button>
             <button class="btn-run" id="btnRun" disabled onclick="runCode()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 EJECUTAR
@@ -682,6 +683,26 @@ except:
         document.addEventListener('keydown', e => {
             if (e.ctrlKey && e.key === 'Enter') runCode();
             if (e.ctrlKey && e.key === 'l') clearTerminal();
+        });
+
+        // Gestión de Tema
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { 
+            root.setAttribute('data-theme', 'light'); 
+            toggleBtn.innerHTML = '🌙 Modo Oscuro'; 
+        }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { 
+                root.removeAttribute('data-theme'); 
+                localStorage.setItem('theme', 'dark'); 
+                toggleBtn.innerHTML = '☀️ Modo Claro'; 
+            }
+            else { 
+                root.setAttribute('data-theme', 'light'); 
+                localStorage.setItem('theme', 'light'); 
+                toggleBtn.innerHTML = '🌙 Modo Oscuro'; 
+            }
         });
 
         init();

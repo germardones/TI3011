@@ -44,6 +44,7 @@
             align-items: center;
             overflow-x: hidden;
             transition: background-color 0.3s, color 0.3s;
+            position: relative;
         }
         
         h1, h2, h3 {
@@ -189,7 +190,10 @@
             color: var(--primary);
             font-weight: 800;
             text-transform: uppercase;
-        .card-number { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; color: #a855f7; }
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
         .class-card h2 { font-size: 1.8rem; margin-bottom: 1rem; }
         .class-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; }
 
@@ -212,12 +216,10 @@
         .class-card.locked .lock-icon { display: block; }
         .class-card.locked h2, .class-card.locked .card-number { color: var(--text-dim) !important; }
 
-        .card-footer {
-            margin-top: 2rem;
-            display: flex; align-items: center; gap: 0.5rem;
-            font-weight: 700; font-size: 0.9rem;
-            color: #a855f7; transition: var(--transition);
-        }
+        /* Card Color Variations */
+        .card-modulo1 .card-number, .card-modulo1 .card-footer { color: #a855f7; }
+        .card-modulo2 .card-number, .card-modulo2 .card-footer { color: #10b981; }
+        .card-modulo3 .card-number, .card-modulo3 .card-footer { color: #3b82f6; }
 
         .card-footer.active {
             color: var(--accent);
@@ -225,6 +227,27 @@
 
         .class-card:hover .card-footer.active i {
             transform: translateX(5px);
+        }
+
+        /* Locked Alert */
+        #locked-alert {
+            display: none;
+            background: rgba(248, 81, 73, 0.15);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+            color: #f85149;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 900px;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeInUp 0.5s ease;
+        }
+        #locked-alert button {
+            background: #f85149; color: white; border: none;
+            padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700;
+            cursor: pointer; font-size: 0.8rem;
         }
 
         footer {
@@ -280,6 +303,10 @@
     <button class="theme-toggle" id="themeToggle">☀️ Modo Claro</button>
 
     <header>
+        <div id="locked-alert">
+            <span>⚠️ Este contenido aún no está disponible.</span>
+            <button onclick="window.location.href='index.html'">Cerrar y Volver</button>
+        </div>
         <h1>Lógica y Resolución de Problemas</h1>
         <div class="author-info">
             Plataforma interactiva (TI3011)
@@ -291,7 +318,7 @@
             <section class="classes-section">
                 <h2 class="section-title">Contenidos del Curso</h2>
                 <div class="hub-grid">
-                    <a href="clase1/clase1.html" class="class-card">
+                    <a href="clase1/clase1.html" class="class-card card-modulo1">
                         <div class="card-number">Módulo 01</div>
                         <h2>Resolución de Problemas</h2>
                         <p>Pasos lógicos, construcción de soluciones, de acuerdo con el modelo de Polya y diagramas de flujo.</p>
@@ -300,7 +327,7 @@
                         </div>
                     </a>
 
-                    <a href="clase2/clase2.html" class="class-card">
+                    <a href="clase2/clase2.html" class="class-card card-modulo2">
                         <div class="card-number">Módulo 02</div>
                         <h2>Introducción a PseInt</h2>
                         <p>Aprende sobre declaraciones, variables, bucles y lógica condicional visualizando su código y diagrama de flujo al mismo tiempo.</p>
@@ -309,7 +336,7 @@
                         </div>
                     </a>
 
-                    <a href="clase3/clase3.html" id="card-modulo3" class="class-card locked" style="animation-delay:0.6s">
+                    <a href="clase3/clase3.html" id="card-modulo3" class="class-card locked card-modulo3" style="animation-delay:0.6s">
                         <div class="lock-icon">🔒</div>
                         <div class="card-number" id="num-modulo3">Módulo 03</div>
                         <h2>Introducción a Python</h2>
@@ -330,21 +357,21 @@
     <script>
         const toggleBtn = document.getElementById('themeToggle');
         const root = document.documentElement;
-
         if (localStorage.getItem('theme') === 'light') {
             root.setAttribute('data-theme', 'light');
             toggleBtn.innerHTML = '🌙 Modo Oscuro';
         }
-
         toggleBtn.addEventListener('click', () => {
             if (root.getAttribute('data-theme') === 'light') {
                 root.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'dark');
                 toggleBtn.innerHTML = '☀️ Modo Claro';
-            } else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
-        });
-
-        // Lógica de desbloqueo automático del Módulo 3
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        }); // Lógica de desbloqueo automático del Módulo 3
         function checkModuleAccess() {
             const RELEASE_DATE = new Date('2026-04-13T00:00:00');
             const now = new Date();
@@ -363,6 +390,12 @@
         checkModuleAccess();
         // Verificar cada minuto por si el usuario deja la página abierta
         setInterval(checkModuleAccess, 60000);
+
+        // Mostrar alerta si hay error en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error')) {
+            document.getElementById('locked-alert').style.display = 'flex';
+        }
     </script>
 </body>
 
