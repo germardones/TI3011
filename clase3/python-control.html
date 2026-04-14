@@ -109,16 +109,16 @@
 
     <!-- STRUCTURE SELECTOR TABS -->
     <div class="struct-tabs">
-        <button class="struct-tab active" onclick="switchStruct('if')"> if / elif / else</button>
-        <button class="struct-tab" onclick="switchStruct('for')"> for</button>
-        <button class="struct-tab" onclick="switchStruct('while')"> while</button>
+        <button class="struct-tab active" onclick="switchStruct('if')">🔀 if / elif / else</button>
+        <button class="struct-tab" onclick="switchStruct('for')">🔁 for</button>
+        <button class="struct-tab" onclick="switchStruct('while')">🔄 while</button>
     </div>
 
     <div class="workspace">
         <!-- LEFT: Código -->
         <div class="term-panel">
             <div class="code-section active" id="code-if">
-                <h1> Condicional if</h1>
+                <h1>🔀 Condicional if</h1>
                 <p>Pasa el cursor sobre cada línea de código para ver el nodo correspondiente en el diagrama.</p>
                 <div class="terminal">
                     <div class="term-header"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#eab308"></div><div class="dot" style="background:#10b981"></div><span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem">condicional.py</span></div>
@@ -136,7 +136,7 @@
             </div>
 
             <div class="code-section" id="code-for">
-                <h1> Bucle for</h1>
+                <h1>🔁 Bucle for</h1>
                 <p>Pasa el cursor sobre cada línea para ver el diagrama de flujo correspondiente.</p>
                 <div class="terminal">
                     <div class="term-header"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#eab308"></div><div class="dot" style="background:#10b981"></div><span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem">bucle_for.py</span></div>
@@ -151,7 +151,7 @@
             </div>
 
             <div class="code-section" id="code-while">
-                <h1> Bucle while</h1>
+                <h1>🔄 Bucle while</h1>
                 <p>Pasa el cursor sobre cada línea para ver el diagrama de flujo correspondiente.</p>
                 <div class="terminal">
                     <div class="term-header"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#eab308"></div><div class="dot" style="background:#10b981"></div><span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem">bucle_while.py</span></div>
@@ -248,13 +248,22 @@
 
     <div class="tooltip-box" id="tooltip"></div>
 
+    <a href="python-consola.html" style="display:flex; align-items:center; gap:1rem; background:var(--card-bg); border-top:1px solid rgba(251,146,60,0.2); padding:1rem 2rem; text-decoration:none; transition:all 0.3s; flex-shrink:0;">
+        <span style="font-size:1.3rem">⌨️</span>
+        <div>
+            <div style="font-weight:700; color:var(--text-main); font-size:0.9rem">Practica if, for y while en la Consola</div>
+            <div style="font-size:0.8rem; color:var(--text-dim)">La pestaña Ejemplos tiene código listo de condicionales y bucles — y el Desafío 3 y 4 te esperan</div>
+        </div>
+        <span style="margin-left:auto; color:#fb923c; font-weight:700; font-size:0.9rem; white-space:nowrap">Abrir Consola →</span>
+    </a>
+
     <script>
         const toggleBtn = document.getElementById('themeToggle');
         const root = document.documentElement;
-        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
         toggleBtn.addEventListener('click', () => {
             if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
-            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = ' Modo Oscuro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
         });
 
         function switchStruct(s) {
