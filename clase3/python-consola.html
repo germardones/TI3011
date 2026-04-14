@@ -128,9 +128,12 @@
             transition: var(--transition);
         }
         .sidebar-tab.active {
-            background: var(--card-bg);
+            background: rgba(255,255,255,0.1);
             color: var(--accent);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        [data-theme="light"] .sidebar-tab.active {
+            background: rgba(0,0,0,0.06);
         }
         .sidebar-content {
             flex: 1;
@@ -250,6 +253,10 @@
         .challenge-status.solved { color: var(--green); border: 1px solid var(--green); }
         .challenge-body { font-size: 0.85rem; line-height: 1.5; color: var(--text); }
         .challenge-goal { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.75rem; padding-left: 0.75rem; border-left: 2px solid var(--accent); }
+        .challenge-hint { font-size: 0.72rem; color: var(--yellow); margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(227,179,65,0.08); border-radius: 6px; display: none; font-family: 'Fira Code', monospace; white-space: pre-wrap; }
+        .challenge-hint.visible { display: block; }
+        .btn-hint { margin-top: 8px; width: 100%; padding: 0.3rem; border-radius: 6px; border: 1px dashed rgba(227,179,65,0.4); background: transparent; color: var(--yellow); font-size: 0.68rem; cursor: pointer; opacity: 0.8; }
+        .btn-hint:hover { opacity: 1; }
 
         /* Overlay */
         .loading-overlay {
@@ -275,8 +282,8 @@
         <div class="nav-left">
             <a href="clase3.html" class="back-link">← Hub Clase 3</a>
             <span style="color:rgba(255,255,255,0.1)">|</span>
-            <span class="nav-title">Laboratorio Python Avanzado</span>
-            <span class="nav-badge">WASM / Pyodide</span>
+            <span class="nav-title">Consola Python Interactiva</span>
+            <span class="nav-badge">Python 3 · WASM</span>
         </div>
         <div class="nav-right" style="display:flex; align-items:center; gap:1rem">
             <button id="themeToggle" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); padding:0.4rem 0.8rem; border-radius:100px; cursor:pointer; font-size:0.75rem; font-weight:600">☀️ Modo Claro</button>
@@ -321,7 +328,14 @@
                 <div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.5rem">Esto toma ~10-15 segundos la primera vez</div>
             </div>
             <div class="history" id="history">
-                <div class="entry-info">Bienvenido al Laboratorio Avanzado de Python. <br>Aquí puedes graficar con <b>Matplotlib</b>, gestionar archivos virtuales y completar desafíos interactivos.</div>
+                <div class="entry-info">
+                    <b style="color:var(--accent)">Consola Python Interactiva — TI3011 Módulo 3</b><br><br>
+                    Escribe código Python real y presiona <b>Ctrl+Enter</b> (o el botón EJECUTAR) para correr.<br><br>
+                    <span style="color:var(--green)">&#9650; Desafíos:</span> Selecciona uno en el panel izquierdo, completa el código y ejecuta para validar automáticamente.<br>
+                    <span style="color:var(--blue)">&#9654; Ejemplos:</span> Usa la pestaña <b>Ejemplos</b> para cargar snippets de práctica del módulo.<br>
+                    <span style="color:var(--yellow)">&#9728; Librerías:</span> Carga NumPy, Pandas o Matplotlib desde la pestaña <b>Librerías</b>.<br><br>
+                    <span style="color:var(--text-dim); font-size:0.75rem">Ctrl+L para limpiar la consola</span>
+                </div>
             </div>
             <div class="input-area">
                 <textarea id="codeInput" placeholder=">>> Escribe tu código aquí... (Ctrl+Enter para ejecutar)" disabled></textarea>
@@ -397,27 +411,51 @@
         const CHALLENGES = [
             {
                 id: 'chal-1',
-                title: 'Desafío 1: El Área',
-                body: 'Crea una variable llamada <code>base</code> con valor 10 y otra llamada <code>altura</code> con valor 5. Calcula el área de un triángulo y guárdala en <code>area</code>.',
-                goal: 'El valor de la variable <code>area</code> debe ser 25.0',
+                title: 'Desafío 1: Variables y Tipos',
+                body: 'Crea una variable <code>base = 10</code> y <code>altura = 5</code>. Calcula el área del triángulo y guárdala en <code>area</code>.',
+                goal: '<code>area</code> debe ser igual a <code>25.0</code>',
                 test: 'area == 25.0',
-                hint: 'La fórmula es (base * altura) / 2'
+                hint: 'area = (base * altura) / 2'
             },
             {
                 id: 'chal-2',
                 title: 'Desafío 2: Listas',
-                body: 'Crea una lista llamada <code>numeros</code> que contenga los números del 1 al 5. Luego, añade el número 6 al final.',
-                goal: 'La lista <code>numeros</code> debe ser [1, 2, 3, 4, 5, 6]',
+                body: 'Crea una lista <code>numeros = [1, 2, 3, 4, 5]</code>. Luego usa <code>.append()</code> para agregar el 6 al final.',
+                goal: '<code>numeros</code> debe ser <code>[1, 2, 3, 4, 5, 6]</code>',
                 test: 'numeros == [1, 2, 3, 4, 5, 6]',
-                hint: 'Usa el método .append()'
+                hint: 'numeros = [1, 2, 3, 4, 5]\nnumeros.append(6)'
             },
             {
                 id: 'chal-3',
-                title: 'Desafío 3: Archivos',
-                body: 'Crea un archivo llamado <code>mensaje.txt</code> y escribe dentro la palabra "Hola Python".',
-                goal: 'El archivo <code>mensaje.txt</code> debe existir en el explorador.',
-                test: 'os.path.exists("mensaje.txt")',
-                hint: 'Usa with open("mensaje.txt", "w") as f:'
+                title: 'Desafío 3: Bucle for',
+                body: 'Usa un bucle <code>for</code> para crear la lista <code>cuadrados</code> con los cuadrados de 1 a 5: <code>[1, 4, 9, 16, 25]</code>.',
+                goal: '<code>cuadrados</code> debe ser <code>[1, 4, 9, 16, 25]</code>',
+                test: 'cuadrados == [1, 4, 9, 16, 25]',
+                hint: 'cuadrados = []\nfor i in range(1, 6):\n    cuadrados.append(i ** 2)'
+            },
+            {
+                id: 'chal-4',
+                title: 'Desafío 4: Condicional if',
+                body: 'Crea <code>nota = 75</code>. Usa <code>if/elif/else</code> para asignar a <code>estado</code> el string <code>"Aprobado"</code> si nota >= 60, o <code>"Reprobado"</code> si no.',
+                goal: '<code>estado</code> debe ser <code>"Aprobado"</code>',
+                test: 'estado == "Aprobado"',
+                hint: 'nota = 75\nif nota >= 60:\n    estado = "Aprobado"\nelse:\n    estado = "Reprobado"'
+            },
+            {
+                id: 'chal-5',
+                title: 'Desafío 5: Función',
+                body: 'Define una función <code>saludar(nombre)</code> que retorne el string <code>"Hola, {nombre}!"</code>. Llámala con <code>"Python"</code>.',
+                goal: '<code>saludar("Python")</code> debe retornar <code>"Hola, Python!"</code>',
+                test: 'saludar("Python") == "Hola, Python!"',
+                hint: 'def saludar(nombre):\n    return f"Hola, {nombre}!"'
+            },
+            {
+                id: 'chal-6',
+                title: 'Desafío 6: Archivos',
+                body: 'Crea un archivo llamado <code>notas.txt</code> y escribe la línea <code>"Módulo 3 completado"</code> dentro de él.',
+                goal: 'El archivo <code>notas.txt</code> debe existir en el explorador.',
+                test: 'os.path.exists("notas.txt")',
+                hint: 'with open("notas.txt", "w") as f:\n    f.write("Módulo 3 completado")'
             }
         ];
 
@@ -431,9 +469,9 @@
             try {
                 pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/" });
                 
-                // Redirigir stdout/stderr
+                // Redirigir stdout/stderr y configurar entorno base
                 await pyodide.runPythonAsync(`
-import sys, io, os
+import sys, io, os, math
 from io import StringIO
 class Capture:
     def __init__(self): self.buf = []
@@ -537,7 +575,11 @@ except:
                     if (!solvedChallenges.includes(activeChallenge.id)) {
                         solvedChallenges.push(activeChallenge.id);
                         localStorage.setItem('solvedPy', JSON.stringify(solvedChallenges));
-                        showFeedback(`¡Has superado el ${activeChallenge.title}!`);
+                        const solved = solvedChallenges.length;
+                        const total = CHALLENGES.length;
+                        showFeedback(`¡Has superado el ${activeChallenge.title}! (${solved}/${total} completados)`);
+                        appendEntry('info', `✅ Desafío resuelto: ${activeChallenge.title}`);
+                        activeChallenge = null;
                         renderSidebar();
                     }
                 }
@@ -578,16 +620,19 @@ except:
                 const div = document.createElement('div');
                 div.className = 'challenge-box';
                 div.style.borderLeft = isSolved ? '4px solid var(--green)' : '4px solid var(--accent)';
+                const hintId = `hint-${c.id}`;
                 div.innerHTML = `
                     <div class="challenge-header">
                         <span style="font-weight:700; font-size:0.8rem">${c.title}</span>
-                        <span class="challenge-status ${isSolved?'solved':''}">${isSolved?'RESUELTO':'PENDIENTE'}</span>
+                        <span class="challenge-status ${isSolved?'solved':''}">${isSolved?'✓ RESUELTO':'PENDIENTE'}</span>
                     </div>
                     <div class="challenge-body">${c.body}</div>
                     <div class="challenge-goal"><b>Meta:</b> ${c.goal}</div>
-                    <button onclick="setChallenge('${c.id}')" style="margin-top:10px; width:100%; padding:0.4rem; border-radius:6px; border:1px solid var(--accent); background:transparent; color:var(--accent); font-size:0.7rem; cursor:pointer">
-                        ${activeChallenge?.id === c.id ? '🎯 EN CURSO' : 'ACEPTAR DESAFÍO'}
+                    <div class="challenge-hint ${activeChallenge?.id === c.id ? 'visible' : ''}" id="${hintId}"><b>Pista:</b> ${c.hint}</div>
+                    <button onclick="setChallenge('${c.id}')" style="margin-top:8px; width:100%; padding:0.4rem; border-radius:6px; border:1px solid var(--accent); background:${activeChallenge?.id === c.id ? 'rgba(167,139,250,0.15)' : 'transparent'}; color:var(--accent); font-size:0.7rem; cursor:pointer; font-weight:700">
+                        ${activeChallenge?.id === c.id ? '🎯 EN CURSO' : isSolved ? '↺ REPETIR' : 'ACEPTAR DESAFÍO'}
                     </button>
+                    ${!isSolved && activeChallenge?.id !== c.id ? `<button class="btn-hint" onclick="document.getElementById('${hintId}').classList.toggle('visible')">💡 Mostrar / ocultar pista</button>` : ''}
                 `;
                 cList.appendChild(div);
             });
@@ -608,20 +653,60 @@ except:
             
             // Examples
             const eList = document.getElementById('examples-list');
-            eList.innerHTML = '';
+            eList.innerHTML = '<p style="font-size:0.72rem; color:var(--text-dim); margin-bottom:0.75rem">Haz clic para cargar el ejemplo en la consola:</p>';
             [
-                { t: 'Gráfico simple', c: 'import matplotlib.pyplot as plt\nplt.plot([1, 4, 9, 16])\nplt.ylabel("Potencia de 2")\nplt.show()' },
-                { t: 'Escribir Archivo', c: 'with open("test.txt", "w") as f:\n    for i in range(10):\n        f.write(f"Linea {i}\\n")\nprint("Archivo creado!")' },
-                { t: 'Leer Archivo', c: 'with open("test.txt", "r") as f:\n    print(f.read())' },
-                { t: 'NumPy Array', c: 'import numpy as np\na = np.arange(15).reshape(3, 5)\nprint(a)' }
+                {
+                    t: '01 · Hola Mundo',
+                    cat: 'Básico',
+                    c: '# Mi primer programa en Python\nnombre = "Python"\nversion = 3\n\nprint(f"Hola, {nombre} {version}!")\nprint(type(nombre))   # <class \'str\'>\nprint(type(version))  # <class \'int\'>'
+                },
+                {
+                    t: '02 · Variables y Tipos',
+                    cat: 'Tipos',
+                    c: '# Tipos de datos en Python\nentero  = 42\nflotante = 3.14\ncadena  = "TI3011"\nbool_v  = True\n\nfor val in [entero, flotante, cadena, bool_v]:\n    print(f"  {repr(val):15} → {type(val).__name__}")'
+                },
+                {
+                    t: '03 · Operadores',
+                    cat: 'Operadores',
+                    c: '# Operadores aritméticos y de comparación\na, b = 10, 3\n\nprint(f"Suma:          {a} + {b} = {a + b}")\nprint(f"Resta:         {a} - {b} = {a - b}")\nprint(f"Multiplicación:{a} * {b} = {a * b}")\nprint(f"División:      {a} / {b} = {a / b:.4f}")\nprint(f"Div. entera:   {a} //{b} = {a // b}")\nprint(f"Módulo:        {a} % {b} = {a % b}")\nprint(f"Potencia:      2 ** 8 = {2**8}")\nprint(f"\\n¿{a} > {b}? → {a > b}")\nprint(f"¿{a} == {b}? → {a == b}")'
+                },
+                {
+                    t: '04 · Condicional if',
+                    cat: 'Control',
+                    c: '# Estructura if / elif / else\nnota = 75\n\nif nota >= 90:\n    resultado = "Sobresaliente"\nelif nota >= 70:\n    resultado = "Aprobado"\nelif nota >= 55:\n    resultado = "Recuperación"\nelse:\n    resultado = "Reprobado"\n\nprint(f"Nota: {nota} → {resultado}")'
+                },
+                {
+                    t: '05 · Bucle for',
+                    cat: 'Control',
+                    c: '# Bucle for con range y listas\nprint("Tabla del 3:")\nfor i in range(1, 11):\n    print(f"  3 × {i:2} = {3*i:2}")\n\nfrutas = ["manzana", "pera", "uva"]\nprint("\\nFrutas:")\nfor idx, f in enumerate(frutas, 1):\n    print(f"  {idx}. {f}")'
+                },
+                {
+                    t: '06 · Bucle while',
+                    cat: 'Control',
+                    c: '# Bucle while con contador\ncontador = 1\nacumulador = 0\n\nwhile contador <= 10:\n    acumulador += contador\n    contador += 1\n\nprint(f"Suma 1..10 = {acumulador}")'
+                },
+                {
+                    t: '07 · Funciones',
+                    cat: 'Funciones',
+                    c: '# Definir y llamar funciones\ndef calcular_promedio(notas):\n    """Calcula el promedio de una lista de notas."""\n    return sum(notas) / len(notas)\n\ndef calificacion(promedio):\n    if promedio >= 90: return "Sobresaliente"\n    elif promedio >= 70: return "Aprobado"\n    else: return "Reprobado"\n\nnotas = [85, 92, 78, 95, 88]\nprom = calcular_promedio(notas)\nprint(f"Notas:     {notas}")\nprint(f"Promedio:  {prom:.1f}")\nprint(f"Estado:    {calificacion(prom)}")'
+                },
+                {
+                    t: '08 · Gráfico Matplotlib',
+                    cat: 'Avanzado',
+                    c: 'import matplotlib.pyplot as plt\n\nx = list(range(1, 11))\ny = [i**2 for i in x]\n\nplt.figure(figsize=(5, 3))\nplt.plot(x, y, "b-o", linewidth=2, markersize=5)\nplt.title("Cuadrados de 1 a 10", fontsize=13)\nplt.xlabel("x")\nplt.ylabel("x²")\nplt.grid(True, alpha=0.3)\nplt.tight_layout()\nplt.show()'
+                }
             ].forEach(ex => {
                 const btn = document.createElement('button');
                 btn.className = 'sidebar-tab';
                 btn.style.width = '100%';
                 btn.style.textAlign = 'left';
-                btn.style.marginBottom = '5px';
-                btn.textContent = ex.t;
-                btn.onclick = () => { document.getElementById('codeInput').value = ex.c; document.getElementById('codeInput').focus(); };
+                btn.style.marginBottom = '4px';
+                btn.style.padding = '0.5rem 0.75rem';
+                btn.innerHTML = `<div style="color:var(--text)">${ex.t}</div><div style="font-size:0.6rem; color:var(--text-dim)">${ex.cat}</div>`;
+                btn.onclick = () => {
+                    document.getElementById('codeInput').value = ex.c;
+                    document.getElementById('codeInput').focus();
+                };
                 eList.appendChild(btn);
             });
         }
@@ -636,7 +721,7 @@ except:
         function setChallenge(id) {
             activeChallenge = CHALLENGES.find(c => c.id === id);
             renderSidebar();
-            appendEntry('info', `Iniciando ${activeChallenge.title}. Tu código será evaluado automáticamente al ejecutar.`);
+            appendEntry('info', `🎯 ${activeChallenge.title} activado — escribe tu código y presiona Ctrl+Enter para validar automáticamente.`);
         }
 
         function showFeedback(msg) {
