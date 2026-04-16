@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Qué es VS Code? | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #38bdf8; --accent-glow: rgba(56,189,248,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #0284c7; --accent-glow: rgba(2,132,199,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+
+        header { text-align: center; margin-bottom: 3.5rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.75rem; }
+        header p { color: var(--text-dim); max-width: 620px; margin: 0 auto; font-size: 1.05rem; }
+
+        /* HERO BADGE */
+        .hero-badge { display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.25); border-radius: 100px; padding: 0.5rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+
+        /* DEFINITION CARD */
+        .def-card { background: linear-gradient(135deg, var(--card-bg), rgba(56,189,248,0.05)); border: 1px solid rgba(56,189,248,0.2); border-radius: 1.5rem; padding: 2.5rem; margin-bottom: 3rem; }
+        [data-theme="light"] .def-card { box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .def-card h2 { font-size: 1.6rem; margin-bottom: 1rem; color: var(--accent); }
+        .def-card p { color: var(--text-dim); line-height: 1.75; font-size: 0.95rem; }
+        .def-card p + p { margin-top: 1rem; }
+
+        /* COMPARISON TABLE */
+        .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .section-title span { color: var(--accent); }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 3rem; }
+        @media(max-width: 700px) { .compare-grid { grid-template-columns: 1fr; } }
+        .compare-card { background: var(--card-bg); border-radius: 1.25rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); }
+        [data-theme="light"] .compare-card { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .compare-card.featured { border: 2px solid rgba(56,189,248,0.4); }
+        .compare-header { padding: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        [data-theme="light"] .compare-header { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .compare-header .tool-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+        .compare-header h3 { font-size: 1rem; }
+        .compare-header .tag { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.6rem; border-radius: 100px; margin-top: 0.4rem; font-weight: 700; }
+        .compare-body { padding: 1rem 1.25rem; }
+        .compare-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.4rem 0; font-size: 0.82rem; color: var(--text-dim); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        [data-theme="light"] .compare-row { border-bottom: 1px solid rgba(0,0,0,0.04); }
+        .compare-row:last-child { border: none; }
+        .compare-row .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+        /* FEATURES GRID */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .feat-card { background: var(--card-bg); border-radius: 1rem; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); }
+        [data-theme="light"] .feat-card { border: 1px solid rgba(0,0,0,0.07); }
+        .feat-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .feat-card .feat-icon { font-size: 1.8rem; margin-bottom: 0.75rem; display: block; }
+        .feat-card h3 { font-size: 0.95rem; margin-bottom: 0.4rem; }
+        .feat-card p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+
+        /* DOWNLOAD STEPS */
+        .steps { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 3rem; }
+        .step { display: flex; align-items: flex-start; gap: 1.25rem; background: var(--card-bg); border-radius: 1rem; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .step { border: 1px solid rgba(0,0,0,0.07); }
+        .step-num { background: var(--accent); color: #000; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; }
+        .step h3 { font-size: 0.95rem; margin-bottom: 0.3rem; }
+        .step p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+        .step code { font-family: 'Fira Code', monospace; background: rgba(56,189,248,0.1); color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase4.html" class="back-link">← Volver a Módulo 4</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <div class="hero-badge">💙 Visual Studio Code · Microsoft · Gratuito</div>
+            <h1>🖥️ ¿Qué es VS Code?</h1>
+            <p>Conoce el editor de código más popular del mundo y por qué es la herramienta ideal para aprender a programar.</p>
+        </header>
+
+        <!-- DEFINITION -->
+        <div class="def-card">
+            <h2>Editor de código ligero y potente</h2>
+            <p>Visual Studio Code (VS Code) es un <strong>editor de código fuente</strong> desarrollado por Microsoft, completamente gratuito y de código abierto. Está disponible para Windows, macOS y Linux.</p>
+            <p>A diferencia de un IDE completo (como PyCharm o Visual Studio), VS Code es un editor ligero que se vuelve tan potente como necesites gracias a su sistema de <strong>extensiones</strong>. Abre en segundos, consume pocos recursos y soporta prácticamente cualquier lenguaje de programación.</p>
+            <p>Desde 2019 es el editor más usado en el mundo según Stack Overflow, con más de <strong>73% de los desarrolladores</strong> eligiéndolo como su herramienta principal.</p>
+        </div>
+
+        <!-- COMPARISON -->
+        <h2 class="section-title">VS Code vs otras <span>herramientas</span></h2>
+        <div class="compare-grid">
+            <div class="compare-card">
+                <div class="compare-header">
+                    <span class="tool-icon">📝</span>
+                    <h3>Bloc de Notas / TextEdit</h3>
+                    <span class="tag" style="background:rgba(239,68,68,0.15); color:#ef4444">Editor básico</span>
+                </div>
+                <div class="compare-body">
+                    <div class="compare-row"><div class="dot" style="background:#ef4444"></div>Sin resaltado de sintaxis</div>
+                    <div class="compare-row"><div class="dot" style="background:#ef4444"></div>Sin autocompletado</div>
+                    <div class="compare-row"><div class="dot" style="background:#ef4444"></div>Sin terminal integrado</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Muy ligero</div>
+                </div>
+            </div>
+            <div class="compare-card featured">
+                <div class="compare-header">
+                    <span class="tool-icon">💙</span>
+                    <h3>VS Code</h3>
+                    <span class="tag" style="background:rgba(56,189,248,0.2); color:#38bdf8">✓ Recomendado</span>
+                </div>
+                <div class="compare-body">
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Resaltado de sintaxis</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>IntelliSense (autocompletar)</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Terminal integrado</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Depurador visual</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>+30.000 extensiones</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Gratuito y ligero</div>
+                </div>
+            </div>
+            <div class="compare-card">
+                <div class="compare-header">
+                    <span class="tool-icon">🧠</span>
+                    <h3>PyCharm / IDE completo</h3>
+                    <span class="tag" style="background:rgba(251,191,36,0.15); color:#fbbf24">IDE pesado</span>
+                </div>
+                <div class="compare-body">
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Muy potente para Python</div>
+                    <div class="compare-row"><div class="dot" style="background:#34d399"></div>Todo integrado</div>
+                    <div class="compare-row"><div class="dot" style="background:#ef4444"></div>Arranca en 15-30 segundos</div>
+                    <div class="compare-row"><div class="dot" style="background:#ef4444"></div>Consume 1-2 GB de RAM</div>
+                    <div class="compare-row"><div class="dot" style="background:#ef4444"></div>Versión pro es de pago</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES -->
+        <h2 class="section-title">Características <span>principales</span></h2>
+        <div class="features-grid">
+            <div class="feat-card">
+                <span class="feat-icon">🎨</span>
+                <h3>Resaltado de Sintaxis</h3>
+                <p>Colorea palabras clave, strings y funciones para que el código sea más fácil de leer.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🧠</span>
+                <h3>IntelliSense</h3>
+                <p>Autocompletado inteligente que sugiere funciones, variables y métodos mientras escribes.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🐛</span>
+                <h3>Depurador Visual</h3>
+                <p>Ejecuta el código paso a paso y examina variables para encontrar y corregir errores.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🖥️</span>
+                <h3>Terminal Integrado</h3>
+                <p>Abre una terminal de línea de comandos directamente dentro del editor, sin cambiar de ventana.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🧩</span>
+                <h3>Extensiones</h3>
+                <p>Más de 30.000 extensiones para añadir soporte a cualquier lenguaje o herramienta.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🔀</span>
+                <h3>Control de Versiones</h3>
+                <p>Integración nativa con Git para ver cambios, hacer commits y gestionar ramas.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">🌍</span>
+                <h3>Multiplataforma</h3>
+                <p>Funciona igual en Windows, macOS y Linux. Tu configuración se puede sincronizar.</p>
+            </div>
+            <div class="feat-card">
+                <span class="feat-icon">⚡</span>
+                <h3>Ligero y Rápido</h3>
+                <p>Abre en menos de 2 segundos y consume poca RAM. Ideal para computadores modestos.</p>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD -->
+        <h2 class="section-title">Cómo <span>instalarlo</span></h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div>
+                    <h3>Ir al sitio oficial</h3>
+                    <p>Visita <code>code.visualstudio.com</code> desde tu navegador. El sitio detecta automáticamente tu sistema operativo (Windows, macOS o Linux) y te ofrece el instalador correcto.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div>
+                    <h3>Descargar el instalador</h3>
+                    <p>Haz clic en el botón azul de descarga. El archivo tiene unos 90 MB. Asegúrate de descargar la versión <code>User Installer</code> para Windows (no requiere permisos de administrador).</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div>
+                    <h3>Ejecutar el instalador</h3>
+                    <p>Abre el archivo descargado y sigue los pasos del asistente. Recomendamos marcar las opciones <code>Agregar al PATH</code> y <code>Abrir con Code</code> (clic derecho en archivos).</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div>
+                    <h3>Abrir VS Code</h3>
+                    <p>Busca "Visual Studio Code" en el menú de inicio o haz doble clic en el ícono del escritorio. La primera vez abrirá la pantalla de bienvenida — ya estás listo para comenzar.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="max-width:1000px; margin:0 auto;">
+            <a href="vscode-interfaz.html" style="display:flex; align-items:center; gap:1rem; background:var(--card-bg); border:1px solid rgba(56,189,248,0.25); border-radius:1rem; padding:1.25rem 1.5rem; text-decoration:none; transition:all 0.3s;">
+                <span style="font-size:1.3rem">🗂️</span>
+                <div>
+                    <div style="font-weight:700; color:var(--text-main); font-size:0.9rem">Siguiente: Conoce la Interfaz</div>
+                    <div style="font-size:0.8rem; color:var(--text-dim)">Aprende para qué sirve cada zona de VS Code</div>
+                </div>
+                <span style="margin-left:auto; color:#38bdf8; font-weight:700; font-size:0.9rem; white-space:nowrap">Continuar →</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Interfaz de VS Code | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #818cf8; --accent-glow: rgba(129,140,248,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #4338ca; --accent-glow: rgba(67,56,202,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.5rem; }
+        header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+        .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .section-title span { color: var(--accent); }
+
+        /* MOCK UI */
+        .vscode-mock {
+            background: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.78rem;
+            user-select: none;
+        }
+        .mock-titlebar { background: #3c3c3c; padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .mock-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .mock-title { color: #ccc; font-size: 0.7rem; margin: 0 auto; font-family: 'Inter', sans-serif; }
+        .mock-body { display: flex; height: 420px; }
+        .mock-activity { width: 48px; background: #333; display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0; gap: 0.75rem; }
+        .mock-act-btn { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: 0.2s; opacity: 0.6; }
+        .mock-act-btn:hover, .mock-act-btn.active { opacity: 1; background: rgba(255,255,255,0.1); }
+        .mock-sidebar { width: 200px; background: #252526; border-right: 1px solid #333; display: flex; flex-direction: column; }
+        .mock-sidebar-title { padding: 0.5rem 0.75rem; font-size: 0.65rem; color: #bbb; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Inter', sans-serif; }
+        .mock-file { padding: 0.25rem 1rem; color: #ccc; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; font-family: 'Inter', sans-serif; }
+        .mock-file:hover { background: rgba(255,255,255,0.05); }
+        .mock-file.active { background: rgba(255,255,255,0.08); color: #fff; }
+        .mock-main { flex: 1; display: flex; flex-direction: column; }
+        .mock-tabs { display: flex; background: #2d2d2d; border-bottom: 1px solid #333; }
+        .mock-tab { padding: 0.4rem 1rem; font-size: 0.72rem; color: #aaa; border-right: 1px solid #333; cursor: pointer; white-space: nowrap; font-family: 'Inter', sans-serif; }
+        .mock-tab.active { background: #1e1e1e; color: #fff; border-top: 2px solid #818cf8; }
+        .mock-editor { flex: 1; padding: 1rem; overflow: hidden; }
+        .mock-line { display: flex; gap: 1rem; color: #555; line-height: 1.7; }
+        .mock-line-num { min-width: 20px; text-align: right; font-size: 0.7rem; }
+        .mock-code { font-size: 0.78rem; }
+        .kw { color: #c678dd; } .fn { color: #61afef; } .st { color: #98c379; } .num { color: #d19a66; } .cm { color: #5c6370; }
+        .mock-panel { height: 100px; background: #1e1e1e; border-top: 1px solid #333; padding: 0.5rem 1rem; }
+        .mock-panel-tab { font-size: 0.65rem; color: #aaa; display: inline-block; padding: 0.2rem 0.75rem; border-bottom: 2px solid #818cf8; color: #fff; font-family: 'Inter', sans-serif; }
+        .mock-terminal-line { color: #cdd9e5; font-size: 0.72rem; line-height: 1.6; }
+        .mock-terminal-line .prompt { color: #3fb950; }
+        .mock-statusbar { background: #007acc; padding: 0.2rem 0.75rem; display: flex; gap: 1rem; font-size: 0.65rem; color: rgba(255,255,255,0.85); font-family: 'Inter', sans-serif; }
+
+        /* CLICKABLE ZONES */
+        .zone-highlight { outline: 2px solid transparent; outline-offset: -2px; cursor: pointer; transition: outline-color 0.2s; }
+        .zone-highlight:hover { outline-color: var(--accent); }
+        .zone-highlight.selected { outline-color: var(--accent); background: rgba(129,140,248,0.08); }
+
+        /* ZONE CARDS */
+        .zones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .zone-card {
+            background: var(--card-bg); border-radius: 1rem; padding: 1.25rem;
+            border: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+            transition: var(--transition); display: flex; gap: 1rem; align-items: flex-start;
+        }
+        [data-theme="light"] .zone-card { border: 1px solid rgba(0,0,0,0.07); }
+        .zone-card:hover, .zone-card.active { border-color: var(--c, var(--accent)); background: rgba(255,255,255,0.02); transform: translateY(-2px); }
+        .zone-num { width: 32px; height: 32px; border-radius: 8px; background: var(--c, var(--accent)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: #000; flex-shrink: 0; }
+        .zone-card h3 { font-size: 0.95rem; margin-bottom: 0.3rem; color: var(--c, var(--accent)); }
+        .zone-card p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+        .zone-card .shortcut { display: inline-block; margin-top: 0.5rem; font-family: 'Fira Code', monospace; font-size: 0.72rem; background: rgba(255,255,255,0.06); padding: 0.15rem 0.5rem; border-radius: 4px; color: var(--text-dim); }
+        [data-theme="light"] .zone-card .shortcut { background: rgba(0,0,0,0.06); }
+
+        /* COMMAND PALETTE */
+        .cmd-palette { background: #1e1e1e; border: 1px solid #555; border-radius: 8px; overflow: hidden; max-width: 600px; margin: 0 auto 3rem; }
+        .cmd-input { padding: 0.75rem 1rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #fff; background: #3c3c3c; border-bottom: 1px solid #555; display: flex; align-items: center; gap: 0.75rem; }
+        .cmd-input .caret { color: #818cf8; }
+        .cmd-result { padding: 0.5rem 1rem; font-size: 0.8rem; color: #ccc; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; }
+        .cmd-result:hover, .cmd-result.hl { background: rgba(129,140,248,0.15); color: #fff; }
+        .cmd-icon { opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase4.html" class="back-link">← Volver a Módulo 4</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>🗂️ La Interfaz de VS Code</h1>
+            <p>Explora cada zona de Visual Studio Code. Haz clic en una zona para ver su descripción detallada.</p>
+        </header>
+
+        <!-- MOCK VSCODE UI -->
+        <h2 class="section-title">Maqueta <span>interactiva</span></h2>
+        <div class="vscode-mock">
+            <div class="mock-titlebar">
+                <div class="mock-dot" style="background:#ef4444"></div>
+                <div class="mock-dot" style="background:#eab308"></div>
+                <div class="mock-dot" style="background:#10b981"></div>
+                <div class="mock-title">hola.py — mi_proyecto — Visual Studio Code</div>
+            </div>
+            <div class="mock-body">
+                <!-- Activity Bar -->
+                <div class="mock-activity zone-highlight" id="zone-activity" onclick="selectZone('activity')" title="Barra de Actividad">
+                    <div class="mock-act-btn active" title="Explorador">📁</div>
+                    <div class="mock-act-btn" title="Buscar">🔍</div>
+                    <div class="mock-act-btn" title="Control de versiones">🔀</div>
+                    <div class="mock-act-btn" title="Depurador">🐛</div>
+                    <div class="mock-act-btn" title="Extensiones">🧩</div>
+                </div>
+                <!-- Sidebar -->
+                <div class="mock-sidebar zone-highlight" id="zone-sidebar" onclick="selectZone('sidebar')" title="Panel lateral">
+                    <div class="mock-sidebar-title">Explorador</div>
+                    <div class="mock-file">📁 mi_proyecto</div>
+                    <div class="mock-file active" style="padding-left:1.5rem">🐍 hola.py</div>
+                    <div class="mock-file" style="padding-left:1.5rem">📄 README.md</div>
+                    <div class="mock-file" style="padding-left:1.5rem">📁 datos</div>
+                </div>
+                <!-- Editor + Panel -->
+                <div class="mock-main">
+                    <div class="mock-tabs zone-highlight" id="zone-tabs" onclick="selectZone('editor')" title="Pestañas del Editor">
+                        <div class="mock-tab active">🐍 hola.py</div>
+                        <div class="mock-tab">📄 README.md</div>
+                    </div>
+                    <div class="mock-editor zone-highlight" id="zone-editor" onclick="selectZone('editor')" title="Editor de código">
+                        <div class="mock-line"><span class="mock-line-num">1</span><span class="mock-code cm"># Mi primer programa</span></div>
+                        <div class="mock-line"><span class="mock-line-num">2</span><span class="mock-code"></span></div>
+                        <div class="mock-line"><span class="mock-line-num">3</span><span class="mock-code"><span class="kw">def</span> <span class="fn">saludar</span>(nombre):</span></div>
+                        <div class="mock-line"><span class="mock-line-num">4</span><span class="mock-code">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="st">f"Hola, {'{nombre}'}!"</span>)</span></div>
+                        <div class="mock-line"><span class="mock-line-num">5</span><span class="mock-code"></span></div>
+                        <div class="mock-line"><span class="mock-line-num">6</span><span class="mock-code"><span class="fn">saludar</span>(<span class="st">"VS Code"</span>)</span></div>
+                    </div>
+                    <div class="mock-panel zone-highlight" id="zone-terminal" onclick="selectZone('terminal')" title="Terminal integrado">
+                        <div class="mock-panel-tab">TERMINAL</div>
+                        <div class="mock-terminal-line"><span class="prompt">PS</span> C:\mi_proyecto&gt; python hola.py</div>
+                        <div class="mock-terminal-line" style="color:#3fb950">Hola, VS Code!</div>
+                        <div class="mock-terminal-line"><span class="prompt">PS</span> C:\mi_proyecto&gt; <span style="opacity:0.5">█</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mock-statusbar zone-highlight" id="zone-statusbar" onclick="selectZone('statusbar')" title="Barra de Estado">
+                <span>🔀 main</span>
+                <span>⚠ 0  ✖ 0</span>
+                <span style="margin-left:auto">🐍 Python 3.12.0</span>
+                <span>UTF-8</span>
+                <span>Ln 6, Col 1</span>
+            </div>
+        </div>
+
+        <!-- ZONE CARDS -->
+        <h2 class="section-title">Las <span>6 zonas</span> de VS Code</h2>
+        <div class="zones-grid">
+            <div class="zone-card" id="card-activity" style="--c:#38bdf8" onclick="selectZone('activity')">
+                <div class="zone-num" style="background:#38bdf8">1</div>
+                <div>
+                    <h3>Barra de Actividad</h3>
+                    <p>La barra vertical más a la izquierda. Cambia entre los paneles principales: Explorador, Búsqueda, Git, Depurador y Extensiones.</p>
+                    <span class="shortcut">Ctrl+Shift+E → Explorador</span>
+                </div>
+            </div>
+            <div class="zone-card" id="card-sidebar" style="--c:#818cf8" onclick="selectZone('sidebar')">
+                <div class="zone-num" style="background:#818cf8">2</div>
+                <div>
+                    <h3>Panel Lateral (Sidebar)</h3>
+                    <p>Muestra el contenido del panel activo: archivos de tu proyecto, resultados de búsqueda, cambios de Git o extensiones disponibles.</p>
+                    <span class="shortcut">Ctrl+B → Mostrar/ocultar</span>
+                </div>
+            </div>
+            <div class="zone-card" id="card-editor" style="--c:#34d399" onclick="selectZone('editor')">
+                <div class="zone-num" style="background:#34d399">3</div>
+                <div>
+                    <h3>Editor de Código</h3>
+                    <p>Zona central donde escribes. Soporta múltiples pestañas, división en columnas, resaltado de sintaxis e IntelliSense.</p>
+                    <span class="shortcut">Ctrl+P → Abrir archivo</span>
+                </div>
+            </div>
+            <div class="zone-card" id="card-terminal" style="--c:#fb923c" onclick="selectZone('terminal')">
+                <div class="zone-num" style="background:#fb923c">4</div>
+                <div>
+                    <h3>Panel Inferior (Terminal)</h3>
+                    <p>Terminal integrado donde ejecutas programas, comandos y ves la salida de tus scripts. Puedes abrir múltiples terminales.</p>
+                    <span class="shortcut">Ctrl+` → Abrir terminal</span>
+                </div>
+            </div>
+            <div class="zone-card" id="card-statusbar" style="--c:#a78bfa" onclick="selectZone('statusbar')">
+                <div class="zone-num" style="background:#a78bfa">5</div>
+                <div>
+                    <h3>Barra de Estado</h3>
+                    <p>Barra inferior con información contextual: rama de Git, errores, intérprete de Python seleccionado, posición del cursor y más.</p>
+                    <span class="shortcut">Clic en "Python 3.x" → Cambiar intérprete</span>
+                </div>
+            </div>
+            <div class="zone-card" id="card-palette" style="--c:#f87171" onclick="selectZone('palette')">
+                <div class="zone-num" style="background:#f87171">6</div>
+                <div>
+                    <h3>Paleta de Comandos</h3>
+                    <p>La herramienta más potente de VS Code. Ejecuta cualquier acción, configura el editor o instala extensiones desde un único buscador.</p>
+                    <span class="shortcut">Ctrl+Shift+P → Abrir paleta</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMAND PALETTE EXAMPLE -->
+        <h2 class="section-title">La <span>Paleta de Comandos</span></h2>
+        <p style="color:var(--text-dim); margin-bottom:1.5rem; font-size:0.9rem">Presiona <strong style="color:var(--accent)">Ctrl+Shift+P</strong> (Windows/Linux) o <strong style="color:var(--accent)">⌘+Shift+P</strong> (Mac) para abrirla. Es como un buscador de todo lo que puedes hacer en VS Code.</p>
+        <div class="cmd-palette">
+            <div class="cmd-input">
+                <span class="caret">&gt;</span>
+                <span>Python: Select Interpreter</span>
+                <span style="margin-left:auto; color:#555; font-size:0.7rem">Esc para cerrar</span>
+            </div>
+            <div class="cmd-result hl"><span class="cmd-icon">🐍</span> Python: Select Interpreter</div>
+            <div class="cmd-result"><span class="cmd-icon">🐛</span> Python: Start Debugging</div>
+            <div class="cmd-result"><span class="cmd-icon">🔧</span> Preferences: Open Settings</div>
+            <div class="cmd-result"><span class="cmd-icon">🎨</span> Preferences: Color Theme</div>
+            <div class="cmd-result"><span class="cmd-icon">📦</span> Extensions: Install Extensions</div>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href="vscode-intro.html" style="flex:1; min-width:200px; display:flex; align-items:center; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:var(--text-dim); font-size:0.85rem; font-weight:600; transition:all 0.3s;">
+                ← Anterior: ¿Qué es VS Code?
+            </a>
+            <a href="vscode-extensiones.html" style="flex:1; min-width:200px; display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(129,140,248,0.25); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:#818cf8; font-size:0.85rem; font-weight:700; transition:all 0.3s;">
+                Siguiente: Extensiones →
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+
+        function selectZone(zone) {
+            document.querySelectorAll('.zone-highlight').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.zone-card').forEach(el => el.classList.remove('active'));
+            const zoneMap = { activity: 'zone-activity', sidebar: 'zone-sidebar', editor: 'zone-editor', terminal: 'zone-terminal', statusbar: 'zone-statusbar' };
+            const cardMap = { activity: 'card-activity', sidebar: 'card-sidebar', editor: 'card-editor', terminal: 'card-terminal', statusbar: 'card-statusbar', palette: 'card-palette' };
+            if (zoneMap[zone]) document.getElementById(zoneMap[zone])?.classList.add('selected');
+            if (cardMap[zone]) {
+                const card = document.getElementById(cardMap[zone]);
+                if (card) { card.classList.add('active'); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+            }
+        }
+    </script>
+</body>
+</html>

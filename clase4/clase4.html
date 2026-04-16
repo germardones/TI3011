@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 4 | Visual Studio Code</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14,165,233,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-dim: #475569;
+            --accent: #0284c7;
+            --accent-glow: rgba(2,132,199,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(14,165,233,0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99,102,241,0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        #themeToggle {
+            position: fixed; top: 2rem; right: 2rem;
+            background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main); padding: 0.75rem 1.25rem;
+            border-radius: 100px; cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); z-index: 100;
+            transition: var(--transition);
+        }
+        [data-theme="light"] #themeToggle { border: 1px solid rgba(0,0,0,0.1); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; animation: fadeInUp 0.8s cubic-bezier(0.4,0,0.2,1) forwards; }
+        header { margin-bottom: 3.5rem; }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: var(--accent); text-decoration: none; font-weight: 600;
+            margin-bottom: 1.5rem; transition: var(--transition);
+        }
+        .back-link:hover { transform: translateX(-5px); }
+        .module-badge {
+            display: inline-block; background: var(--accent-glow); color: var(--accent);
+            padding: 0.3rem 1rem; border-radius: 100px; font-size: 0.8rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+            border: 1px solid rgba(14,165,233,0.3);
+        }
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(to right, var(--text-main), var(--accent));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        [data-theme="light"] h1 { background-image: linear-gradient(to right, #0f172a, #0284c7) !important; }
+        .subtitle { font-size: 1.2rem; color: var(--text-dim); max-width: 650px; }
+        .vscode-badge {
+            display: flex; align-items: center; gap: 0.75rem;
+            margin-top: 1.5rem; padding: 0.75rem 1.25rem;
+            background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.2);
+            border-radius: 12px; width: fit-content; font-size: 0.9rem; color: var(--text-dim);
+        }
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.75rem; }
+        .content-card {
+            background-color: var(--card-bg); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.5rem; padding: 2rem; text-decoration: none; color: inherit;
+            position: relative; overflow: hidden; transition: var(--transition);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        [data-theme="light"] .content-card { border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .content-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent); opacity: 0; transition: opacity 0.3s;
+        }
+        .content-card:hover::before { opacity: 1; }
+        .content-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 20px 40px -15px var(--accent-glow); }
+        .card-icon { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+        .card-tag {
+            background: var(--accent-glow); color: var(--accent); display: inline-block;
+            padding: 0.2rem 0.7rem; border-radius: 100px; font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;
+        }
+        .content-card h2 { font-size: 1.4rem; margin-bottom: 0.75rem; }
+        .content-card p { color: var(--text-dim); margin-bottom: 1.5rem; flex-grow: 1; font-size: 0.9rem; line-height: 1.6; }
+        .card-action { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--accent); font-size: 0.9rem; }
+        /* Card color variants */
+        .card-sky    { --accent: #38bdf8; --accent-glow: rgba(56,189,248,0.15);  border-color: rgba(56,189,248,0.15); }
+        .card-indigo { --accent: #818cf8; --accent-glow: rgba(129,140,248,0.15); border-color: rgba(129,140,248,0.15); }
+        .card-green  { --accent: #34d399; --accent-glow: rgba(52,211,153,0.15);  border-color: rgba(52,211,153,0.15); }
+        .card-orange { --accent: #fb923c; --accent-glow: rgba(251,146,60,0.15);  border-color: rgba(251,146,60,0.15); }
+        .card-amber  { --accent: #fbbf24; --accent-glow: rgba(251,191,36,0.15);  border-color: rgba(251,191,36,0.15); }
+        [data-theme="light"] .card-sky    { --accent: #0284c7; }
+        [data-theme="light"] .card-indigo { --accent: #4338ca; }
+        [data-theme="light"] .card-green  { --accent: #059669; }
+        [data-theme="light"] .card-orange { --accent: #ea580c; }
+        [data-theme="light"] .card-amber  { --accent: #d97706; }
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .container { padding: 2rem 1.5rem; }
+            #themeToggle { top: 1rem; right: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <button id="themeToggle">☀️ Modo Claro</button>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Hub Principal
+            </a>
+            <div class="module-badge">Módulo 04</div>
+            <h1>Visual Studio Code</h1>
+            <p class="subtitle">Domina el editor de código más popular del mundo. Aprende su interfaz, extensiones imprescindibles, atajos de teclado y cómo configurarlo para programar en Python.</p>
+            <div class="vscode-badge">
+                <span style="font-size:1.4rem">💙</span>
+                <span>VS Code — Editor de código ligero, gratuito y multiplataforma de Microsoft</span>
+            </div>
+        </header>
+
+        <main class="content-grid">
+            <a href="vscode-intro.html" class="content-card card-sky">
+                <div>
+                    <span class="card-icon">🖥️</span>
+                    <span class="card-tag">Introducción</span>
+                    <h2 style="color: var(--accent);">¿Qué es VS Code?</h2>
+                    <p>Descubre qué es un editor de código, por qué VS Code es la herramienta preferida de millones de desarrolladores y cómo descargarlo e instalarlo.</p>
+                </div>
+                <div class="card-action">Explorar <span>&rarr;</span></div>
+            </a>
+
+            <a href="vscode-interfaz.html" class="content-card card-indigo">
+                <div>
+                    <span class="card-icon">🗂️</span>
+                    <span class="card-tag">Interfaz</span>
+                    <h2 style="color: var(--accent);">La Interfaz</h2>
+                    <p>Recorre todas las zonas de VS Code: Barra de Actividad, Explorador, Editor, Terminal integrada, Barra de Estado y Paleta de Comandos.</p>
+                </div>
+                <div class="card-action">Explorar <span>&rarr;</span></div>
+            </a>
+
+            <a href="vscode-extensiones.html" class="content-card card-green">
+                <div>
+                    <span class="card-icon">🧩</span>
+                    <span class="card-tag">Extensiones</span>
+                    <h2 style="color: var(--accent);">Extensiones</h2>
+                    <p>Instala las extensiones esenciales para este curso: Python, Pylance, y otras que mejorarán tu productividad y experiencia de programación.</p>
+                </div>
+                <div class="card-action">Explorar <span>&rarr;</span></div>
+            </a>
+
+            <a href="vscode-atajos.html" class="content-card card-orange">
+                <div>
+                    <span class="card-icon">⌨️</span>
+                    <span class="card-tag">Productividad</span>
+                    <h2 style="color: var(--accent);">Atajos de Teclado</h2>
+                    <p>Aprende los atajos más importantes para editar, navegar, usar la terminal y trabajar con Python sin despegar las manos del teclado.</p>
+                </div>
+                <div class="card-action">Explorar <span>&rarr;</span></div>
+            </a>
+
+            <a href="vscode-python.html" class="content-card card-amber" style="grid-column: 1 / -1; background: linear-gradient(135deg, var(--card-bg), rgba(251,191,36,0.05)); border: 2px solid rgba(251,191,36,0.3);">
+                <div style="display: flex; align-items: flex-start; gap: 2rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 280px;">
+                        <span class="card-tag" style="background: #fbbf24; color: #000;">Python + VS Code</span>
+                        <h2 style="color: #fbbf24; font-size: 1.8rem;">Programar Python en VS Code</h2>
+                        <p>Guía paso a paso completa: instala la extensión Python, selecciona el intérprete, crea tu primer script, ejecútalo y aprende a depurar errores.</p>
+                        <div class="card-action" style="color:#fbbf24">Ver guía completa <span>&rarr;</span></div>
+                    </div>
+                    <div style="width: 200px; opacity: 0.85; display: flex; flex-direction: column; gap: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.72rem; background: #0d1117; padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="color:#6b7280; margin-bottom:4px"># hola.py</div>
+                        <div style="color:#fbbf24">def saludar(nombre):</div>
+                        <div style="color:#cdd9e5; padding-left:12px">msg = f"Hola, {'{nombre}'}!"</div>
+                        <div style="color:#cdd9e5; padding-left:12px">print(msg)</div>
+                        <div style="color:#cdd9e5; margin-top:4px">saludar("VSCode")</div>
+                        <div style="color:#3fb950; margin-top:6px">▶ Hola, VSCode!</div>
+                    </div>
+                </div>
+            </a>
+        </main>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+    </script>
+</body>
+</html>
