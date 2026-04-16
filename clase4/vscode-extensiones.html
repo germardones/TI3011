@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extensiones de VS Code | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #34d399; --accent-glow: rgba(52,211,153,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #059669; --accent-glow: rgba(5,150,105,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.5rem; }
+        header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+        .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; margin-top: 2.5rem; }
+        .section-title span { color: var(--accent); }
+
+        /* HOW TO INSTALL */
+        .install-banner { background: linear-gradient(135deg, var(--card-bg), rgba(52,211,153,0.06)); border: 1px solid rgba(52,211,153,0.25); border-radius: 1.25rem; padding: 1.5rem 2rem; margin-bottom: 3rem; display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+        .install-steps { display: flex; gap: 0.75rem; flex-wrap: wrap; flex: 1; min-width: 280px; }
+        .inst-step { display: flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.04); border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.82rem; }
+        [data-theme="light"] .inst-step { background: rgba(0,0,0,0.04); }
+        .inst-num { background: var(--accent); color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0; }
+        .inst-key { font-family: 'Fira Code', monospace; background: rgba(52,211,153,0.1); color: var(--accent); padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.78rem; font-weight: 600; }
+
+        /* EXTENSION CARDS */
+        .ext-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .ext-card {
+            background: var(--card-bg); border-radius: 1.25rem; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05); transition: var(--transition);
+        }
+        [data-theme="light"] .ext-card { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .ext-card:hover { transform: translateY(-4px); border-color: var(--c, var(--accent)); }
+        .ext-card.essential { border-color: rgba(52,211,153,0.3); }
+        .ext-header { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 0.75rem; }
+        [data-theme="light"] .ext-header { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .ext-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+        .ext-name { font-weight: 700; font-size: 0.95rem; }
+        .ext-publisher { font-size: 0.75rem; color: var(--text-dim); }
+        .ext-badge { font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 100px; font-weight: 700; margin-left: auto; flex-shrink: 0; }
+        .badge-essential { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+        .badge-recommended { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+        .badge-optional { background: rgba(148,163,184,0.1); color: var(--text-dim); border: 1px solid rgba(148,163,184,0.2); }
+        .ext-body { padding: 1rem 1.25rem; }
+        .ext-body p { font-size: 0.83rem; color: var(--text-dim); line-height: 1.55; margin-bottom: 0.75rem; }
+        .ext-feature { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.3rem; }
+        .ext-feature::before { content: '✓'; color: var(--accent); font-weight: 700; }
+        .ext-id { font-family: 'Fira Code', monospace; font-size: 0.72rem; background: rgba(255,255,255,0.05); padding: 0.25rem 0.75rem; border-radius: 4px; color: var(--text-dim); display: inline-block; margin-top: 0.5rem; }
+        [data-theme="light"] .ext-id { background: rgba(0,0,0,0.05); }
+
+        /* SEARCH BAR MOCK */
+        .ext-search { background: var(--panel-bg); border-radius: 1rem; padding: 1.25rem; margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.06); }
+        [data-theme="light"] .ext-search { border: 1px solid rgba(0,0,0,0.08); }
+        .ext-search h3 { font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-dim); }
+        .search-bar { background: rgba(0,0,0,0.3); border: 1px solid rgba(52,211,153,0.3); border-radius: 8px; padding: 0.6rem 1rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+        [data-theme="light"] .search-bar { background: rgba(0,0,0,0.05); }
+        .search-bar span { opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase4.html" class="back-link">← Volver a Módulo 4</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>🧩 Extensiones</h1>
+            <p>Las extensiones transforman VS Code en un entorno completo. Aquí están las que necesitas para este curso y las que mejorarán tu experiencia.</p>
+        </header>
+
+        <!-- HOW TO INSTALL -->
+        <h2 class="section-title">Cómo <span>instalar</span> una extensión</h2>
+        <div class="install-banner">
+            <div style="flex:0 0 auto;">
+                <span style="font-size:2.5rem">🧩</span>
+            </div>
+            <div style="flex:1">
+                <div style="font-weight:700; margin-bottom:0.75rem; font-size:1rem">Desde el panel de Extensiones</div>
+                <div class="install-steps">
+                    <div class="inst-step"><div class="inst-num">1</div> Presiona <span class="inst-key">Ctrl+Shift+X</span></div>
+                    <div class="inst-step"><div class="inst-num">2</div> Busca el nombre de la extensión</div>
+                    <div class="inst-step"><div class="inst-num">3</div> Haz clic en <strong>Instalar</strong></div>
+                    <div class="inst-step"><div class="inst-num">4</div> ¡Listo! Se activa automáticamente</div>
+                </div>
+                <div style="margin-top:0.75rem; font-size:0.8rem; color:var(--text-dim)">También puedes buscar una extensión por su ID exacto en la barra de búsqueda del panel.</div>
+            </div>
+        </div>
+
+        <!-- SEARCH MOCK -->
+        <div class="ext-search">
+            <h3>🔍 Así se ve la búsqueda de extensiones en VS Code:</h3>
+            <div class="search-bar">
+                <span>🔍</span>
+                <span>ms-python.python</span>
+                <span style="margin-left:auto">×</span>
+            </div>
+        </div>
+
+        <!-- ESSENTIAL EXTENSIONS -->
+        <h2 class="section-title">Extensiones <span>esenciales</span> para el curso</h2>
+        <div class="ext-grid">
+            <div class="ext-card essential" style="--c:#3fb950">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(63,185,80,0.15)">🐍</div>
+                    <div>
+                        <div class="ext-name">Python</div>
+                        <div class="ext-publisher">Microsoft</div>
+                    </div>
+                    <span class="ext-badge badge-essential">ESENCIAL</span>
+                </div>
+                <div class="ext-body">
+                    <p>La extensión oficial de Python para VS Code. Sin ella no puedes ejecutar ni depurar código Python.</p>
+                    <div class="ext-feature">Ejecución de scripts con un clic ▶</div>
+                    <div class="ext-feature">Selección del intérprete Python</div>
+                    <div class="ext-feature">Formateo y linting automático</div>
+                    <div class="ext-feature">Depurador visual integrado</div>
+                    <span class="ext-id">ms-python.python</span>
+                </div>
+            </div>
+            <div class="ext-card essential" style="--c:#38bdf8">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(56,189,248,0.15)">💡</div>
+                    <div>
+                        <div class="ext-name">Pylance</div>
+                        <div class="ext-publisher">Microsoft</div>
+                    </div>
+                    <span class="ext-badge badge-essential">ESENCIAL</span>
+                </div>
+                <div class="ext-body">
+                    <p>Motor de lenguaje avanzado para Python. Potencia el IntelliSense con análisis de tipos estático.</p>
+                    <div class="ext-feature">Autocompletado inteligente mejorado</div>
+                    <div class="ext-feature">Detección de errores en tiempo real</div>
+                    <div class="ext-feature">Documentación al pasar el cursor</div>
+                    <div class="ext-feature">Soporte de type hints</div>
+                    <span class="ext-id">ms-python.vscode-pylance</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECOMMENDED EXTENSIONS -->
+        <h2 class="section-title">Extensiones <span>recomendadas</span></h2>
+        <div class="ext-grid">
+            <div class="ext-card" style="--c:#fbbf24">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(251,191,36,0.15)">🌎</div>
+                    <div>
+                        <div class="ext-name">Spanish Language Pack</div>
+                        <div class="ext-publisher">Microsoft</div>
+                    </div>
+                    <span class="ext-badge badge-recommended">RECOMENDADO</span>
+                </div>
+                <div class="ext-body">
+                    <p>Traduce toda la interfaz de VS Code al español. Menús, mensajes de error y opciones en tu idioma.</p>
+                    <div class="ext-feature">Interfaz completa en español</div>
+                    <div class="ext-feature">Sin afectar el rendimiento</div>
+                    <span class="ext-id">MS-CEINTL.vscode-language-pack-es</span>
+                </div>
+            </div>
+            <div class="ext-card" style="--c:#a78bfa">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(167,139,250,0.15)">🎨</div>
+                    <div>
+                        <div class="ext-name">Material Icon Theme</div>
+                        <div class="ext-publisher">Philipp Kief</div>
+                    </div>
+                    <span class="ext-badge badge-recommended">RECOMENDADO</span>
+                </div>
+                <div class="ext-body">
+                    <p>Reemplaza los íconos de archivos y carpetas por íconos coloridos y claros. Mucho más fácil navegar el explorador.</p>
+                    <div class="ext-feature">Íconos para .py, .js, .html y más</div>
+                    <div class="ext-feature">Íconos específicos por carpeta</div>
+                    <span class="ext-id">PKief.material-icon-theme</span>
+                </div>
+            </div>
+            <div class="ext-card" style="--c:#f87171">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(248,113,113,0.15)">🎯</div>
+                    <div>
+                        <div class="ext-name">Error Lens</div>
+                        <div class="ext-publisher">Alexander</div>
+                    </div>
+                    <span class="ext-badge badge-recommended">RECOMENDADO</span>
+                </div>
+                <div class="ext-body">
+                    <p>Muestra los errores y advertencias directamente en la línea de código, en lugar de solo en el panel de problemas.</p>
+                    <div class="ext-feature">Errores visibles inline</div>
+                    <div class="ext-feature">Ideal para aprender</div>
+                    <span class="ext-id">usernamehw.errorlens</span>
+                </div>
+            </div>
+            <div class="ext-card" style="--c:#34d399">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(52,211,153,0.15)">🔵</div>
+                    <div>
+                        <div class="ext-name">indent-rainbow</div>
+                        <div class="ext-publisher">oderwat</div>
+                    </div>
+                    <span class="ext-badge badge-recommended">RECOMENDADO</span>
+                </div>
+                <div class="ext-body">
+                    <p>Colorea los niveles de indentación. Esencial para Python donde la indentación define los bloques de código.</p>
+                    <div class="ext-feature">Cada nivel tiene un color</div>
+                    <div class="ext-feature">Detecta indentación incorrecta</div>
+                    <span class="ext-id">oderwat.indent-rainbow</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPTIONAL -->
+        <h2 class="section-title">Extensiones <span>opcionales</span></h2>
+        <div class="ext-grid">
+            <div class="ext-card" style="--c:#94a3b8">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(148,163,184,0.1)">📊</div>
+                    <div>
+                        <div class="ext-name">Jupyter</div>
+                        <div class="ext-publisher">Microsoft</div>
+                    </div>
+                    <span class="ext-badge badge-optional">OPCIONAL</span>
+                </div>
+                <div class="ext-body">
+                    <p>Permite trabajar con Jupyter Notebooks (.ipynb) directamente en VS Code. Útil para ciencia de datos.</p>
+                    <span class="ext-id">ms-toolsai.jupyter</span>
+                </div>
+            </div>
+            <div class="ext-card" style="--c:#94a3b8">
+                <div class="ext-header">
+                    <div class="ext-icon" style="background:rgba(148,163,184,0.1)">🔀</div>
+                    <div>
+                        <div class="ext-name">GitLens</div>
+                        <div class="ext-publisher">GitKraken</div>
+                    </div>
+                    <span class="ext-badge badge-optional">OPCIONAL</span>
+                </div>
+                <div class="ext-body">
+                    <p>Potencia la integración de Git con historial inline, comparación de ramas y mucho más.</p>
+                    <span class="ext-id">eamodio.gitlens</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+            <a href="vscode-interfaz.html" style="flex:1; min-width:200px; display:flex; align-items:center; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:var(--text-dim); font-size:0.85rem; font-weight:600;">← Anterior: La Interfaz</a>
+            <a href="vscode-atajos.html" style="flex:1; min-width:200px; display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(52,211,153,0.25); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:#34d399; font-size:0.85rem; font-weight:700;">Siguiente: Atajos →</a>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+    </script>
+</body>
+</html>

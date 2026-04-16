@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atajos de Teclado VS Code | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #fb923c; --accent-glow: rgba(251,146,60,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #ea580c; --accent-glow: rgba(234,88,12,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3rem; }
+        header h1 { font-size: 2.8rem; color: var(--accent); margin-bottom: 0.5rem; }
+        header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; justify-content: center; }
+        .tab { padding: 0.5rem 1.25rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .tab { border: 1px solid rgba(0,0,0,0.1); }
+        .tab.active { background: var(--c, var(--accent)); color: #fff; border-color: transparent; }
+        .tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.25); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* KEY BADGE */
+        .key { display: inline-flex; align-items: center; justify-content: center; font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.78rem; background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.15); border-bottom: 3px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 0.2rem 0.55rem; min-width: 28px; color: var(--text-main); white-space: nowrap; }
+        [data-theme="light"] .key { background: #e2e8f0; border: 1px solid rgba(0,0,0,0.15); border-bottom: 3px solid rgba(0,0,0,0.12); }
+        .key-sep { color: var(--text-dim); font-size: 0.75rem; margin: 0 0.3rem; }
+
+        /* SHORTCUT TABLE */
+        .shortcut-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem; }
+        .shortcut-row { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.25rem; background: var(--card-bg); border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.04); transition: var(--transition); }
+        [data-theme="light"] .shortcut-row { border: 1px solid rgba(0,0,0,0.06); }
+        .shortcut-row:hover { border-color: var(--c, var(--accent)); background: rgba(255,255,255,0.02); }
+        .shortcut-keys { display: flex; align-items: center; flex-shrink: 0; min-width: 220px; flex-wrap: wrap; gap: 2px; }
+        .shortcut-desc { flex: 1; font-size: 0.88rem; }
+        .shortcut-desc strong { color: var(--text-main); }
+        .shortcut-desc span { color: var(--text-dim); font-size: 0.8rem; display: block; margin-top: 0.1rem; }
+        .shortcut-tag { font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 100px; font-weight: 700; flex-shrink: 0; }
+
+        /* TIP CARD */
+        .tip-card { background: linear-gradient(135deg, rgba(251,146,60,0.1), transparent); border: 1px solid rgba(251,146,60,0.25); border-radius: 1rem; padding: 1.25rem 1.5rem; margin-top: 1rem; display: flex; gap: 1rem; align-items: flex-start; }
+        .tip-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+        .tip-card strong { color: var(--text-main); }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase4.html" class="back-link">← Volver a Módulo 4</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>⌨️ Atajos de Teclado</h1>
+            <p>Los atajos más importantes de VS Code organizados por categoría. Apréndetelos de a poco — empezando por los de uso diario.</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" style="--c:#fb923c" onclick="switchTab('esenciales')">⭐ Esenciales</button>
+            <button class="tab" style="--c:#38bdf8" onclick="switchTab('editor')">✏️ Editor</button>
+            <button class="tab" style="--c:#34d399" onclick="switchTab('navegacion')">🗂️ Navegación</button>
+            <button class="tab" style="--c:#a78bfa" onclick="switchTab('terminal')">🖥️ Terminal</button>
+            <button class="tab" style="--c:#fbbf24" onclick="switchTab('python')">🐍 Python</button>
+        </div>
+
+        <!-- ESENCIALES -->
+        <div class="tab-content active" id="tab-esenciales">
+            <div class="shortcut-list">
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">P</span></div>
+                    <div class="shortcut-desc"><strong>Paleta de Comandos</strong><span>Accede a cualquier función de VS Code desde un solo buscador</span></div>
+                    <span class="shortcut-tag" style="background:rgba(251,146,60,0.15);color:#fb923c">⭐ Top 1</span>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">P</span></div>
+                    <div class="shortcut-desc"><strong>Abrir archivo rápido</strong><span>Escribe el nombre del archivo para abrirlo sin usar el explorador</span></div>
+                    <span class="shortcut-tag" style="background:rgba(251,146,60,0.15);color:#fb923c">⭐ Top 2</span>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">S</span></div>
+                    <div class="shortcut-desc"><strong>Guardar archivo</strong><span>Guarda los cambios del archivo activo</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Z</span></div>
+                    <div class="shortcut-desc"><strong>Deshacer</strong><span>Revierte el último cambio en el editor</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">Z</span></div>
+                    <div class="shortcut-desc"><strong>Rehacer</strong><span>Vuelve a aplicar el cambio que fue deshecho</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">F</span></div>
+                    <div class="shortcut-desc"><strong>Buscar en el archivo</strong><span>Abre la barra de búsqueda en el archivo activo</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">H</span></div>
+                    <div class="shortcut-desc"><strong>Buscar y reemplazar</strong><span>Encuentra texto y lo reemplaza por otro en el archivo</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fb923c">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">,</span></div>
+                    <div class="shortcut-desc"><strong>Abrir Configuración</strong><span>Abre el panel de preferencias de VS Code</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDITOR -->
+        <div class="tab-content" id="tab-editor">
+            <div class="shortcut-list">
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Alt</span><span class="key-sep">+</span><span class="key">↑ / ↓</span></div>
+                    <div class="shortcut-desc"><strong>Mover línea</strong><span>Mueve la línea actual hacia arriba o hacia abajo</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Shift</span><span class="key-sep">+</span><span class="key">Alt</span><span class="key-sep">+</span><span class="key">↓</span></div>
+                    <div class="shortcut-desc"><strong>Duplicar línea</strong><span>Copia la línea actual justo debajo de ella</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">D</span></div>
+                    <div class="shortcut-desc"><strong>Seleccionar siguiente coincidencia</strong><span>Selecciona la siguiente aparición de la palabra seleccionada</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">/</span></div>
+                    <div class="shortcut-desc"><strong>Comentar / Descomentar</strong><span>Activa o desactiva el comentario en la línea seleccionada</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Tab</span></div>
+                    <div class="shortcut-desc"><strong>Indentar</strong><span>Agrega un nivel de indentación (4 espacios por defecto)</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Shift</span><span class="key-sep">+</span><span class="key">Tab</span></div>
+                    <div class="shortcut-desc"><strong>Desindentar</strong><span>Quita un nivel de indentación de la línea</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">K</span></div>
+                    <div class="shortcut-desc"><strong>Eliminar línea</strong><span>Borra completamente la línea actual</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#38bdf8">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">A</span></div>
+                    <div class="shortcut-desc"><strong>Seleccionar todo</strong><span>Selecciona todo el contenido del archivo</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <div class="tab-content" id="tab-navegacion">
+            <div class="shortcut-list">
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Tab</span></div>
+                    <div class="shortcut-desc"><strong>Cambiar entre pestañas</strong><span>Navega entre los archivos abiertos en el editor</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">W</span></div>
+                    <div class="shortcut-desc"><strong>Cerrar pestaña</strong><span>Cierra el archivo activo</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">G</span></div>
+                    <div class="shortcut-desc"><strong>Ir a línea</strong><span>Navega directamente a un número de línea específico</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">B</span></div>
+                    <div class="shortcut-desc"><strong>Mostrar/ocultar Sidebar</strong><span>Alterna la visibilidad del panel lateral de exploración</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">E</span></div>
+                    <div class="shortcut-desc"><strong>Abrir Explorador</strong><span>Muestra el panel de exploración de archivos</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">F12</span></div>
+                    <div class="shortcut-desc"><strong>Ir a definición</strong><span>Salta a donde se definió la función o variable bajo el cursor</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#34d399">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">F</span></div>
+                    <div class="shortcut-desc"><strong>Buscar en todos los archivos</strong><span>Busca texto en todos los archivos del proyecto</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TERMINAL -->
+        <div class="tab-content" id="tab-terminal">
+            <div class="shortcut-list">
+                <div class="shortcut-row" style="--c:#a78bfa">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">`</span></div>
+                    <div class="shortcut-desc"><strong>Abrir/cerrar Terminal</strong><span>Muestra u oculta el panel de terminal integrado</span></div>
+                    <span class="shortcut-tag" style="background:rgba(167,139,250,0.15);color:#a78bfa">⭐ Top</span>
+                </div>
+                <div class="shortcut-row" style="--c:#a78bfa">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">`</span></div>
+                    <div class="shortcut-desc"><strong>Nueva terminal</strong><span>Abre una segunda terminal sin cerrar la actual</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#a78bfa">
+                    <div class="shortcut-keys"><span class="key">↑ / ↓</span></div>
+                    <div class="shortcut-desc"><strong>Historial de comandos</strong><span>Navega por los comandos ejecutados anteriormente en la terminal</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#a78bfa">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">C</span></div>
+                    <div class="shortcut-desc"><strong>Interrumpir proceso</strong><span>Detiene el programa Python que está ejecutándose en la terminal</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#a78bfa">
+                    <div class="shortcut-keys"><span class="key">cls</span> / <span class="key">clear</span></div>
+                    <div class="shortcut-desc"><strong>Limpiar terminal</strong><span><code>cls</code> en Windows, <code>clear</code> en macOS/Linux</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PYTHON -->
+        <div class="tab-content" id="tab-python">
+            <div class="shortcut-list">
+                <div class="shortcut-row" style="--c:#fbbf24">
+                    <div class="shortcut-keys"><span class="key">F5</span></div>
+                    <div class="shortcut-desc"><strong>Ejecutar con Depurador</strong><span>Inicia la ejecución del script Python con el depurador activado</span></div>
+                    <span class="shortcut-tag" style="background:rgba(251,191,36,0.15);color:#fbbf24">⭐ Top</span>
+                </div>
+                <div class="shortcut-row" style="--c:#fbbf24">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">F5</span></div>
+                    <div class="shortcut-desc"><strong>Ejecutar sin Depurador</strong><span>Corre el script directamente en la terminal sin modo debug</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fbbf24">
+                    <div class="shortcut-keys"><span class="key">F9</span></div>
+                    <div class="shortcut-desc"><strong>Añadir/quitar breakpoint</strong><span>Establece un punto de pausa para inspeccionar el estado del programa</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fbbf24">
+                    <div class="shortcut-keys"><span class="key">F10</span></div>
+                    <div class="shortcut-desc"><strong>Paso a paso (Step Over)</strong><span>Ejecuta la siguiente línea sin entrar dentro de las funciones</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fbbf24">
+                    <div class="shortcut-keys"><span class="key">Ctrl</span><span class="key-sep">+</span><span class="key">Shift</span><span class="key-sep">+</span><span class="key">P</span> → <span class="key" style="font-size:0.65rem">Python: Select Interpreter</span></div>
+                    <div class="shortcut-desc"><strong>Seleccionar intérprete Python</strong><span>Elige qué versión de Python usar para ejecutar tus scripts</span></div>
+                </div>
+                <div class="shortcut-row" style="--c:#fbbf24">
+                    <div class="shortcut-keys"><span class="key">Shift</span><span class="key-sep">+</span><span class="key">Enter</span></div>
+                    <div class="shortcut-desc"><strong>Ejecutar selección en REPL</strong><span>Envía el código seleccionado a la terminal Python interactiva</span></div>
+                </div>
+            </div>
+            <div class="tip-card">
+                <span style="font-size:1.5rem; flex-shrink:0">💡</span>
+                <p><strong>Tip:</strong> El botón ▶ (triángulo) que aparece en la esquina superior derecha del editor cuando abres un archivo .py es equivalente a <strong>Ctrl+F5</strong>. Es la forma más rápida de ejecutar tu script.</p>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:2rem;">
+            <a href="vscode-extensiones.html" style="flex:1; min-width:200px; display:flex; align-items:center; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:var(--text-dim); font-size:0.85rem; font-weight:600;">← Anterior: Extensiones</a>
+            <a href="vscode-python.html" style="flex:1; min-width:200px; display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(251,191,36,0.3); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:#fbbf24; font-size:0.85rem; font-weight:700;">Siguiente: Python en VS Code →</a>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            document.querySelector(`[onclick="switchTab('${id}')"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>

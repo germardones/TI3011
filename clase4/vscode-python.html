@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python en VS Code | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #fbbf24; --accent-glow: rgba(251,191,36,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #d97706; --accent-glow: rgba(217,119,6,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        .container { animation: fadeInUp 0.7s ease forwards; }
+        header { text-align: center; margin-bottom: 3.5rem; }
+        header h1 { font-size: 2.6rem; color: var(--accent); margin-bottom: 0.5rem; }
+        header p { color: var(--text-dim); max-width: 600px; margin: 0 auto; }
+        .section-title { font-size: 1.4rem; margin-bottom: 1.25rem; margin-top: 0; }
+        .section-title span { color: var(--accent); }
+
+        /* STEP CARD */
+        .step-card {
+            background: var(--card-bg); border-radius: 1.25rem; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+        [data-theme="light"] .step-card { border: 1px solid rgba(0,0,0,0.07); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .step-card:hover { border-color: var(--accent); }
+        .step-header { padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .step-header { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .step-num { background: var(--accent); color: #000; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+        .step-header h3 { font-size: 1.05rem; }
+        .step-header .step-icon { font-size: 1.3rem; }
+        .step-body { padding: 1.25rem 1.5rem; }
+        .step-body p { color: var(--text-dim); font-size: 0.88rem; line-height: 1.65; margin-bottom: 0.75rem; }
+        .step-body p:last-child { margin: 0; }
+
+        /* CODE MOCK */
+        .code-mock { background: #0d1117; border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; margin: 0.75rem 0; }
+        .code-mock-header { background: rgba(255,255,255,0.04); padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .code-filename { color: var(--text-dim); margin-left: 0.5rem; font-size: 0.72rem; font-family: 'Inter', sans-serif; }
+        .code-body { padding: 1.25rem 1.5rem; font-size: 0.83rem; line-height: 1.8; }
+        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; } .fn { color: #61afef; } .st { color: #98c379; } .num { color: #d19a66; } .va { color: #e06c75; }
+
+        /* TERMINAL MOCK */
+        .term-mock { background: #0d1117; border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; margin: 0.75rem 0; }
+        .term-mock-header { background: rgba(255,255,255,0.03); padding: 0.35rem 1rem; font-size: 0.65rem; color: var(--text-dim); font-family: 'Inter', sans-serif; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .term-body { padding: 0.85rem 1.25rem; font-size: 0.8rem; line-height: 1.7; }
+        .t-prompt { color: #3fb950; }
+        .t-cmd { color: #cdd9e5; }
+        .t-out { color: #3fb950; }
+        .t-err { color: #f85149; }
+        .t-info { color: #58a6ff; }
+
+        /* KEY */
+        .key { display: inline-flex; align-items: center; justify-content: center; font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.75rem; background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.15); border-bottom: 3px solid rgba(255,255,255,0.1); border-radius: 5px; padding: 0.15rem 0.5rem; color: var(--text-main); }
+        [data-theme="light"] .key { background: #e2e8f0; border: 1px solid rgba(0,0,0,0.15); border-bottom: 3px solid rgba(0,0,0,0.12); }
+
+        /* TIP */
+        .tip { background: rgba(251,191,36,0.08); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; font-size: 0.83rem; color: var(--text-dim); margin: 0.75rem 0; }
+        .tip strong { color: var(--text-main); }
+        code { font-family: 'Fira Code', monospace; background: rgba(251,191,36,0.1); color: var(--accent); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.82rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase4.html" class="back-link">← Volver a Módulo 4</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>🐍 Programar Python en VS Code</h1>
+            <p>Guía completa paso a paso: desde instalar las extensiones hasta ejecutar y depurar tus scripts de Python.</p>
+        </header>
+
+        <!-- STEP 1 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">1</div>
+                <span class="step-icon">🧩</span>
+                <div>
+                    <h3>Instalar la extensión Python</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>Antes de escribir código Python, necesitas instalar la extensión oficial de Microsoft. Sin ella, VS Code no sabe cómo ejecutar ni entender archivos <code>.py</code>.</p>
+                <p>Presiona <span class="key">Ctrl</span>+<span class="key">Shift</span>+<span class="key">X</span> para abrir el panel de extensiones, busca <strong>Python</strong> y haz clic en <strong>Instalar</strong>. También instala <strong>Pylance</strong> para mejor autocompletado.</p>
+                <div class="tip"><strong>Tip:</strong> Después de instalar, VS Code puede pedirte que lo recargues. Haz clic en <strong>"Recargar ventana"</strong> para activar la extensión.</div>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">2</div>
+                <span class="step-icon">📁</span>
+                <div>
+                    <h3>Abrir una carpeta de proyecto</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>Lo recomendable es trabajar con una <strong>carpeta de proyecto</strong> en lugar de abrir archivos sueltos. Esto permite que VS Code entienda el contexto de tu código.</p>
+                <p>Ve a <strong>Archivo → Abrir Carpeta</strong> (o <span class="key">Ctrl</span>+<span class="key">K</span> → <span class="key">Ctrl</span>+<span class="key">O</span>) y selecciona (o crea) la carpeta donde guardarás tus scripts Python.</p>
+                <div class="tip"><strong>Tip:</strong> Nombra la carpeta sin espacios ni tildes, por ejemplo <code>mi_proyecto</code> o <code>TI3011</code>. Facilita el trabajo con la terminal.</div>
+            </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">3</div>
+                <span class="step-icon">🐍</span>
+                <div>
+                    <h3>Seleccionar el intérprete Python</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>VS Code puede tener múltiples versiones de Python instaladas. Debes indicarle cuál usar. Verás en la <strong>Barra de Estado</strong> (abajo a la derecha) algo como <code>Python 3.x.x</code>.</p>
+                <p>Haz clic en ese texto, o usa <span class="key">Ctrl</span>+<span class="key">Shift</span>+<span class="key">P</span> y escribe <strong>"Python: Select Interpreter"</strong>. Selecciona la versión de Python 3 que tienes instalada.</p>
+                <div class="term-mock">
+                    <div class="term-mock-header">BARRA DE ESTADO — Esquina inferior derecha</div>
+                    <div class="term-body">
+                        <span class="t-info">🐍 Python 3.12.0 ('base': conda)</span>
+                        <span class="t-cmd"> ← Haz clic aquí para cambiar</span>
+                    </div>
+                </div>
+                <div class="tip"><strong>¿No ves Python?</strong> Primero asegúrate de haber instalado Python desde <code>python.org</code> y marcado la opción <strong>"Add Python to PATH"</strong> durante la instalación.</div>
+            </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">4</div>
+                <span class="step-icon">📄</span>
+                <div>
+                    <h3>Crear tu primer archivo .py</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>En el <strong>Explorador</strong> (panel izquierdo), haz clic derecho en la carpeta y selecciona <strong>"Nuevo Archivo"</strong>. Nómbralo con extensión <code>.py</code>, por ejemplo <code>hola.py</code>.</p>
+                <p>Escribe tu código Python. Notarás el resaltado de sintaxis y que el IntelliSense comienza a sugerir completaciones automáticamente.</p>
+                <div class="code-mock">
+                    <div class="code-mock-header">
+                        <div class="code-dot" style="background:#ef4444"></div>
+                        <div class="code-dot" style="background:#eab308"></div>
+                        <div class="code-dot" style="background:#10b981"></div>
+                        <span class="code-filename">hola.py</span>
+                    </div>
+                    <div class="code-body"><pre><span class="cm"># Mi primer script Python en VS Code</span>
+
+<span class="kw">def</span> <span class="fn">saludar</span>(<span class="va">nombre</span>):
+    <span class="fn">print</span>(<span class="st">f"Hola, </span><span class="va">{nombre}</span><span class="st">! Bienvenido a Python."</span>)
+
+<span class="va">mi_nombre</span> = <span class="fn">input</span>(<span class="st">"¿Cómo te llamas? "</span>)
+<span class="fn">saludar</span>(<span class="va">mi_nombre</span>)</pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">5</div>
+                <span class="step-icon">▶️</span>
+                <div>
+                    <h3>Ejecutar el script</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>Tienes tres formas de ejecutar un script Python en VS Code:</p>
+                <p><strong>A) Botón ▶</strong> — En la esquina superior derecha del editor aparece un triángulo. Haz clic para ejecutar el script actual en la terminal.</p>
+                <p><strong>B) Clic derecho</strong> → <strong>"Ejecutar archivo Python en la terminal"</strong></p>
+                <p><strong>C) Terminal directa</strong> — Abre la terminal con <span class="key">Ctrl</span>+<span class="key">`</span> y escribe:</p>
+                <div class="term-mock">
+                    <div class="term-mock-header">TERMINAL INTEGRADO</div>
+                    <div class="term-body">
+                        <div><span class="t-prompt">PS</span> <span class="t-cmd">C:\mi_proyecto&gt; python hola.py</span></div>
+                        <div><span class="t-cmd">¿Cómo te llamas? </span><span class="t-out">Germán</span></div>
+                        <div><span class="t-out">Hola, Germán! Bienvenido a Python.</span></div>
+                        <div><span class="t-prompt">PS</span> <span class="t-cmd">C:\mi_proyecto&gt; </span><span style="opacity:0.4">█</span></div>
+                    </div>
+                </div>
+                <div class="tip"><strong>Tip:</strong> Si usas macOS o Linux, el comando es <code>python3 hola.py</code> en lugar de <code>python hola.py</code>.</div>
+            </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">6</div>
+                <span class="step-icon">🐛</span>
+                <div>
+                    <h3>Depurar errores con el Debugger</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>Cuando tu programa tiene un error lógico (el código corre pero da resultados incorrectos), el <strong>depurador visual</strong> es tu mejor herramienta.</p>
+                <p><strong>Cómo usarlo:</strong></p>
+                <p>1. Haz clic en el margen izquierdo del número de línea donde quieras pausar → aparece un punto rojo (<strong>breakpoint</strong>).</p>
+                <p>2. Presiona <span class="key">F5</span> para iniciar el depurador.</p>
+                <p>3. El programa se detendrá en ese punto y podrás ver el valor de cada variable en el panel izquierdo.</p>
+                <p>4. Usa <span class="key">F10</span> para avanzar línea a línea y observar cómo cambian los valores.</p>
+                <div class="tip"><strong>Tip:</strong> También puedes usar <code>print()</code> para mostrar valores intermedios — es la forma más simple de depurar para principiantes.</div>
+            </div>
+        </div>
+
+        <!-- STEP 7 -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-num">7</div>
+                <span class="step-icon">💡</span>
+                <div>
+                    <h3>Usar IntelliSense al máximo</h3>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>IntelliSense es el sistema de autocompletado inteligente de VS Code. Con Pylance instalado, ofrece sugerencias muy precisas.</p>
+                <p><strong>Trucos útiles:</strong></p>
+                <p>— Al escribir el nombre de una función y abrir el paréntesis, aparece la <strong>firma</strong> con los parámetros que acepta.</p>
+                <p>— Pasa el cursor sobre una función o variable para ver su <strong>documentación</strong> emergente.</p>
+                <p>— Presiona <span class="key">Ctrl</span>+<span class="key">Space</span> para forzar las sugerencias en cualquier momento.</p>
+                <p>— Presiona <span class="key">F12</span> sobre una función para <strong>ir a su definición</strong>.</p>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+            <a href="vscode-atajos.html" style="flex:1; min-width:200px; display:flex; align-items:center; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(255,255,255,0.06); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:var(--text-dim); font-size:0.85rem; font-weight:600;">← Anterior: Atajos de Teclado</a>
+            <a href="../clase3/python-vscode.html" style="flex:1; min-width:200px; display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; background:var(--card-bg); border:1px solid rgba(251,191,36,0.3); border-radius:1rem; padding:1rem 1.25rem; text-decoration:none; color:#fbbf24; font-size:0.85rem; font-weight:700;">Ver mini-módulo en Módulo 3 →</a>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+    </script>
+</body>
+</html>
