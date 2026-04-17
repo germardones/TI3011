@@ -405,6 +405,21 @@
             document.getElementById('locked-alert').style.display = 'flex';
         }
     </script>
+
+  <!-- Botón flotante de sugerencias -->
+  <a href="sugerencias.html" style="
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    display:flex;align-items:center;gap:8px;
+    background:#8b5cf6;color:#fff;
+    padding:12px 20px;border-radius:50px;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:0.88rem;
+    text-decoration:none;
+    box-shadow:0 4px 20px rgba(139,92,246,0.45);
+    transition:transform 0.2s,box-shadow 0.2s;"
+    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 28px rgba(139,92,246,0.6)'"
+    onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(139,92,246,0.45)'">
+    💬 Sugerencias
+  </a>
 </body>
 
 </html>
