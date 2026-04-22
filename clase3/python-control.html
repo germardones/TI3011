@@ -137,6 +137,8 @@
         <button class="struct-tab active" onclick="switchStruct('if')">🔀 if / elif / else</button>
         <button class="struct-tab" onclick="switchStruct('for')">🔁 for</button>
         <button class="struct-tab" onclick="switchStruct('while')">🔄 while</button>
+        <button class="struct-tab" onclick="switchStruct('dowhile')">🔃 do-while</button>
+        <button class="struct-tab" onclick="switchStruct('match')">🎯 match/case</button>
     </div>
 
     <div class="workspace">
@@ -268,6 +270,96 @@
                         <div class="code-line" data-key="wh-inc"><span class="ln">5</span><span class="cl" data-i="1"><span class="va">contador</span> <span class="op">+=</span> <span class="num">1</span></span></div>
                         <div class="code-line blank"><span class="ln">6</span><span class="cl">&nbsp;</span></div>
                         <div class="code-line" data-key="wh-end"><span class="ln">7</span><span class="cl"><span class="fn">print</span>(<span class="st">"Bucle terminado"</span>)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── DO-WHILE ─── -->
+            <div class="code-section" id="code-dowhile">
+                <div class="overview">
+                    <div class="overview-header">
+                        <h1>🔃 do-while en Python</h1>
+                        <p>Python no tiene <code>do-while</code> nativo. Se simula con <code>while True</code> + <code>break</code>. El cuerpo siempre se ejecuta <strong>al menos una vez</strong>, sin importar la condición.</p>
+                    </div>
+                    <div class="overview-body">
+                        <div>
+                            <div class="syntax-label">Sintaxis</div>
+                            <div class="syntax-box">
+<span class="syn-kw">while</span> True:
+    <span class="syn-cm"># cuerpo (siempre ejecuta)</span>
+    <span class="syn-kw">if</span> condición_de_salida:
+        <span class="syn-kw">break</span></div>
+                        </div>
+                        <ul class="key-points">
+                            <li>El cuerpo se ejecuta <strong>antes</strong> de verificar la condición: garantiza al menos una iteración.</li>
+                            <li><code>break</code> interrumpe el bucle inmediatamente y salta al código siguiente.</li>
+                            <li>La condición de salida se evalúa <strong>dentro</strong> del cuerpo, no en el encabezado del bucle.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="terminal">
+                    <div class="term-header">
+                        <div class="dot" style="background:#ef4444"></div>
+                        <div class="dot" style="background:#eab308"></div>
+                        <div class="dot" style="background:#10b981"></div>
+                        <span class="term-filename">do_while.py</span>
+                    </div>
+                    <div class="term-body">
+                        <div class="code-line" data-key="dw-header"><span class="ln">1</span><span class="cl"><span class="kw">while</span> <span class="kw">True</span>:</span></div>
+                        <div class="code-line" data-key="dw-body"><span class="ln">2</span><span class="cl" data-i="1"><span class="va">respuesta</span> <span class="op">=</span> <span class="fn">input</span>(<span class="st">"¿Continuar? (s/n): "</span>)</span></div>
+                        <div class="code-line" data-key="dw-cond"><span class="ln">3</span><span class="cl" data-i="1"><span class="kw">if</span> <span class="va">respuesta</span>.<span class="fn">lower</span>() <span class="op">!=</span> <span class="st">'s'</span>:</span></div>
+                        <div class="code-line" data-key="dw-break"><span class="ln">4</span><span class="cl" data-i="2"><span class="kw">break</span></span></div>
+                        <div class="code-line blank"><span class="ln">5</span><span class="cl">&nbsp;</span></div>
+                        <div class="code-line" data-key="dw-end"><span class="ln">6</span><span class="cl"><span class="fn">print</span>(<span class="st">"Programa finalizado"</span>)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── MATCH / CASE ─── -->
+            <div class="code-section" id="code-match">
+                <div class="overview">
+                    <div class="overview-header">
+                        <h1>🎯 match / case</h1>
+                        <p>Disponible desde <strong>Python 3.10</strong>. Equivalente al <code>switch</code> de otros lenguajes. Compara un valor contra múltiples patrones y ejecuta el bloque del primer caso que coincida.</p>
+                    </div>
+                    <div class="overview-body">
+                        <div>
+                            <div class="syntax-label">Sintaxis</div>
+                            <div class="syntax-box">
+<span class="syn-kw">match</span> valor:
+    <span class="syn-kw">case</span> patrón1:
+        <span class="syn-cm"># bloque 1</span>
+    <span class="syn-kw">case</span> patrón2:
+        <span class="syn-cm"># bloque 2</span>
+    <span class="syn-kw">case</span> _:
+        <span class="syn-cm"># bloque por defecto</span></div>
+                        </div>
+                        <ul class="key-points">
+                            <li>Solo el <strong>primer</strong> <code>case</code> que coincide se ejecuta; los restantes se ignoran.</li>
+                            <li><code>case _</code> es el comodín: captura cualquier valor no cubierto anteriormente.</li>
+                            <li>Requiere <strong>Python 3.10 o superior</strong>. En versiones anteriores se usa <code>if/elif/else</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="terminal">
+                    <div class="term-header">
+                        <div class="dot" style="background:#ef4444"></div>
+                        <div class="dot" style="background:#eab308"></div>
+                        <div class="dot" style="background:#10b981"></div>
+                        <span class="term-filename">match_case.py</span>
+                    </div>
+                    <div class="term-body">
+                        <div class="code-line" data-key="mc-read"><span class="ln">1</span><span class="cl"><span class="va">opcion</span> <span class="op">=</span> <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Elige opción (1-3): "</span>))</span></div>
+                        <div class="code-line blank"><span class="ln">2</span><span class="cl">&nbsp;</span></div>
+                        <div class="code-line" data-key="mc-header"><span class="ln">3</span><span class="cl"><span class="kw">match</span> <span class="va">opcion</span>:</span></div>
+                        <div class="code-line" data-key="mc-case1"><span class="ln">4</span><span class="cl" data-i="1"><span class="kw">case</span> <span class="num">1</span>:</span></div>
+                        <div class="code-line" data-key="mc-p1"><span class="ln">5</span><span class="cl" data-i="2"><span class="fn">print</span>(<span class="st">"▶ Iniciando..."</span>)</span></div>
+                        <div class="code-line" data-key="mc-case2"><span class="ln">6</span><span class="cl" data-i="1"><span class="kw">case</span> <span class="num">2</span>:</span></div>
+                        <div class="code-line" data-key="mc-p2"><span class="ln">7</span><span class="cl" data-i="2"><span class="fn">print</span>(<span class="st">"💾 Guardando..."</span>)</span></div>
+                        <div class="code-line" data-key="mc-case3"><span class="ln">8</span><span class="cl" data-i="1"><span class="kw">case</span> <span class="num">3</span>:</span></div>
+                        <div class="code-line" data-key="mc-p3"><span class="ln">9</span><span class="cl" data-i="2"><span class="fn">print</span>(<span class="st">"🚪 Saliendo..."</span>)</span></div>
+                        <div class="code-line" data-key="mc-default"><span class="ln">10</span><span class="cl" data-i="1"><span class="kw">case</span> <span class="va">_</span>:</span></div>
+                        <div class="code-line" data-key="mc-pd"><span class="ln">11</span><span class="cl" data-i="2"><span class="fn">print</span>(<span class="st">"❌ Opción inválida"</span>)</span></div>
                     </div>
                 </div>
             </div>
@@ -454,6 +546,98 @@
                 line: 'print("Bucle terminado")',
                 text: 'Esta línea está <strong>fuera del bucle</strong> (sin indentado). Se ejecuta una sola vez, cuando la condición del <code>while</code> finalmente es <code>False</code> — es decir, cuando <code>contador</code> llega a <code>6</code>.',
                 tip: null
+            },
+
+            'dw-header': {
+                tag: 'Bucle infinito intencional',
+                line: 'while True:',
+                text: '<code>True</code> es siempre verdadero, por lo que el bucle nunca terminaría por sí solo. Esto es intencional: queremos que el cuerpo se ejecute <strong>sin condición previa</strong>, al menos una vez. La salida se controla con <code>break</code>.',
+                tip: 'Diferencia clave con <code>while</code> normal: aquí la condición de salida está <em>dentro</em> del cuerpo, no en el encabezado.'
+            },
+            'dw-body': {
+                tag: 'Cuerpo — siempre ejecuta',
+                line: '    respuesta = input("¿Continuar? (s/n): ")',
+                text: 'Esta línea se ejecuta <strong>siempre</strong> antes de cualquier verificación. En un <code>do-while</code> tradicional, el cuerpo garantiza al menos una iteración. Aquí, el usuario siempre ve el mensaje al menos una vez.',
+                tip: null
+            },
+            'dw-cond': {
+                tag: 'Condición de salida',
+                line: '    if respuesta.lower() != \'s\':',
+                text: '<code>.lower()</code> convierte la respuesta a minúsculas antes de compararla, para que funcione igual con <code>\'S\'</code> o <code>\'s\'</code>. Si el usuario <strong>no</strong> escribe <code>\'s\'</code>, se ejecuta el <code>break</code>.',
+                tip: null
+            },
+            'dw-break': {
+                tag: 'break — salida del bucle',
+                line: '        break',
+                text: '<code>break</code> interrumpe el bucle inmediatamente y continúa con la siguiente línea fuera de él. Sin este <code>break</code>, el <code>while True</code> sería un bucle infinito real.',
+                tip: 'Puedes usar <code>break</code> en cualquier bucle (<code>for</code> o <code>while</code>) para salir antes de que la condición principal sea falsa.'
+            },
+            'dw-end': {
+                tag: 'Código post-bucle',
+                line: 'print("Programa finalizado")',
+                text: 'Solo se alcanza cuando <code>break</code> se ejecutó, es decir, cuando el usuario escribió algo distinto de <code>\'s\'</code>. Si el bucle fuera infinito, esta línea nunca ejecutaría.',
+                tip: null
+            },
+
+            'mc-read': {
+                tag: 'Entrada de datos',
+                line: 'opcion = int(input("Elige opción (1-3): "))',
+                text: 'Lee un número del usuario. <code>input()</code> devuelve texto, por lo que <code>int()</code> lo convierte a entero. Este valor es el que <code>match</code> comparará contra cada <code>case</code>.',
+                tip: 'Si el usuario ingresa texto no numérico, <code>int()</code> lanzará un <code>ValueError</code>. En código real se envuelve en <code>try/except</code>.'
+            },
+            'mc-header': {
+                tag: 'Encabezado match',
+                line: 'match opcion:',
+                text: '<code>match</code> evalúa la expresión <code>opcion</code> y la compara secuencialmente contra cada <code>case</code>. En cuanto un caso coincide, ejecuta su bloque y <strong>no evalúa los demás</strong>.',
+                tip: 'A diferencia de algunos lenguajes, en Python no necesitas escribir <code>break</code> al final de cada <code>case</code>: el comportamiento es automático.'
+            },
+            'mc-case1': {
+                tag: 'case 1',
+                line: '    case 1:',
+                text: 'Primer patrón: compara si <code>opcion == 1</code>. Si es verdadero, ejecuta el bloque indentado debajo y sale del <code>match</code> completo. Los demás <code>case</code> se ignoran.',
+                tip: null
+            },
+            'mc-p1': {
+                tag: 'Bloque case 1',
+                line: '        print("▶ Iniciando...")',
+                text: 'Se ejecuta <strong>únicamente</strong> cuando <code>opcion == 1</code>. El doble indentado (8 espacios) indica que pertenece al <code>case 1</code> dentro del <code>match</code>.',
+                tip: null
+            },
+            'mc-case2': {
+                tag: 'case 2',
+                line: '    case 2:',
+                text: 'Solo se evalúa si <code>case 1</code> no coincidió. Compara si <code>opcion == 2</code>. Este comportamiento secuencial es idéntico al de <code>elif</code> en una cadena <code>if/elif/else</code>.',
+                tip: null
+            },
+            'mc-p2': {
+                tag: 'Bloque case 2',
+                line: '        print("💾 Guardando...")',
+                text: 'Se ejecuta solo cuando <code>opcion == 2</code>.',
+                tip: null
+            },
+            'mc-case3': {
+                tag: 'case 3',
+                line: '    case 3:',
+                text: 'Tercer patrón. Solo se evalúa si los dos anteriores no coincidieron.',
+                tip: null
+            },
+            'mc-p3': {
+                tag: 'Bloque case 3',
+                line: '        print("🚪 Saliendo...")',
+                text: 'Se ejecuta solo cuando <code>opcion == 3</code>.',
+                tip: null
+            },
+            'mc-default': {
+                tag: 'case _ (comodín)',
+                line: '    case _:',
+                text: '<code>_</code> es el <strong>comodín</strong> de <code>match</code>: coincide con <em>cualquier</em> valor que no haya sido capturado por un <code>case</code> anterior. Equivale al <code>default</code> del <code>switch</code> en otros lenguajes. No es obligatorio, pero es buena práctica incluirlo.',
+                tip: null
+            },
+            'mc-pd': {
+                tag: 'Bloque por defecto',
+                line: '        print("❌ Opción inválida")',
+                text: 'Se ejecuta cuando <code>opcion</code> no es <code>1</code>, <code>2</code> ni <code>3</code>. Al igual que <code>else</code> en un <code>if/elif</code>, cubre todos los casos restantes.',
+                tip: null
             }
         };
 
@@ -479,7 +663,7 @@
             clickedLine.classList.add('selected');
             idleEl.style.display = 'none';
             contEl.classList.remove('visible');
-            void contEl.offsetWidth; // trigger reflow for animation replay
+            void contEl.offsetWidth;
             contEl.classList.add('visible');
             lineBox.textContent = d.line;
             tagEl.textContent   = d.tag;
