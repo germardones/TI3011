@@ -112,6 +112,8 @@
         <button class="struct-tab active" onclick="switchStruct('if')">🔀 if / elif / else</button>
         <button class="struct-tab" onclick="switchStruct('for')">🔁 for</button>
         <button class="struct-tab" onclick="switchStruct('while')">🔄 while</button>
+        <button class="struct-tab" onclick="switchStruct('dowhile')">🔃 do-while</button>
+        <button class="struct-tab" onclick="switchStruct('match')">🎯 match/case</button>
     </div>
 
     <div class="workspace">
@@ -162,6 +164,39 @@
 <span class="code-line" data-target="wh-inc" data-loop="wh">    <span class="va">contador</span> <span class="op">+=</span> <span class="num">1</span></span>
 
 <span class="fn code-line" data-target="wh-end">print</span><span class="code-line" data-target="wh-end">(<span class="st">"Bucle terminado"</span>)</span></pre></div>
+                </div>
+            </div>
+
+            <div class="code-section" id="code-dowhile">
+                <h1>🔃 do-while en Python</h1>
+                <p>Pasa el cursor sobre cada línea para ver el diagrama de flujo correspondiente.</p>
+                <div class="terminal">
+                    <div class="term-header"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#eab308"></div><div class="dot" style="background:#10b981"></div><span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem">do_while.py</span></div>
+                    <div class="term-body"><pre><span class="kw code-line" data-target="dw-body" data-loop="dw">while</span><span class="code-line" data-target="dw-body" data-loop="dw"> <span class="kw">True</span>:</span>
+<span class="code-line" data-target="dw-body" data-loop="dw">    <span class="va">respuesta</span> = <span class="fn">input</span>(<span class="st">"¿Continuar? (s/n): "</span>)</span>
+<span class="kw code-line" data-target="dw-cond" data-loop="dw">    if</span><span class="code-line" data-target="dw-cond" data-loop="dw"> <span class="va">respuesta</span>.<span class="fn">lower</span>() <span class="op">!=</span> <span class="st">'s'</span>:</span>
+<span class="kw code-line" data-target="dw-cond" data-loop="dw">        break</span>
+
+<span class="fn code-line" data-target="dw-end">print</span><span class="code-line" data-target="dw-end">(<span class="st">"Programa finalizado"</span>)</span></pre></div>
+                </div>
+            </div>
+
+            <div class="code-section" id="code-match">
+                <h1>🎯 match / case</h1>
+                <p>Pasa el cursor sobre cada línea para ver el diagrama de flujo correspondiente.</p>
+                <div class="terminal">
+                    <div class="term-header"><div class="dot" style="background:#ef4444"></div><div class="dot" style="background:#eab308"></div><div class="dot" style="background:#10b981"></div><span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem">match_case.py</span></div>
+                    <div class="term-body"><pre><span class="va code-line" data-target="mc-read">opcion</span><span class="code-line" data-target="mc-read"> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Elige opción (1-3): "</span>))</span>
+
+<span class="kw code-line" data-target="mc-case1">match</span><span class="code-line" data-target="mc-case1"> <span class="va">opcion</span>:</span>
+<span class="kw code-line" data-target="mc-p1">    case</span><span class="code-line" data-target="mc-p1"> <span class="num">1</span>:</span>
+<span class="code-line" data-target="mc-p1">        <span class="fn">print</span>(<span class="st">"▶ Iniciando..."</span>)</span>
+<span class="kw code-line" data-target="mc-p2">    case</span><span class="code-line" data-target="mc-p2"> <span class="num">2</span>:</span>
+<span class="code-line" data-target="mc-p2">        <span class="fn">print</span>(<span class="st">"💾 Guardando..."</span>)</span>
+<span class="kw code-line" data-target="mc-p3">    case</span><span class="code-line" data-target="mc-p3"> <span class="num">3</span>:</span>
+<span class="code-line" data-target="mc-p3">        <span class="fn">print</span>(<span class="st">"🚪 Saliendo..."</span>)</span>
+<span class="kw code-line" data-target="mc-default">    case</span><span class="code-line" data-target="mc-default"> <span class="va">_</span>:</span>
+<span class="code-line" data-target="mc-default">        <span class="fn">print</span>(<span class="st">"❌ Opción inválida"</span>)</span></pre></div>
                 </div>
             </div>
         </div>
@@ -241,6 +276,57 @@
                     <div id="wh-end" class="shape shape-io" data-tooltip="Instrucción post-bucle. Ejecuta cuando la condición es falsa."><span>print("Bucle terminado")</span></div>
                     <div class="line-v"></div>
                     <div class="shape shape-terminal" data-tooltip="Fin del algoritmo">Fin</div>
+                </div>
+            </div>
+
+            <!-- DO-WHILE DIAGRAM -->
+            <div class="diagram-section" id="diag-dowhile">
+                <div class="flowchart">
+                    <div class="shape shape-terminal" data-tooltip="Inicio del programa">Inicio</div>
+                    <div class="line-v"></div>
+                    <div id="wrapper-dw" class="loop-container">
+                        <div class="loop-back"></div>
+                        <div id="dw-body" class="shape shape-io" data-tooltip="El cuerpo se ejecuta PRIMERO, siempre al menos una vez. Esto lo diferencia del while normal."><span>Leer respuesta</span></div>
+                        <div class="line-v" style="height:15px"></div>
+                        <div id="dw-cond" class="shape shape-decision" data-tooltip="La condición se evalúa DESPUÉS del cuerpo. Si resp == 's', el bucle repite. Si no, break sale del bucle."><span>resp == 's'?</span></div>
+                        <div class="true-label">Sí ↑ (repite)</div>
+                        <div class="line-v" style="height:40px"></div>
+                    </div>
+                    <div class="false-label" style="margin-bottom:4px">No → break</div>
+                    <div class="line-v"></div>
+                    <div id="dw-end" class="shape shape-io" data-tooltip="Solo se alcanza cuando la condición es False y se ejecuta break."><span>print("Finalizado")</span></div>
+                    <div class="line-v"></div>
+                    <div class="shape shape-terminal" data-tooltip="Fin del algoritmo">Fin</div>
+                </div>
+            </div>
+
+            <!-- MATCH/CASE DIAGRAM -->
+            <div class="diagram-section" id="diag-match">
+                <div class="flowchart">
+                    <div class="shape shape-terminal" data-tooltip="Inicio del programa">Inicio</div>
+                    <div class="line-v"></div>
+                    <div id="mc-read" class="shape shape-io" data-tooltip="Lee el valor entero ingresado por el usuario"><span>Leer opcion</span></div>
+                    <div class="line-v"></div>
+                    <div class="branch-wrapper">
+                        <div id="mc-case1" class="shape shape-decision" data-tooltip="match evalúa opcion. ¿Es igual a 1? (case 1)"><span>case 1?</span></div>
+                        <div class="true-label">Sí ↓</div>
+                        <div class="line-v" style="height:10px"></div>
+                        <div id="mc-p1" class="shape shape-io" data-tooltip="Acción para case 1: Iniciar"><span>▶ Iniciando...</span></div>
+                        <div class="line-v"></div>
+                        <div id="mc-case2" class="shape shape-decision" data-tooltip="¿opcion == 2? (case 2)"><span>case 2?</span></div>
+                        <div class="true-label">Sí ↓</div>
+                        <div class="line-v" style="height:10px"></div>
+                        <div id="mc-p2" class="shape shape-io" data-tooltip="Acción para case 2: Guardar"><span>💾 Guardando...</span></div>
+                        <div class="line-v"></div>
+                        <div id="mc-case3" class="shape shape-decision" data-tooltip="¿opcion == 3? (case 3)"><span>case 3?</span></div>
+                        <div class="true-label">Sí ↓</div>
+                        <div class="line-v" style="height:10px"></div>
+                        <div id="mc-p3" class="shape shape-io" data-tooltip="Acción para case 3: Salir"><span>🚪 Saliendo...</span></div>
+                        <div class="line-v"></div>
+                        <div id="mc-default" class="shape shape-process" data-tooltip="case _: el guion bajo es el comodín. Captura cualquier valor no cubierto anteriormente. Equivale al 'default' de switch.">case _ (default)</div>
+                        <div class="line-v" style="height:10px"></div>
+                        <div class="shape shape-io" data-tooltip="Acción por defecto cuando ningún case coincide"><span>❌ Opción inválida</span></div>
+                    </div>
                 </div>
             </div>
         </div>
