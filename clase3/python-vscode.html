@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python en VS Code | TI3011</title>
+    <title>Entrada y Salida | TI3011</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
             --text-main: #f8fafc; --text-dim: #94a3b8;
-            --accent: #0ea5e9; --accent-glow: rgba(14,165,233,0.2);
+            --accent: #10b981; --accent-glow: rgba(16,185,129,0.2);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         [data-theme="light"] {
             --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
-            --text-main: #0f172a; --text-dim: #475569; --accent: #0284c7; --accent-glow: rgba(2,132,199,0.1);
+            --text-main: #0f172a; --text-dim: #475569; --accent: #059669; --accent-glow: rgba(5,150,105,0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
@@ -38,13 +38,12 @@
         /* STEP */
         .step { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-start; cursor: pointer; border-radius: 0.75rem; padding: 0.5rem; transition: var(--transition); }
         .step:hover { background: rgba(255,255,255,0.03); }
-        .step.active { background: rgba(14,165,233,0.08); }
-        .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(14,165,233,0.3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: var(--accent); flex-shrink: 0; transition: var(--transition); }
+        .step.active { background: rgba(16,185,129,0.08); }
+        .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--panel-bg); border: 2px solid rgba(16,185,129,0.3); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; color: var(--accent); flex-shrink: 0; transition: var(--transition); }
         .step.active .step-num { background: var(--accent); color: #000; border-color: var(--accent); }
-        .step.done .step-num { background: #3fb950; color: #000; border-color: #3fb950; }
         .step h3 { font-size: 0.92rem; margin-bottom: 0.2rem; }
         .step p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
-        code { font-family: 'Fira Code', monospace; background: rgba(14,165,233,0.1); color: var(--accent); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.8rem; }
+        code { font-family: 'Fira Code', monospace; background: rgba(16,185,129,0.1); color: var(--accent); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.8rem; }
 
         /* RIGHT */
         .right { background: var(--card-bg); overflow-y: auto; padding: 2.5rem; }
@@ -53,25 +52,21 @@
         .panel h2 { font-size: 1.2rem; color: var(--accent); margin-bottom: 0.4rem; }
         .panel > p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; margin-bottom: 1rem; }
 
-        /* KEY */
-        .key { display: inline-flex; align-items: center; justify-content: center; font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.72rem; background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.15); border-bottom: 3px solid rgba(255,255,255,0.1); border-radius: 5px; padding: 0.15rem 0.45rem; color: var(--text-main); white-space: nowrap; }
-        [data-theme="light"] .key { background: #e2e8f0; border: 1px solid rgba(0,0,0,0.15); border-bottom: 3px solid rgba(0,0,0,0.12); }
-
         /* CODE BLOCK */
         .code-block { background: #0d1117; border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; margin: 1rem 0; }
         .code-header { background: rgba(255,255,255,0.04); padding: 0.4rem 1rem; display: flex; align-items: center; gap: 0.35rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .dot { width: 10px; height: 10px; border-radius: 50%; }
         .filename { color: var(--text-dim); margin-left: 0.5rem; font-size: 0.72rem; font-family: 'Inter', sans-serif; }
         .code-body { padding: 1.1rem 1.25rem; font-size: 0.8rem; line-height: 1.8; }
-        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; } .fn { color: #61afef; } .st { color: #98c379; } .num { color: #d19a66; } .va { color: #e06c75; }
+        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; } .fn { color: #61afef; } .st { color: #98c379; } .num { color: #d19a66; } .va { color: #e06c75; } .op { color: #56b6c2; }
 
         /* TERMINAL */
         .term-block { background: #0d1117; border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; margin: 1rem 0; }
         .term-header { background: rgba(255,255,255,0.03); padding: 0.3rem 1rem; font-size: 0.65rem; color: var(--text-dim); font-family: 'Inter', sans-serif; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .term-body { padding: 0.85rem 1.25rem; font-size: 0.78rem; line-height: 1.7; }
-        .t-prompt { color: #3fb950; } .t-out { color: #3fb950; } .t-cmd { color: #cdd9e5; } .t-err { color: #f85149; }
+        .t-prompt { color: #3fb950; } .t-out { color: #cdd9e5; } .t-in { color: #fbbf24; } .t-cmd { color: #cdd9e5; } .t-comment { color: #5c6370; }
 
-        /* VISUAL BADGES */
+        /* FEATURE LIST */
         .feature-list { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
         .feat { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.82rem; }
         .feat-icon { flex-shrink: 0; }
@@ -79,12 +74,30 @@
         .feat-text strong { color: var(--text-main); }
 
         /* TIP */
-        .tip { background: rgba(14,165,233,0.08); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text-dim); border-radius: 0 8px 8px 0; margin: 0.75rem 0; }
+        .tip { background: rgba(16,185,129,0.08); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text-dim); border-radius: 0 8px 8px 0; margin: 0.75rem 0; }
         .tip strong { color: var(--text-main); }
 
+        /* WARNING */
+        .warn { background: rgba(251,191,36,0.08); border-left: 3px solid #fbbf24; padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--text-dim); border-radius: 0 8px 8px 0; margin: 0.75rem 0; }
+        .warn strong { color: var(--text-main); }
+
+        /* SYNTAX DIAGRAM */
+        .syntax-box { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem; padding: 1rem 1.25rem; margin: 0.75rem 0; font-family: 'Fira Code', monospace; font-size: 0.82rem; }
+        [data-theme="light"] .syntax-box { border: 1px solid rgba(0,0,0,0.08); }
+        .syntax-label { font-family: 'Inter', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.5rem; }
+
+        /* IO FLOW */
+        .io-flow { display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; flex-wrap: wrap; }
+        .io-box { background: var(--panel-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.5rem 0.85rem; font-size: 0.78rem; font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .io-box { border: 1px solid rgba(0,0,0,0.08); }
+        .io-arrow { color: var(--accent); font-weight: 700; font-size: 1rem; }
+        .io-user { border-color: #fbbf24; color: #fbbf24; }
+        .io-program { border-color: var(--accent); color: var(--accent); }
+        .io-screen { border-color: #60a5fa; color: #60a5fa; }
+
         /* CTA */
-        .cta-vscode { display: flex; align-items: center; gap: 1rem; background: rgba(14,165,233,0.08); border: 1px solid rgba(14,165,233,0.25); border-radius: 1rem; padding: 1rem 1.25rem; text-decoration: none; transition: all 0.3s; margin-top: 1.5rem; }
-        .cta-vscode:hover { border-color: var(--accent); background: rgba(14,165,233,0.12); }
+        .cta-next { display: flex; align-items: center; gap: 1rem; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); border-radius: 1rem; padding: 1rem 1.25rem; text-decoration: none; transition: all 0.3s; margin-top: 1.5rem; }
+        .cta-next:hover { border-color: var(--accent); background: rgba(16,185,129,0.12); }
     </style>
 </head>
 <body>
@@ -94,196 +107,334 @@
     </nav>
 
     <div class="workspace">
-        <!-- LEFT: Steps -->
+        <!-- LEFT: Topics -->
         <div class="left">
-            <h1>💙 Python en VS Code</h1>
-            <p>Ya sabes programar en Python. Ahora aprende a hacerlo en VS Code, el entorno profesional más usado.</p>
+            <h1>🖨️ Entrada y Salida</h1>
+            <p>Todo programa necesita comunicarse: mostrar resultados al usuario y recibir datos de él. Aprende las herramientas fundamentales de Python para esto.</p>
 
             <div class="step active" id="step-1" onclick="selectStep(1)">
                 <div class="step-num">1</div>
                 <div>
-                    <h3>Instalar extensiones Python</h3>
-                    <p>Descarga <strong>Python</strong> y <strong>Pylance</strong> desde el panel de extensiones.</p>
+                    <h3>print() — salida básica</h3>
+                    <p>Muestra texto, números y variables en la consola.</p>
                 </div>
             </div>
 
             <div class="step" id="step-2" onclick="selectStep(2)">
                 <div class="step-num">2</div>
                 <div>
-                    <h3>Abrir carpeta de proyecto</h3>
-                    <p>Trabaja siempre con una carpeta, no con archivos sueltos.</p>
+                    <h3>print(f"") — f-strings</h3>
+                    <p>Inserta valores de variables directamente dentro de un texto.</p>
                 </div>
             </div>
 
             <div class="step" id="step-3" onclick="selectStep(3)">
                 <div class="step-num">3</div>
                 <div>
-                    <h3>Seleccionar el intérprete Python</h3>
-                    <p>Indica a VS Code qué versión de Python usar.</p>
+                    <h3>input() — entrada del usuario</h3>
+                    <p>Pausa el programa y espera que el usuario escriba algo.</p>
                 </div>
             </div>
 
             <div class="step" id="step-4" onclick="selectStep(4)">
                 <div class="step-num">4</div>
                 <div>
-                    <h3>Crear y escribir un script</h3>
-                    <p>Crea un archivo <code>.py</code> y escribe tu código con IntelliSense.</p>
+                    <h3>Convertir lo que ingresa el usuario</h3>
+                    <p>Todo lo que llega por <code>input()</code> es texto — aprende a convertirlo.</p>
                 </div>
             </div>
 
             <div class="step" id="step-5" onclick="selectStep(5)">
                 <div class="step-num">5</div>
                 <div>
-                    <h3>Ejecutar el script ▶</h3>
-                    <p>Corre tu programa con el botón ▶ o desde la terminal integrada.</p>
+                    <h3>Programa completo</h3>
+                    <p>Combina <code>input()</code>, cálculos y <code>print(f"")</code> en un solo script.</p>
                 </div>
             </div>
 
-            <div class="step" id="step-6" onclick="selectStep(6)">
-                <div class="step-num">6</div>
+            <a href="python-consola.html" class="cta-next">
+                <span style="font-size:1.2rem">🖥️</span>
                 <div>
-                    <h3>Leer los errores</h3>
-                    <p>Interpreta los mensajes de error de Python en la terminal.</p>
+                    <div style="font-weight:700; color:var(--text-main); font-size:0.85rem">Practica en la consola interactiva</div>
+                    <div style="font-size:0.75rem; color:var(--text-dim)">Ejecuta print() e input() en tu navegador con Python real</div>
                 </div>
-            </div>
-
-            <a href="../clase4/vscode-python.html" class="cta-vscode">
-                <span style="font-size:1.2rem">📖</span>
-                <div>
-                    <div style="font-weight:700; color:var(--text-main); font-size:0.85rem">Guía completa en Módulo 4</div>
-                    <div style="font-size:0.75rem; color:var(--text-dim)">Depurador, IntelliSense, entornos virtuales y más</div>
-                </div>
-                <span style="margin-left:auto; color:var(--accent); font-weight:700; white-space:nowrap; font-size:0.85rem">Ver →</span>
+                <span style="margin-left:auto; color:var(--accent); font-weight:700; white-space:nowrap; font-size:0.85rem">Abrir →</span>
             </a>
         </div>
 
         <!-- RIGHT: Detail panels -->
         <div class="right">
-            <!-- Panel 1 -->
+
+            <!-- Panel 1: print() -->
             <div class="panel active" id="panel-1">
-                <h2>🧩 Instalar extensiones Python</h2>
-                <p>VS Code por sí solo no entiende Python. Necesitas instalar dos extensiones oficiales de Microsoft.</p>
-                <div class="feature-list">
-                    <div class="feat"><span class="feat-icon">1️⃣</span><span class="feat-text">Presiona <span class="key">Ctrl</span>+<span class="key">Shift</span>+<span class="key">X</span> para abrir el panel de Extensiones</span></div>
-                    <div class="feat"><span class="feat-icon">2️⃣</span><span class="feat-text">Busca <strong>Python</strong> (de Microsoft) y haz clic en <strong>Instalar</strong></span></div>
-                    <div class="feat"><span class="feat-icon">3️⃣</span><span class="feat-text">Busca también <strong>Pylance</strong> (de Microsoft) e instálalo</span></div>
-                    <div class="feat"><span class="feat-icon">4️⃣</span><span class="feat-text">Si VS Code pide recargar, haz clic en <strong>"Recargar ventana"</strong></span></div>
-                </div>
-                <div class="tip"><strong>¿Para qué sirve Pylance?</strong> Mejora enormemente el autocompletado. Te muestra los parámetros de las funciones y detecta errores antes de ejecutar.</div>
-                <div style="background:var(--panel-bg); border-radius:0.75rem; padding:1rem; border:1px solid rgba(255,255,255,0.06); margin-top:1rem; font-size:0.8rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem; color:var(--text-dim)"><span>🔍</span> Panel de Extensiones — busca:</div>
-                    <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                        <div style="display:flex; align-items:center; gap:0.75rem; background:rgba(255,255,255,0.04); padding:0.5rem 0.75rem; border-radius:6px;">
-                            <span>🐍</span>
-                            <div><div style="font-weight:600; color:var(--text-main)">Python</div><div style="font-size:0.7rem; color:var(--text-dim)">ms-python.python · Microsoft</div></div>
-                            <span style="margin-left:auto; color:#3fb950; font-size:0.75rem; font-weight:700">ESENCIAL</span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:0.75rem; background:rgba(255,255,255,0.04); padding:0.5rem 0.75rem; border-radius:6px;">
-                            <span>💡</span>
-                            <div><div style="font-weight:600; color:var(--text-main)">Pylance</div><div style="font-size:0.7rem; color:var(--text-dim)">ms-python.vscode-pylance · Microsoft</div></div>
-                            <span style="margin-left:auto; color:#3fb950; font-size:0.75rem; font-weight:700">ESENCIAL</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <h2>🖨️ print() — mostrar datos en pantalla</h2>
+                <p><code>print()</code> es la función de salida de Python. Todo lo que pongas dentro se mostrará en la consola cuando el programa se ejecute.</p>
 
-            <!-- Panel 2 -->
-            <div class="panel" id="panel-2">
-                <h2>📁 Abrir carpeta de proyecto</h2>
-                <p>Siempre trabaja con una <strong>carpeta</strong>, no abriendo archivos sueltos. VS Code entiende mejor tu proyecto así.</p>
-                <div class="feature-list">
-                    <div class="feat"><span class="feat-icon">1️⃣</span><span class="feat-text">Ve a <strong>Archivo → Abrir Carpeta</strong> (o <span class="key">Ctrl</span>+<span class="key">K</span> luego <span class="key">Ctrl</span>+<span class="key">O</span>)</span></div>
-                    <div class="feat"><span class="feat-icon">2️⃣</span><span class="feat-text">Selecciona o crea una carpeta, por ejemplo <code>TI3011_Python</code></span></div>
-                    <div class="feat"><span class="feat-icon">3️⃣</span><span class="feat-text">Haz clic en <strong>"Seleccionar carpeta"</strong> — verás el Explorador con tu carpeta</span></div>
+                <div class="syntax-box">
+                    <div class="syntax-label">Sintaxis</div>
+                    <span style="color:#61afef">print</span>(<span style="color:#98c379">valor</span>, <span style="color:#98c379">valor2</span>, ...)
                 </div>
-                <div class="tip"><strong>Nombra las carpetas sin espacios ni tildes.</strong> Usa guiones o guiones bajos: <code>mi_proyecto</code> no <code>mi proyecto</code>. La terminal trabaja mejor así.</div>
-            </div>
 
-            <!-- Panel 3 -->
-            <div class="panel" id="panel-3">
-                <h2>🐍 Seleccionar el intérprete Python</h2>
-                <p>VS Code necesita saber qué instalación de Python usar para ejecutar tu código.</p>
-                <div class="feature-list">
-                    <div class="feat"><span class="feat-icon">1️⃣</span><span class="feat-text">Presiona <span class="key">Ctrl</span>+<span class="key">Shift</span>+<span class="key">P</span> para abrir la Paleta de Comandos</span></div>
-                    <div class="feat"><span class="feat-icon">2️⃣</span><span class="feat-text">Escribe <strong>Python: Select Interpreter</strong> y presiona Enter</span></div>
-                    <div class="feat"><span class="feat-icon">3️⃣</span><span class="feat-text">Selecciona la versión de Python 3 que aparece en la lista</span></div>
-                </div>
-                <div style="background:#0d1117; border-radius:0.75rem; padding:0.75rem 1rem; border:1px solid rgba(255,255,255,0.08); font-family:'Fira Code', monospace; font-size:0.75rem; margin:0.75rem 0;">
-                    <div style="color:#58a6ff; margin-bottom:4px">BARRA DE ESTADO (abajo a la derecha):</div>
-                    <div style="color:#fbbf24">🐍 Python 3.12.0 64-bit</div>
-                    <div style="color:#5c6370; margin-top:4px; font-family:'Inter', sans-serif; font-size:0.7rem">← Haz clic aquí para cambiar el intérprete</div>
-                </div>
-                <div class="tip"><strong>¿No aparece Python?</strong> Instala Python desde <code>python.org</code> y marca <strong>"Add Python to PATH"</strong> durante la instalación. Luego reinicia VS Code.</div>
-            </div>
-
-            <!-- Panel 4 -->
-            <div class="panel" id="panel-4">
-                <h2>📄 Crear y escribir un script</h2>
-                <p>Con la extensión instalada y el intérprete seleccionado, ya puedes escribir código.</p>
-                <div class="feature-list">
-                    <div class="feat"><span class="feat-icon">1️⃣</span><span class="feat-text">En el Explorador, haz clic en el ícono <strong>Nuevo Archivo</strong> o usa <span class="key">Ctrl</span>+<span class="key">N</span></span></div>
-                    <div class="feat"><span class="feat-icon">2️⃣</span><span class="feat-text">Nómbralo con extensión <code>.py</code>, por ejemplo: <code>ejercicio1.py</code></span></div>
-                    <div class="feat"><span class="feat-icon">3️⃣</span><span class="feat-text">Escribe tu código — el resaltado de colores y autocompletado aparecen automáticamente</span></div>
-                </div>
                 <div class="code-block">
                     <div class="code-header">
                         <div class="dot" style="background:#ef4444"></div>
                         <div class="dot" style="background:#eab308"></div>
                         <div class="dot" style="background:#10b981"></div>
-                        <span class="filename">ejercicio1.py</span>
+                        <span class="filename">salida.py</span>
                     </div>
-                    <div class="code-body"><pre><span class="cm"># Módulo 3 — Ejercicio con funciones</span>
+                    <div class="code-body"><pre><span class="cm"># Imprimir texto (string)</span>
+<span class="fn">print</span>(<span class="st">"Hola, mundo"</span>)
 
-<span class="kw">def</span> <span class="fn">calcular_promedio</span>(<span class="va">notas</span>):
-    <span class="kw">return</span> <span class="fn">sum</span>(<span class="va">notas</span>) / <span class="fn">len</span>(<span class="va">notas</span>)
+<span class="cm"># Imprimir un número</span>
+<span class="fn">print</span>(<span class="num">42</span>)
 
-<span class="va">mis_notas</span> = [<span class="num">85</span>, <span class="num">90</span>, <span class="num">78</span>, <span class="num">92</span>]
-<span class="va">prom</span> = <span class="fn">calcular_promedio</span>(<span class="va">mis_notas</span>)
-<span class="fn">print</span>(<span class="st">f"Promedio: </span><span class="va">{prom}</span><span class="st">"</span>)</pre></div>
+<span class="cm"># Imprimir una variable</span>
+<span class="va">nombre</span> = <span class="st">"Ana"</span>
+<span class="fn">print</span>(<span class="va">nombre</span>)
+
+<span class="cm"># Imprimir varios valores separados por coma</span>
+<span class="fn">print</span>(<span class="st">"Edad:"</span>, <span class="num">20</span>)
+<span class="fn">print</span>(<span class="st">"Hola"</span>, <span class="va">nombre</span>, <span class="st">"!"</span>)</pre></div>
                 </div>
-            </div>
 
-            <!-- Panel 5 -->
-            <div class="panel" id="panel-5">
-                <h2>▶️ Ejecutar el script</h2>
-                <p>Tienes tres formas de ejecutar tu script Python:</p>
+                <div class="term-block">
+                    <div class="term-header">SALIDA EN CONSOLA</div>
+                    <div class="term-body">
+                        <div><span class="t-out">Hola, mundo</span></div>
+                        <div><span class="t-out">42</span></div>
+                        <div><span class="t-out">Ana</span></div>
+                        <div><span class="t-out">Edad: 20</span></div>
+                        <div><span class="t-out">Hola Ana !</span></div>
+                    </div>
+                </div>
+
+                <div class="tip"><strong>Separador automático:</strong> Cuando pasas varios valores separados por coma, <code>print()</code> los une con un espacio por defecto. Puedes cambiarlo con <code>sep=","</code> si lo necesitas.</div>
+
                 <div class="feature-list">
-                    <div class="feat"><span class="feat-icon">▶</span><span class="feat-text"><strong>Botón ▶</strong> — Esquina superior derecha del editor. La forma más rápida.</span></div>
-                    <div class="feat"><span class="feat-icon">🖱️</span><span class="feat-text"><strong>Clic derecho</strong> en el editor → <strong>"Ejecutar archivo Python en la terminal"</strong></span></div>
-                    <div class="feat"><span class="feat-icon">⌨️</span><span class="feat-text"><strong>Terminal</strong> (<span class="key">Ctrl</span>+<span class="key">`</span>) → escribe <code>python ejercicio1.py</code></span></div>
+                    <div class="feat"><span class="feat-icon">📌</span><span class="feat-text"><strong>Texto:</strong> siempre entre comillas simples <code>'...'</code> o dobles <code>"..."</code></span></div>
+                    <div class="feat"><span class="feat-icon">📌</span><span class="feat-text"><strong>Números:</strong> se escriben directamente, sin comillas</span></div>
+                    <div class="feat"><span class="feat-icon">📌</span><span class="feat-text"><strong>Variables:</strong> se escriben por su nombre, sin comillas</span></div>
                 </div>
-                <div class="term-block">
-                    <div class="term-header">TERMINAL INTEGRADO</div>
-                    <div class="term-body">
-                        <div><span class="t-prompt">PS</span> <span class="t-cmd">C:\TI3011_Python&gt; python ejercicio1.py</span></div>
-                        <div><span class="t-out">Promedio: 86.25</span></div>
-                        <div><span class="t-prompt">PS</span> <span class="t-cmd">C:\TI3011_Python&gt; </span><span style="opacity:0.4">█</span></div>
-                    </div>
-                </div>
-                <div class="tip"><strong>Tip:</strong> Guarda siempre el archivo (<span class="key">Ctrl</span>+<span class="key">S</span>) antes de ejecutar. Si hay un asterisco (*) en el nombre de la pestaña, el archivo tiene cambios sin guardar.</div>
             </div>
 
-            <!-- Panel 6 -->
-            <div class="panel" id="panel-6">
-                <h2>🔴 Leer los mensajes de error</h2>
-                <p>Cuando tu código tiene un error, Python muestra un mensaje en la terminal. Aprende a interpretarlo.</p>
+            <!-- Panel 2: f-strings -->
+            <div class="panel" id="panel-2">
+                <h2>✏️ print(f"") — f-strings</h2>
+                <p>Un <strong>f-string</strong> (string formateado) te permite insertar el valor de una variable directamente dentro de un texto, usando llaves <code>{}</code>. Es la forma más moderna y legible de formatear salidas en Python.</p>
+
+                <div class="syntax-box">
+                    <div class="syntax-label">Sintaxis</div>
+                    <span style="color:#61afef">print</span>(<span style="color:#c678dd">f</span><span style="color:#98c379">"texto </span><span style="color:#e06c75">{variable}</span><span style="color:#98c379"> más texto"</span>)
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="dot" style="background:#ef4444"></div>
+                        <div class="dot" style="background:#eab308"></div>
+                        <div class="dot" style="background:#10b981"></div>
+                        <span class="filename">fstrings.py</span>
+                    </div>
+                    <div class="code-body"><pre><span class="va">nombre</span> = <span class="st">"Carlos"</span>
+<span class="va">edad</span>   = <span class="num">22</span>
+<span class="va">nota</span>   = <span class="num">6.5</span>
+
+<span class="cm"># Sin f-string (menos legible)</span>
+<span class="fn">print</span>(<span class="st">"Hola, "</span> + <span class="va">nombre</span> + <span class="st">". Tienes "</span> + <span class="fn">str</span>(<span class="va">edad</span>) + <span class="st">" años."</span>)
+
+<span class="cm"># Con f-string (más legible)</span>
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Hola, </span><span class="va">{nombre}</span><span class="st">. Tienes </span><span class="va">{edad}</span><span class="st"> años."</span>)
+
+<span class="cm"># Expresiones dentro de las llaves</span>
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Tu nota es </span><span class="va">{nota}</span><span class="st">. Aprobado: </span><span class="va">{nota >= 4.0}</span><span class="st">"</span>)
+
+<span class="cm"># Redondear con :.2f</span>
+<span class="va">precio</span> = <span class="num">1234.5678</span>
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Precio: $</span><span class="va">{precio:.2f}</span><span class="st">"</span>)</pre></div>
+                </div>
+
                 <div class="term-block">
-                    <div class="term-header">ERROR EJEMPLO — SyntaxError</div>
+                    <div class="term-header">SALIDA EN CONSOLA</div>
                     <div class="term-body">
-                        <div><span class="t-prompt">PS</span> <span class="t-cmd">C:\TI3011_Python&gt; python ejercicio1.py</span></div>
-                        <div><span class="t-err">  File "ejercicio1.py", line 4</span></div>
-                        <div><span class="t-err">    return sum(notas) / len(notas</span></div>
-                        <div><span class="t-err">                                 ^</span></div>
-                        <div><span class="t-err">SyntaxError: '(' was never closed</span></div>
+                        <div><span class="t-out">Hola, Carlos. Tienes 22 años.</span></div>
+                        <div><span class="t-out">Hola, Carlos. Tienes 22 años.</span></div>
+                        <div><span class="t-out">Tu nota es 6.5. Aprobado: True</span></div>
+                        <div><span class="t-out">Precio: $1234.57</span></div>
                     </div>
                 </div>
-                <div class="feature-list" style="margin-top:0.75rem;">
-                    <div class="feat"><span class="feat-icon">📍</span><span class="feat-text"><strong>File "ejercicio1.py", line 4</strong> → El error está en la línea 4</span></div>
-                    <div class="feat"><span class="feat-icon">🔴</span><span class="feat-text"><strong>SyntaxError</strong> → Tipo de error: error de sintaxis (algo mal escrito)</span></div>
-                    <div class="feat"><span class="feat-icon">💬</span><span class="feat-text"><strong>'(' was never closed</strong> → Mensaje del error: falta cerrar un paréntesis</span></div>
+
+                <div class="tip"><strong>La <code>f</code> va justo antes de las comillas:</strong> <code>f"..."</code> o <code>f'...'</code>. Dentro de las llaves <code>{}</code> puedes escribir cualquier expresión válida de Python: variables, operaciones, llamadas a funciones.</div>
+
+                <div class="feature-list">
+                    <div class="feat"><span class="feat-icon">🔢</span><span class="feat-text"><code>{valor:.2f}</code> → muestra el número con 2 decimales</span></div>
+                    <div class="feat"><span class="feat-icon">📐</span><span class="feat-text"><code>{valor:10}</code> → reserva un ancho de 10 caracteres (útil para tablas)</span></div>
+                    <div class="feat"><span class="feat-icon">⚡</span><span class="feat-text"><code>{2 + 2}</code> → las expresiones se evalúan directamente</span></div>
                 </div>
-                <div class="tip"><strong>Tip:</strong> Usa la extensión <strong>Error Lens</strong> (Módulo 4 → Extensiones) para ver los errores directamente en la línea de código, sin tener que leer la terminal.</div>
             </div>
+
+            <!-- Panel 3: input() -->
+            <div class="panel" id="panel-3">
+                <h2>⌨️ input() — recibir datos del usuario</h2>
+                <p><code>input()</code> detiene la ejecución del programa, muestra un mensaje opcional en pantalla y espera a que el usuario escriba algo y presione <strong>Enter</strong>. Lo que el usuario escribe se guarda como texto.</p>
+
+                <div class="syntax-box">
+                    <div class="syntax-label">Sintaxis</div>
+                    <span style="color:#e06c75">variable</span> = <span style="color:#61afef">input</span>(<span style="color:#98c379">"Mensaje para el usuario: "</span>)
+                </div>
+
+                <div class="io-flow">
+                    <div class="io-box io-program">Programa Python</div>
+                    <div class="io-arrow">→</div>
+                    <div class="io-box io-screen">Muestra el mensaje</div>
+                    <div class="io-arrow">→</div>
+                    <div class="io-box io-user">Usuario escribe</div>
+                    <div class="io-arrow">→</div>
+                    <div class="io-box io-program">Se guarda en la variable</div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="dot" style="background:#ef4444"></div>
+                        <div class="dot" style="background:#eab308"></div>
+                        <div class="dot" style="background:#10b981"></div>
+                        <span class="filename">entrada.py</span>
+                    </div>
+                    <div class="code-body"><pre><span class="cm"># El mensaje dentro de input() aparece en pantalla</span>
+<span class="va">nombre</span> = <span class="fn">input</span>(<span class="st">"¿Cuál es tu nombre? "</span>)
+
+<span class="cm"># Usar lo que ingresó el usuario</span>
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Hola, </span><span class="va">{nombre}</span><span class="st">. Bienvenido."</span>)</pre></div>
+                </div>
+
+                <div class="term-block">
+                    <div class="term-header">EJECUCIÓN — lo amarillo lo escribe el usuario</div>
+                    <div class="term-body">
+                        <div><span class="t-out">¿Cuál es tu nombre? </span><span class="t-in">Pedro</span></div>
+                        <div><span class="t-out">Hola, Pedro. Bienvenido.</span></div>
+                    </div>
+                </div>
+
+                <div class="warn"><strong>input() siempre devuelve texto (str).</strong> Aunque el usuario escriba <code>25</code>, Python lo recibe como la cadena <code>"25"</code>, no como el número 25. Esto es importante al hacer cálculos.</div>
+
+                <div class="feature-list">
+                    <div class="feat"><span class="feat-icon">💬</span><span class="feat-text">El texto dentro de <code>input("...")</code> es el <strong>prompt</strong> — lo que el usuario ve como pregunta</span></div>
+                    <div class="feat"><span class="feat-icon">⏸️</span><span class="feat-text">El programa <strong>se pausa</strong> hasta que el usuario presione Enter</span></div>
+                    <div class="feat"><span class="feat-icon">📝</span><span class="feat-text">El resultado <strong>siempre es de tipo <code>str</code></strong>, sin importar qué se escriba</span></div>
+                </div>
+            </div>
+
+            <!-- Panel 4: Conversión de tipos -->
+            <div class="panel" id="panel-4">
+                <h2>🔄 Convertir la entrada del usuario</h2>
+                <p>Como <code>input()</code> retorna siempre texto, si necesitas un número debes convertirlo con <code>int()</code> o <code>float()</code>. Sin esto, las operaciones matemáticas fallarán.</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="dot" style="background:#ef4444"></div>
+                        <div class="dot" style="background:#eab308"></div>
+                        <div class="dot" style="background:#10b981"></div>
+                        <span class="filename">conversion.py</span>
+                    </div>
+                    <div class="code-body"><pre><span class="cm"># ❌ Sin conversión — error al sumar</span>
+<span class="va">texto</span> = <span class="fn">input</span>(<span class="st">"Escribe un número: "</span>)  <span class="cm"># "5"</span>
+<span class="fn">print</span>(<span class="va">texto</span> + <span class="num">10</span>)  <span class="cm"># TypeError: no se puede sumar str + int</span>
+
+<span class="cm"># ✅ Con int() — convierte a entero</span>
+<span class="va">edad</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"¿Cuántos años tienes? "</span>))
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"En 10 años tendrás </span><span class="va">{edad + 10}</span><span class="st"> años."</span>)
+
+<span class="cm"># ✅ Con float() — convierte a decimal</span>
+<span class="va">nota</span> = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"Ingresa tu nota: "</span>))
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Nota ingresada: </span><span class="va">{nota:.1f}</span><span class="st">"</span>)</pre></div>
+                </div>
+
+                <div class="term-block">
+                    <div class="term-header">EJECUCIÓN CORRECTA</div>
+                    <div class="term-body">
+                        <div><span class="t-out">¿Cuántos años tienes? </span><span class="t-in">22</span></div>
+                        <div><span class="t-out">En 10 años tendrás 32 años.</span></div>
+                        <div style="margin-top:4px"><span class="t-out">Ingresa tu nota: </span><span class="t-in">6.5</span></div>
+                        <div><span class="t-out">Nota ingresada: 6.5</span></div>
+                    </div>
+                </div>
+
+                <div class="tip"><strong>Patrón habitual:</strong> envuelve el <code>input()</code> directamente dentro de <code>int()</code> o <code>float()</code> en la misma línea. Así obtienes el tipo correcto de inmediato.</div>
+
+                <div style="background: var(--panel-bg); border-radius: 0.75rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.06); margin-top: 0.75rem; font-size: 0.8rem;">
+                    <div style="color: var(--text-dim); margin-bottom: 0.6rem; font-weight: 600;">Funciones de conversión más usadas:</div>
+                    <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <div style="display: flex; gap: 1rem; font-family: 'Fira Code', monospace;">
+                            <span style="color: #61afef; width: 90px">int()</span>
+                            <span style="color: var(--text-dim)">Convierte a número entero → <span style="color:#d19a66">22</span></span>
+                        </div>
+                        <div style="display: flex; gap: 1rem; font-family: 'Fira Code', monospace;">
+                            <span style="color: #61afef; width: 90px">float()</span>
+                            <span style="color: var(--text-dim)">Convierte a decimal → <span style="color:#d19a66">6.5</span></span>
+                        </div>
+                        <div style="display: flex; gap: 1rem; font-family: 'Fira Code', monospace;">
+                            <span style="color: #61afef; width: 90px">str()</span>
+                            <span style="color: var(--text-dim)">Convierte a texto → <span style="color:#98c379">"22"</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 5: Programa completo -->
+            <div class="panel" id="panel-5">
+                <h2>🚀 Programa completo</h2>
+                <p>Aquí todo se combina: el usuario ingresa datos con <code>input()</code>, el programa los procesa y muestra el resultado con <code>print(f"")</code>.</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="dot" style="background:#ef4444"></div>
+                        <div class="dot" style="background:#eab308"></div>
+                        <div class="dot" style="background:#10b981"></div>
+                        <span class="filename">calculadora_notas.py</span>
+                    </div>
+                    <div class="code-body"><pre><span class="cm"># Calculadora de promedio</span>
+
+<span class="cm"># — Entrada: pedimos datos al usuario —</span>
+<span class="va">nombre</span> = <span class="fn">input</span>(<span class="st">"Nombre del estudiante: "</span>)
+<span class="va">nota1</span>  = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"Nota 1 (de 7.0): "</span>))
+<span class="va">nota2</span>  = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"Nota 2 (de 7.0): "</span>))
+<span class="va">nota3</span>  = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"Nota 3 (de 7.0): "</span>))
+
+<span class="cm"># — Procesamiento —</span>
+<span class="va">promedio</span>  = (<span class="va">nota1</span> + <span class="va">nota2</span> + <span class="va">nota3</span>) / <span class="num">3</span>
+<span class="va">aprobado</span>  = <span class="va">promedio</span> >= <span class="num">4.0</span>
+<span class="va">estado</span>    = <span class="st">"Aprobado"</span> <span class="kw">if</span> <span class="va">aprobado</span> <span class="kw">else</span> <span class="st">"Reprobado"</span>
+
+<span class="cm"># — Salida: mostramos los resultados —</span>
+<span class="fn">print</span>()
+<span class="fn">print</span>(<span class="st">"--- Informe de notas ---"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Estudiante : </span><span class="va">{nombre}</span><span class="st">"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Promedio   : </span><span class="va">{promedio:.2f}</span><span class="st">"</span>)
+<span class="fn">print</span>(<span class="kw">f</span><span class="st">"Estado     : </span><span class="va">{estado}</span><span class="st">"</span>)</pre></div>
+                </div>
+
+                <div class="term-block">
+                    <div class="term-header">EJECUCIÓN COMPLETA</div>
+                    <div class="term-body">
+                        <div><span class="t-out">Nombre del estudiante: </span><span class="t-in">Valentina</span></div>
+                        <div><span class="t-out">Nota 1 (de 7.0): </span><span class="t-in">5.5</span></div>
+                        <div><span class="t-out">Nota 2 (de 7.0): </span><span class="t-in">6.0</span></div>
+                        <div><span class="t-out">Nota 3 (de 7.0): </span><span class="t-in">4.5</span></div>
+                        <div style="margin-top:6px"><span class="t-out"></span></div>
+                        <div><span class="t-out">--- Informe de notas ---</span></div>
+                        <div><span class="t-out">Estudiante : Valentina</span></div>
+                        <div><span class="t-out">Promedio   : 5.33</span></div>
+                        <div><span class="t-out">Estado     : Aprobado</span></div>
+                    </div>
+                </div>
+
+                <div class="tip"><strong>Estructura clásica de un programa:</strong> Entrada → Procesamiento → Salida. Separar estas tres etapas en el código hace que sea más fácil de leer y depurar.</div>
+
+                <div class="feature-list">
+                    <div class="feat"><span class="feat-icon">⌨️</span><span class="feat-text"><strong>Entrada</strong> — <code>input()</code> para texto, <code>int(input())</code> y <code>float(input())</code> para números</span></div>
+                    <div class="feat"><span class="feat-icon">⚙️</span><span class="feat-text"><strong>Procesamiento</strong> — operaciones y lógica con las variables</span></div>
+                    <div class="feat"><span class="feat-icon">🖨️</span><span class="feat-text"><strong>Salida</strong> — <code>print(f"...")</code> para mostrar resultados con formato</span></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
