@@ -42,7 +42,7 @@ TI3011/
     ├── python-tipos.html               # Tipos de Datos & Variables
     ├── python-operadores.html          # Operadores
     ├── python-control.html             # Estructuras de Control
-    ├── python-estructuras-datos.html   # Listas, Diccionarios, Tuplas y Sets
+    ├── python-estructuras-datos.html   # Listas, Diccionarios y Tuplas
     ├── python-funciones.html           # Funciones
     └── python-consola.html             # Consola Interactiva (Pyodide/WASM)
 ```
@@ -84,7 +84,7 @@ Entorno de programación real en el navegador mediante WebAssembly para aprender
 | `python-tipos.html` | Datos y Variables | Literales, enteros, flotantes y cadenas |
 | `python-operadores.html` | Operadores | Calculadora aritmética, lógica y comparativa |
 | `python-control.html` | Flujo de Control | Diagramas de flujo para if/for/while |
-| `python-estructuras-datos.html` | Estructuras de Datos | Listas, diccionarios, tuplas, sets y comprehensions |
+| `python-estructuras-datos.html` | Estructuras de Datos | Listas, diccionarios y tuplas con visualización por índice y mapa clave→valor |
 | `python-funciones.html` | Funciones | Estructura def, parámetros y retorno |
 | `python-consola.html` | **Laboratorio Python** | REPL avanzado con Matplotlib y Desafíos |
 

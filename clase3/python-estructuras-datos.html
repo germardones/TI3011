@@ -130,8 +130,6 @@
                 <button class="type-tab active" style="--c: #f472b6" data-type="list" onclick="switchType('list')">list</button>
                 <button class="type-tab" style="--c: #38bdf8" data-type="dict" onclick="switchType('dict')">dict</button>
                 <button class="type-tab" style="--c: #fbbf24" data-type="tuple" onclick="switchType('tuple')">tuple</button>
-                <button class="type-tab" style="--c: #34d399" data-type="set" onclick="switchType('set')">set</button>
-                <button class="type-tab" style="--c: #a78bfa" data-type="iter" onclick="switchType('iter')">recorrer</button>
             </div>
 
             <div class="terminal">
@@ -218,57 +216,6 @@
 
 <span class="va">cociente</span>, <span class="va">resto</span> = <span class="fn">dividir</span>(<span class="num">17</span>, <span class="num">5</span>)  <span class="cm"># (3, 2)</span></pre></div>
 
-                    <div class="code-section" id="code-set"><pre><span class="cm"># Sets — colección NO ORDENADA y SIN DUPLICADOS</span>
-<span class="cm"># Ideal para eliminar repetidos y operaciones de conjunto.</span>
-
-<span class="va">numeros</span> = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>}
-<span class="fn">print</span>(<span class="va">numeros</span>)              <span class="cm"># {1, 2, 3} — sin duplicados</span>
-
-<span class="cm"># Eliminar duplicados de una lista</span>
-<span class="va">unicos</span> = <span class="fn">set</span>([<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="st">"c"</span>])
-
-<span class="cm"># Métodos</span>
-<span class="va">numeros</span>.<span class="fn">add</span>(<span class="num">4</span>)
-<span class="va">numeros</span>.<span class="fn">discard</span>(<span class="num">2</span>)        <span class="cm"># elimina si existe (sin error)</span>
-
-<span class="cm"># Operaciones de conjunto</span>
-<span class="va">a</span> = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
-<span class="va">b</span> = {<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>}
-
-<span class="va">a</span> <span class="op">|</span> <span class="va">b</span>      <span class="cm"># Unión        → {1,2,3,4,5}</span>
-<span class="va">a</span> <span class="op">&amp;</span> <span class="va">b</span>      <span class="cm"># Intersección → {3}</span>
-<span class="va">a</span> <span class="op">-</span> <span class="va">b</span>      <span class="cm"># Diferencia   → {1,2}</span>
-<span class="va">a</span> <span class="op">^</span> <span class="va">b</span>      <span class="cm"># Simétrica    → {1,2,4,5}</span>
-
-<span class="num">3</span> <span class="kw">in</span> <span class="va">a</span>       <span class="cm"># True (búsqueda muy rápida)</span></pre></div>
-
-                    <div class="code-section" id="code-iter"><pre><span class="cm"># Recorrido y comprehensions</span>
-
-<span class="va">frutas</span> = [<span class="st">"manzana"</span>, <span class="st">"pera"</span>, <span class="st">"uva"</span>]
-
-<span class="cm"># for básico</span>
-<span class="kw">for</span> <span class="va">f</span> <span class="kw">in</span> <span class="va">frutas</span>:
-    <span class="fn">print</span>(<span class="va">f</span>)
-
-<span class="cm"># enumerate → índice + valor</span>
-<span class="kw">for</span> <span class="va">i</span>, <span class="va">f</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">frutas</span>):
-    <span class="fn">print</span>(<span class="va">i</span>, <span class="va">f</span>)
-
-<span class="cm"># Recorrer un dict</span>
-<span class="va">precios</span> = {<span class="st">"pan"</span>: <span class="num">1200</span>, <span class="st">"leche"</span>: <span class="num">990</span>}
-<span class="kw">for</span> <span class="va">k</span>, <span class="va">v</span> <span class="kw">in</span> <span class="va">precios</span>.<span class="fn">items</span>():
-    <span class="fn">print</span>(<span class="va">k</span>, <span class="st">"= $"</span>, <span class="va">v</span>)
-
-<span class="cm"># List comprehension — crea listas en una línea</span>
-<span class="va">cuadrados</span> = [<span class="va">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="va">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)]
-<span class="cm"># [0, 1, 4, 9, 16]</span>
-
-<span class="va">pares</span> = [<span class="va">x</span> <span class="kw">for</span> <span class="va">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>) <span class="kw">if</span> <span class="va">x</span> <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>]
-<span class="cm"># [0, 2, 4, 6, 8]</span>
-
-<span class="cm"># Dict comprehension</span>
-<span class="va">tabla</span> = {<span class="va">n</span>: <span class="va">n</span><span class="op">*</span><span class="num">2</span> <span class="kw">for</span> <span class="va">n</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">4</span>)}
-<span class="cm"># {1: 2, 2: 4, 3: 6}</span></pre></div>
                 </div>
             </div>
         </div>
@@ -350,52 +297,6 @@
                 </div>
             </div>
 
-            <!-- SET -->
-            <div class="type-info" id="info-set">
-                <div class="info-header" style="background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(52,211,153,0.05)); border: 1px solid rgba(52,211,153,0.3);">
-                    <h2 style="color:#34d399">set</h2>
-                    <span class="tag">{ } · sin orden · sin duplicados</span>
-                    <p style="color: var(--text-dim);">Conjunto matemático: elementos únicos, sin posición fija. Pertenencia (<code>in</code>) es muy rápida. Soporta unión, intersección y diferencia.</p>
-                </div>
-                <div class="memory-viz">
-                    <h3>{1, 2, 3, 2, 1} → </h3>
-                    <div class="set-viz">
-                        <span class="set-item">1</span>
-                        <span class="set-item">2</span>
-                        <span class="set-item">3</span>
-                    </div>
-                    <h3 style="margin-top:1.25rem;">Operaciones de conjunto</h3>
-                    <div class="values-list">
-                        <div class="value-row"><span class="v-name">{1,2,3} | {3,4}</span><span class="v-val">{1,2,3,4}</span></div>
-                        <div class="value-row"><span class="v-name">{1,2,3} &amp; {3,4}</span><span class="v-val">{3}</span></div>
-                        <div class="value-row"><span class="v-name">{1,2,3} - {3,4}</span><span class="v-val">{1,2}</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ITER -->
-            <div class="type-info" id="info-iter">
-                <div class="info-header" style="background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(167,139,250,0.05)); border: 1px solid rgba(167,139,250,0.3);">
-                    <h2 style="color:#a78bfa">Recorrido</h2>
-                    <span class="tag">for · enumerate · comprehension</span>
-                    <p style="color: var(--text-dim);">Las estructuras se recorren con <code>for</code>. Las comprehensions son una forma compacta de generar listas o diccionarios a partir de otros iterables.</p>
-                </div>
-                <div class="memory-viz">
-                    <h3>¿Cuándo uso cada una?</h3>
-                    <div class="values-list">
-                        <div class="value-row"><span class="v-name">list</span><span class="v-val">orden + duplicados + cambios</span></div>
-                        <div class="value-row"><span class="v-name">dict</span><span class="v-val">buscar por clave</span></div>
-                        <div class="value-row"><span class="v-name">tuple</span><span class="v-val">datos fijos / retornos</span></div>
-                        <div class="value-row"><span class="v-name">set</span><span class="v-val">únicos · pertenencia rápida</span></div>
-                    </div>
-                </div>
-                <div class="type-fn"><code>[<span class="va">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="va">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)] <span class="op">=&gt;</span></code><div class="output">[0, 1, 4, 9, 16]</div></div>
-                <div class="values-list">
-                    <div class="value-row"><span class="v-name">enumerate(["a","b"])</span><span class="v-val">(0,"a") (1,"b")</span></div>
-                    <div class="value-row"><span class="v-name">{n: n*2 for n in range(1,4)}</span><span class="v-val">{1:2, 2:4, 3:6}</span></div>
-                    <div class="value-row"><span class="v-name">[x for x in r if x%2==0]</span><span class="v-val">solo pares</span></div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -408,7 +309,7 @@
             else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
         });
 
-        const filenames = { list: 'listas.py', dict: 'diccionarios.py', tuple: 'tuplas.py', set: 'sets.py', iter: 'recorrido.py' };
+        const filenames = { list: 'listas.py', dict: 'diccionarios.py', tuple: 'tuplas.py' };
 
         function switchType(type) {
             document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
