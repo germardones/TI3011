@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructuras de Datos | TI3011</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #f472b6; --accent-glow: rgba(244,114,182,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #db2777; --accent-glow: rgba(219,39,119,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { color: var(--text-dim); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { color: var(--accent); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+
+        .workspace { display: grid; grid-template-columns: 1fr 1fr; flex-grow: 1; min-height: calc(100vh - 57px); }
+        @media(max-width:900px) { .workspace { grid-template-columns: 1fr; } }
+
+        /* LEFT */
+        .left-panel { padding: 2.5rem; border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        [data-theme="light"] .left-panel { border-right: 1px solid rgba(0,0,0,0.08); }
+        .left-panel h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .left-panel > p { color: var(--text-dim); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .type-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .type-tab {
+            padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: var(--text-dim); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+        }
+        [data-theme="light"] .type-tab { border: 1px solid rgba(0,0,0,0.1); }
+        .type-tab.active { color: var(--c); border-color: var(--c); background: rgba(255,255,255,0.05); }
+        .type-tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+        .terminal { background: var(--panel-bg); border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .terminal { border: 1px solid rgba(0,0,0,0.1); }
+        .term-header { background: rgba(255,255,255,0.04); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .term-header { background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .term-body { padding: 1.5rem; line-height: 1.9; font-size: 0.85rem; color: #cdd9e5; }
+        .cm { color: #5c6370; }
+        .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; }
+        .st { color: #98c379; }
+        .num { color: #d19a66; }
+        .va { color: #e06c75; }
+        .op { color: #56b6c2; }
+        [data-theme="light"] .kw { color: #7c3aed; } [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; } [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .va { color: #e11d48; } [data-theme="light"] .op { color: #0891b2; }
+        [data-theme="light"] .cm { color: #94a3b8; }
+
+        .code-section { display: none; }
+        .code-section.active { display: block; }
+
+        /* RIGHT */
+        .right-panel { padding: 2.5rem; background: var(--card-bg); overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .type-info { display: none; flex-direction: column; gap: 1.25rem; }
+        .type-info.active { display: flex; }
+
+        .info-header { border-radius: 1rem; padding: 1.5rem; }
+        .info-header h2 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+        .info-header .tag { font-size: 0.8rem; font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; }
+        .info-header p { font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem; }
+
+        .memory-viz { background: rgba(255,255,255,0.05); border-radius: 1rem; padding: 1.25rem; }
+        [data-theme="light"] .memory-viz { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+        .memory-viz h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 1rem; }
+
+        .values-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .value-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; font-size: 0.85rem; gap: 1rem; }
+        [data-theme="light"] .value-row { background: rgba(0,0,0,0.02); }
+        .value-row .v-name { color: var(--text-dim); font-family: 'Fira Code', monospace; font-size: 0.8rem; }
+        .value-row .v-val  { font-family: 'Fira Code', monospace; color: var(--text-main); font-weight: 600; text-align: right; }
+
+        /* List visualization */
+        .list-viz { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: flex-end; }
+        .list-cell { text-align: center; font-family: 'Fira Code', monospace; font-size: 0.85rem; }
+        .list-cell .cell-val { background: rgba(244,114,182,0.18); border: 1px solid rgba(244,114,182,0.45); color: #f472b6; border-radius: 6px; padding: 0.55rem 0.85rem; min-width: 56px; font-weight: 600; }
+        .list-cell .cell-idx { color: var(--text-dim); font-size: 0.7rem; margin-top: 0.25rem; }
+        .list-cell .cell-neg { color: #fbbf24; font-size: 0.7rem; }
+
+        /* Dict visualization */
+        .dict-viz { display: flex; flex-direction: column; gap: 0.5rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; }
+        .dict-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.6rem; }
+        .dict-key { background: rgba(56,189,248,0.18); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; border-radius: 6px; padding: 0.4rem 0.7rem; text-align: center; font-weight: 600; }
+        .dict-val { background: rgba(167,139,250,0.18); border: 1px solid rgba(167,139,250,0.4); color: #a78bfa; border-radius: 6px; padding: 0.4rem 0.7rem; text-align: center; font-weight: 600; }
+        .dict-arrow { color: var(--text-dim); }
+
+        /* Tuple */
+        .tuple-viz { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Fira Code', monospace; font-size: 0.95rem; padding: 0.6rem 0.9rem; background: rgba(251,191,36,0.1); border: 1px dashed rgba(251,191,36,0.45); border-radius: 8px; color: #fbbf24; font-weight: 600; }
+        .tuple-lock { font-size: 0.75rem; color: var(--text-dim); margin-left: 0.4rem; }
+
+        /* Set */
+        .set-viz { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .set-item { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.4); color: #34d399; border-radius: 999px; padding: 0.4rem 0.9rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 600; }
+
+        .type-fn { background: var(--panel-bg); border-radius: 0.75rem; padding: 1rem 1.25rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.06); }
+        [data-theme="light"] .type-fn { border: 1px solid rgba(0,0,0,0.08); }
+        .type-fn .output { color: #34d399; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase3.html" class="back-link">← Volver a Módulo 3</a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <!-- LEFT: Código -->
+        <div class="left-panel">
+            <h1>🗂️ Estructuras de Datos</h1>
+            <p>Colecciones que permiten almacenar y organizar varios valores en una sola variable. Selecciona una para ver su sintaxis y comportamiento.</p>
+
+            <div class="type-tabs">
+                <button class="type-tab active" style="--c: #f472b6" data-type="list" onclick="switchType('list')">list</button>
+                <button class="type-tab" style="--c: #38bdf8" data-type="dict" onclick="switchType('dict')">dict</button>
+                <button class="type-tab" style="--c: #fbbf24" data-type="tuple" onclick="switchType('tuple')">tuple</button>
+                <button class="type-tab" style="--c: #34d399" data-type="set" onclick="switchType('set')">set</button>
+                <button class="type-tab" style="--c: #a78bfa" data-type="iter" onclick="switchType('iter')">recorrer</button>
+            </div>
+
+            <div class="terminal">
+                <div class="term-header">
+                    <div class="dot" style="background:#ef4444"></div>
+                    <div class="dot" style="background:#eab308"></div>
+                    <div class="dot" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">listas.py</span>
+                </div>
+                <div class="term-body">
+                    <div class="code-section active" id="code-list"><pre><span class="cm"># Listas — colección ORDENADA y MUTABLE</span>
+<span class="cm"># Permite duplicados. Se accede por índice.</span>
+
+<span class="va">frutas</span> = [<span class="st">"manzana"</span>, <span class="st">"pera"</span>, <span class="st">"uva"</span>, <span class="st">"kiwi"</span>]
+
+<span class="cm"># Acceso por índice (empieza en 0)</span>
+<span class="fn">print</span>(<span class="va">frutas</span>[<span class="num">0</span>])      <span class="cm"># "manzana"</span>
+<span class="fn">print</span>(<span class="va">frutas</span>[<span class="op">-</span><span class="num">1</span>])     <span class="cm"># "kiwi" (desde el final)</span>
+<span class="fn">print</span>(<span class="va">frutas</span>[<span class="num">1</span>:<span class="num">3</span>])    <span class="cm"># ["pera", "uva"] (slicing)</span>
+
+<span class="cm"># Modificar (son mutables)</span>
+<span class="va">frutas</span>[<span class="num">0</span>] = <span class="st">"naranja"</span>
+
+<span class="cm"># Métodos comunes</span>
+<span class="va">frutas</span>.<span class="fn">append</span>(<span class="st">"mango"</span>)     <span class="cm"># añade al final</span>
+<span class="va">frutas</span>.<span class="fn">insert</span>(<span class="num">1</span>, <span class="st">"banana"</span>) <span class="cm"># inserta en pos. 1</span>
+<span class="va">frutas</span>.<span class="fn">remove</span>(<span class="st">"uva"</span>)       <span class="cm"># elimina por valor</span>
+<span class="va">ultima</span> = <span class="va">frutas</span>.<span class="fn">pop</span>()      <span class="cm"># saca y devuelve la última</span>
+<span class="va">frutas</span>.<span class="fn">sort</span>()                <span class="cm"># ordena in-place</span>
+
+<span class="fn">len</span>(<span class="va">frutas</span>)                  <span class="cm"># cantidad de elementos</span>
+<span class="st">"pera"</span> <span class="kw">in</span> <span class="va">frutas</span>            <span class="cm"># True / False</span></pre></div>
+
+                    <div class="code-section" id="code-dict"><pre><span class="cm"># Diccionarios — pares CLAVE: VALOR</span>
+<span class="cm"># Acceso por clave, no por índice. Mutables.</span>
+
+<span class="va">estudiante</span> = {
+    <span class="st">"nombre"</span>: <span class="st">"Ana"</span>,
+    <span class="st">"edad"</span>:   <span class="num">21</span>,
+    <span class="st">"curso"</span>:  <span class="st">"TI3011"</span>,
+    <span class="st">"notas"</span>:  [<span class="num">6.5</span>, <span class="num">5.8</span>, <span class="num">7.0</span>]
+}
+
+<span class="cm"># Acceso por clave</span>
+<span class="fn">print</span>(<span class="va">estudiante</span>[<span class="st">"nombre"</span>])   <span class="cm"># "Ana"</span>
+<span class="fn">print</span>(<span class="va">estudiante</span>.<span class="fn">get</span>(<span class="st">"email"</span>, <span class="st">"-"</span>))  <span class="cm"># "-" si no existe</span>
+
+<span class="cm"># Modificar / agregar</span>
+<span class="va">estudiante</span>[<span class="st">"edad"</span>] = <span class="num">22</span>          <span class="cm"># actualiza</span>
+<span class="va">estudiante</span>[<span class="st">"email"</span>] = <span class="st">"ana@inacap.cl"</span>  <span class="cm"># añade</span>
+
+<span class="cm"># Eliminar</span>
+<span class="kw">del</span> <span class="va">estudiante</span>[<span class="st">"curso"</span>]
+<span class="va">estudiante</span>.<span class="fn">pop</span>(<span class="st">"edad"</span>, <span class="kw">None</span>)
+
+<span class="cm"># Recorrer claves, valores o ambos</span>
+<span class="kw">for</span> <span class="va">clave</span>, <span class="va">valor</span> <span class="kw">in</span> <span class="va">estudiante</span>.<span class="fn">items</span>():
+    <span class="fn">print</span>(<span class="va">clave</span>, <span class="st">"→"</span>, <span class="va">valor</span>)
+
+<span class="va">estudiante</span>.<span class="fn">keys</span>()    <span class="cm"># dict_keys([...])</span>
+<span class="va">estudiante</span>.<span class="fn">values</span>()  <span class="cm"># dict_values([...])</span></pre></div>
+
+                    <div class="code-section" id="code-tuple"><pre><span class="cm"># Tuplas — colección ORDENADA pero INMUTABLE</span>
+<span class="cm"># Útiles para datos que NO deben cambiar.</span>
+
+<span class="va">punto</span>     = (<span class="num">10</span>, <span class="num">20</span>)
+<span class="va">colores</span>   = (<span class="st">"rojo"</span>, <span class="st">"verde"</span>, <span class="st">"azul"</span>)
+<span class="va">una_sola</span>  = (<span class="num">42</span>,)            <span class="cm"># ¡coma obligatoria!</span>
+
+<span class="cm"># Acceso por índice (igual que listas)</span>
+<span class="fn">print</span>(<span class="va">punto</span>[<span class="num">0</span>])           <span class="cm"># 10</span>
+<span class="fn">print</span>(<span class="va">colores</span>[<span class="op">-</span><span class="num">1</span>])        <span class="cm"># "azul"</span>
+
+<span class="cm"># NO se puede modificar</span>
+<span class="cm"># punto[0] = 5  → TypeError</span>
+
+<span class="cm"># Desempaquetado (unpacking)</span>
+<span class="va">x</span>, <span class="va">y</span> = <span class="va">punto</span>
+<span class="va">r</span>, <span class="va">g</span>, <span class="va">b</span> = <span class="va">colores</span>
+
+<span class="cm"># Caso típico: retornar varios valores</span>
+<span class="kw">def</span> <span class="fn">dividir</span>(<span class="va">a</span>, <span class="va">b</span>):
+    <span class="kw">return</span> <span class="va">a</span> <span class="op">//</span> <span class="va">b</span>, <span class="va">a</span> <span class="op">%</span> <span class="va">b</span>
+
+<span class="va">cociente</span>, <span class="va">resto</span> = <span class="fn">dividir</span>(<span class="num">17</span>, <span class="num">5</span>)  <span class="cm"># (3, 2)</span></pre></div>
+
+                    <div class="code-section" id="code-set"><pre><span class="cm"># Sets — colección NO ORDENADA y SIN DUPLICADOS</span>
+<span class="cm"># Ideal para eliminar repetidos y operaciones de conjunto.</span>
+
+<span class="va">numeros</span> = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>}
+<span class="fn">print</span>(<span class="va">numeros</span>)              <span class="cm"># {1, 2, 3} — sin duplicados</span>
+
+<span class="cm"># Eliminar duplicados de una lista</span>
+<span class="va">unicos</span> = <span class="fn">set</span>([<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"a"</span>, <span class="st">"c"</span>])
+
+<span class="cm"># Métodos</span>
+<span class="va">numeros</span>.<span class="fn">add</span>(<span class="num">4</span>)
+<span class="va">numeros</span>.<span class="fn">discard</span>(<span class="num">2</span>)        <span class="cm"># elimina si existe (sin error)</span>
+
+<span class="cm"># Operaciones de conjunto</span>
+<span class="va">a</span> = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
+<span class="va">b</span> = {<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>}
+
+<span class="va">a</span> <span class="op">|</span> <span class="va">b</span>      <span class="cm"># Unión        → {1,2,3,4,5}</span>
+<span class="va">a</span> <span class="op">&amp;</span> <span class="va">b</span>      <span class="cm"># Intersección → {3}</span>
+<span class="va">a</span> <span class="op">-</span> <span class="va">b</span>      <span class="cm"># Diferencia   → {1,2}</span>
+<span class="va">a</span> <span class="op">^</span> <span class="va">b</span>      <span class="cm"># Simétrica    → {1,2,4,5}</span>
+
+<span class="num">3</span> <span class="kw">in</span> <span class="va">a</span>       <span class="cm"># True (búsqueda muy rápida)</span></pre></div>
+
+                    <div class="code-section" id="code-iter"><pre><span class="cm"># Recorrido y comprehensions</span>
+
+<span class="va">frutas</span> = [<span class="st">"manzana"</span>, <span class="st">"pera"</span>, <span class="st">"uva"</span>]
+
+<span class="cm"># for básico</span>
+<span class="kw">for</span> <span class="va">f</span> <span class="kw">in</span> <span class="va">frutas</span>:
+    <span class="fn">print</span>(<span class="va">f</span>)
+
+<span class="cm"># enumerate → índice + valor</span>
+<span class="kw">for</span> <span class="va">i</span>, <span class="va">f</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">frutas</span>):
+    <span class="fn">print</span>(<span class="va">i</span>, <span class="va">f</span>)
+
+<span class="cm"># Recorrer un dict</span>
+<span class="va">precios</span> = {<span class="st">"pan"</span>: <span class="num">1200</span>, <span class="st">"leche"</span>: <span class="num">990</span>}
+<span class="kw">for</span> <span class="va">k</span>, <span class="va">v</span> <span class="kw">in</span> <span class="va">precios</span>.<span class="fn">items</span>():
+    <span class="fn">print</span>(<span class="va">k</span>, <span class="st">"= $"</span>, <span class="va">v</span>)
+
+<span class="cm"># List comprehension — crea listas en una línea</span>
+<span class="va">cuadrados</span> = [<span class="va">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="va">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)]
+<span class="cm"># [0, 1, 4, 9, 16]</span>
+
+<span class="va">pares</span> = [<span class="va">x</span> <span class="kw">for</span> <span class="va">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>) <span class="kw">if</span> <span class="va">x</span> <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>]
+<span class="cm"># [0, 2, 4, 6, 8]</span>
+
+<span class="cm"># Dict comprehension</span>
+<span class="va">tabla</span> = {<span class="va">n</span>: <span class="va">n</span><span class="op">*</span><span class="num">2</span> <span class="kw">for</span> <span class="va">n</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">4</span>)}
+<span class="cm"># {1: 2, 2: 4, 3: 6}</span></pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Visualización -->
+        <div class="right-panel">
+
+            <!-- LIST -->
+            <div class="type-info active" id="info-list">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(244,114,182,0.2), rgba(244,114,182,0.05)); border: 1px solid rgba(244,114,182,0.3); color:#f472b6;">
+                    <h2>list</h2>
+                    <span class="tag">[ ] · ordenada · mutable</span>
+                    <p style="color: var(--text-dim);">Secuencia ordenada y modificable. Acepta valores duplicados de cualquier tipo. Se accede por índice (empieza en 0).</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Indexación de la lista</h3>
+                    <div class="list-viz">
+                        <div class="list-cell"><div class="cell-val">"manzana"</div><div class="cell-idx">0</div><div class="cell-neg">-4</div></div>
+                        <div class="list-cell"><div class="cell-val">"pera"</div><div class="cell-idx">1</div><div class="cell-neg">-3</div></div>
+                        <div class="list-cell"><div class="cell-val">"uva"</div><div class="cell-idx">2</div><div class="cell-neg">-2</div></div>
+                        <div class="list-cell"><div class="cell-val">"kiwi"</div><div class="cell-idx">3</div><div class="cell-neg">-1</div></div>
+                    </div>
+                </div>
+                <div class="type-fn"><code><span class="fn">type</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>]) <span class="op">=&gt;</span></code><div class="output">&lt;class 'list'&gt;</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">frutas[0]</span><span class="v-val">"manzana"</span></div>
+                    <div class="value-row"><span class="v-name">frutas[-1]</span><span class="v-val">"kiwi"</span></div>
+                    <div class="value-row"><span class="v-name">len(frutas)</span><span class="v-val">4</span></div>
+                    <div class="value-row"><span class="v-name">"pera" in frutas</span><span class="v-val" style="color:#34d399">True</span></div>
+                    <div class="value-row"><span class="v-name">frutas + ["mango"]</span><span class="v-val">[…, "mango"]</span></div>
+                </div>
+            </div>
+
+            <!-- DICT -->
+            <div class="type-info" id="info-dict">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(56,189,248,0.05)); border: 1px solid rgba(56,189,248,0.3);">
+                    <h2 style="color:#38bdf8">dict</h2>
+                    <span class="tag">{ k: v } · clave–valor · mutable</span>
+                    <p style="color: var(--text-dim);">Asocia claves únicas a valores. Acceso ultra rápido por clave (hash). Las claves deben ser inmutables (str, int, tuple…).</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Mapa clave → valor</h3>
+                    <div class="dict-viz">
+                        <div class="dict-row"><div class="dict-key">"nombre"</div><div class="dict-arrow">→</div><div class="dict-val">"Ana"</div></div>
+                        <div class="dict-row"><div class="dict-key">"edad"</div><div class="dict-arrow">→</div><div class="dict-val">21</div></div>
+                        <div class="dict-row"><div class="dict-key">"curso"</div><div class="dict-arrow">→</div><div class="dict-val">"TI3011"</div></div>
+                        <div class="dict-row"><div class="dict-key">"notas"</div><div class="dict-arrow">→</div><div class="dict-val">[6.5, 5.8, 7.0]</div></div>
+                    </div>
+                </div>
+                <div class="type-fn"><code><span class="fn">type</span>({<span class="st">"a"</span>:<span class="num">1</span>}) <span class="op">=&gt;</span></code><div class="output">&lt;class 'dict'&gt;</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">estudiante["nombre"]</span><span class="v-val">"Ana"</span></div>
+                    <div class="value-row"><span class="v-name">estudiante.get("x", "-")</span><span class="v-val">"-"</span></div>
+                    <div class="value-row"><span class="v-name">"edad" in estudiante</span><span class="v-val" style="color:#34d399">True</span></div>
+                    <div class="value-row"><span class="v-name">len(estudiante)</span><span class="v-val">4</span></div>
+                    <div class="value-row"><span class="v-name">list(estudiante.keys())</span><span class="v-val">["nombre", …]</span></div>
+                </div>
+            </div>
+
+            <!-- TUPLE -->
+            <div class="type-info" id="info-tuple">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(251,191,36,0.05)); border: 1px solid rgba(251,191,36,0.3);">
+                    <h2 style="color:#fbbf24">tuple</h2>
+                    <span class="tag">( ) · ordenada · inmutable</span>
+                    <p style="color: var(--text-dim);">Igual que una lista, pero NO se puede modificar tras crearla. Más liviana y segura para datos fijos (coordenadas, fechas, configuración).</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>Tupla bloqueada</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+                        <div><span class="tuple-viz">(10, 20)<span class="tuple-lock">🔒 inmutable</span></span></div>
+                        <div><span class="tuple-viz">("rojo", "verde", "azul")<span class="tuple-lock">🔒 inmutable</span></span></div>
+                    </div>
+                </div>
+                <div class="type-fn"><code><span class="va">punto</span>[<span class="num">0</span>] = <span class="num">5</span> <span class="op">=&gt;</span></code><div class="output" style="color:#f87171">TypeError: 'tuple' object does not support item assignment</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">x, y = (10, 20)</span><span class="v-val">x=10, y=20</span></div>
+                    <div class="value-row"><span class="v-name">(42,)</span><span class="v-val">tupla de 1 elem.</span></div>
+                    <div class="value-row"><span class="v-name">len((1,2,3))</span><span class="v-val">3</span></div>
+                </div>
+            </div>
+
+            <!-- SET -->
+            <div class="type-info" id="info-set">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(52,211,153,0.05)); border: 1px solid rgba(52,211,153,0.3);">
+                    <h2 style="color:#34d399">set</h2>
+                    <span class="tag">{ } · sin orden · sin duplicados</span>
+                    <p style="color: var(--text-dim);">Conjunto matemático: elementos únicos, sin posición fija. Pertenencia (<code>in</code>) es muy rápida. Soporta unión, intersección y diferencia.</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>{1, 2, 3, 2, 1} → </h3>
+                    <div class="set-viz">
+                        <span class="set-item">1</span>
+                        <span class="set-item">2</span>
+                        <span class="set-item">3</span>
+                    </div>
+                    <h3 style="margin-top:1.25rem;">Operaciones de conjunto</h3>
+                    <div class="values-list">
+                        <div class="value-row"><span class="v-name">{1,2,3} | {3,4}</span><span class="v-val">{1,2,3,4}</span></div>
+                        <div class="value-row"><span class="v-name">{1,2,3} &amp; {3,4}</span><span class="v-val">{3}</span></div>
+                        <div class="value-row"><span class="v-name">{1,2,3} - {3,4}</span><span class="v-val">{1,2}</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITER -->
+            <div class="type-info" id="info-iter">
+                <div class="info-header" style="background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(167,139,250,0.05)); border: 1px solid rgba(167,139,250,0.3);">
+                    <h2 style="color:#a78bfa">Recorrido</h2>
+                    <span class="tag">for · enumerate · comprehension</span>
+                    <p style="color: var(--text-dim);">Las estructuras se recorren con <code>for</code>. Las comprehensions son una forma compacta de generar listas o diccionarios a partir de otros iterables.</p>
+                </div>
+                <div class="memory-viz">
+                    <h3>¿Cuándo uso cada una?</h3>
+                    <div class="values-list">
+                        <div class="value-row"><span class="v-name">list</span><span class="v-val">orden + duplicados + cambios</span></div>
+                        <div class="value-row"><span class="v-name">dict</span><span class="v-val">buscar por clave</span></div>
+                        <div class="value-row"><span class="v-name">tuple</span><span class="v-val">datos fijos / retornos</span></div>
+                        <div class="value-row"><span class="v-name">set</span><span class="v-val">únicos · pertenencia rápida</span></div>
+                    </div>
+                </div>
+                <div class="type-fn"><code>[<span class="va">x</span><span class="op">**</span><span class="num">2</span> <span class="kw">for</span> <span class="va">x</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)] <span class="op">=&gt;</span></code><div class="output">[0, 1, 4, 9, 16]</div></div>
+                <div class="values-list">
+                    <div class="value-row"><span class="v-name">enumerate(["a","b"])</span><span class="v-val">(0,"a") (1,"b")</span></div>
+                    <div class="value-row"><span class="v-name">{n: n*2 for n in range(1,4)}</span><span class="v-val">{1:2, 2:4, 3:6}</span></div>
+                    <div class="value-row"><span class="v-name">[x for x in r if x%2==0]</span><span class="v-val">solo pares</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+
+        const filenames = { list: 'listas.py', dict: 'diccionarios.py', tuple: 'tuplas.py', set: 'sets.py', iter: 'recorrido.py' };
+
+        function switchType(type) {
+            document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-info').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('code-' + type).classList.add('active');
+            document.getElementById('info-' + type).classList.add('active');
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            document.getElementById('filename').textContent = filenames[type];
+        }
+    </script>
+</body>
+</html>
