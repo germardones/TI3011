@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colecciones Seguras | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #2dd4bf; --accent-glow: rgba(45,212,191,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #0d9488; --accent-glow: rgba(13,148,136,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+
+        .workspace { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 57px); }
+        @media(max-width:900px) { .workspace { grid-template-columns: 1fr; } }
+
+        /* LEFT */
+        .left-panel { padding: 2.5rem; border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        [data-theme="light"] .left-panel { border-right: 1px solid rgba(0,0,0,0.08); }
+        .left-panel h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .left-panel > p { color: var(--text-dim); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .type-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .type-tab {
+            padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: var(--text-dim); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+        }
+        [data-theme="light"] .type-tab { border: 1px solid rgba(0,0,0,0.1); }
+        .type-tab.active { color: var(--c); border-color: var(--c); background: rgba(255,255,255,0.05); }
+        .type-tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+        .terminal { background: var(--panel-bg); border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .terminal { border: 1px solid rgba(0,0,0,0.1); }
+        .term-header { background: rgba(255,255,255,0.04); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .term-header { background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .term-body { padding: 1.5rem; line-height: 1.9; font-size: 0.82rem; color: #cdd9e5; overflow-x: auto; }
+        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; } .st { color: #98c379; }
+        .num { color: #d19a66; } .va { color: #e06c75; } .op { color: #56b6c2; }
+        [data-theme="light"] .kw { color: #7c3aed; } [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; } [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .va { color: #e11d48; } [data-theme="light"] .op { color: #0891b2; }
+        [data-theme="light"] .cm { color: #94a3b8; } [data-theme="light"] .term-body { color: #1e293b; }
+
+        .code-section { display: none; }
+        .code-section.active { display: block; }
+
+        /* RIGHT */
+        .right-panel { padding: 2.5rem; background: var(--card-bg); overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .type-info { display: none; flex-direction: column; gap: 1.25rem; }
+        .type-info.active { display: flex; }
+
+        .info-header { border-radius: 1rem; padding: 1.5rem; }
+        .info-header h2 { font-size: 1.8rem; margin-bottom: 0.4rem; }
+        .info-header .tag { font-size: 0.8rem; font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; }
+        .info-header p { font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem; }
+
+        .security-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .sec-box { border-radius: 0.75rem; padding: 1rem; font-family: 'Fira Code', monospace; font-size: 0.78rem; line-height: 1.6; }
+        .sec-safe { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.3); }
+        .sec-unsafe { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); }
+        .sec-label { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .sec-safe .sec-label { color: #34d399; } .sec-unsafe .sec-label { color: #f87171; }
+        .sec-box code { color: #cdd9e5; }
+        [data-theme="light"] .sec-box code { color: #1e293b; }
+
+        .prop-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .prop-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.9rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; font-size: 0.85rem; }
+        [data-theme="light"] .prop-row { background: rgba(0,0,0,0.03); }
+        .prop-name { color: var(--text-dim); font-family: 'Fira Code', monospace; font-size: 0.8rem; }
+        .prop-val { font-weight: 600; font-family: 'Fira Code', monospace; }
+        .badge-safe { color: #34d399; } .badge-unsafe { color: #f87171; } .badge-neutral { color: #fbbf24; }
+
+        .mem-viz { background: rgba(255,255,255,0.04); border-radius: 0.75rem; padding: 1.1rem; }
+        [data-theme="light"] .mem-viz { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+        .mem-viz h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.75rem; }
+
+        .cell-row { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: flex-end; }
+        .cell { text-align: center; }
+        .cell-val { border-radius: 6px; padding: 0.45rem 0.7rem; min-width: 52px; font-family: 'Fira Code', monospace; font-size: 0.8rem; font-weight: 600; }
+        .cell-idx { color: var(--text-dim); font-size: 0.68rem; margin-top: 0.2rem; font-family: 'Fira Code', monospace; }
+
+        @media (max-width: 768px) { .security-compare { grid-template-columns: 1fr; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <!-- LEFT: Código -->
+        <div class="left-panel">
+            <h1>🛡️ Colecciones Seguras</h1>
+            <p>Uso seguro de listas, tuplas y diccionarios. Conoce los riesgos de mutabilidad y cómo prevenirlos con buenas prácticas defensivas.</p>
+
+            <div class="type-tabs">
+                <button class="type-tab active" style="--c:#2dd4bf" data-type="list" onclick="switchType('list')">list</button>
+                <button class="type-tab" style="--c:#fbbf24" data-type="tuple" onclick="switchType('tuple')">tuple</button>
+                <button class="type-tab" style="--c:#38bdf8" data-type="dict" onclick="switchType('dict')">dict</button>
+            </div>
+
+            <div class="terminal">
+                <div class="term-header">
+                    <div class="dot" style="background:#ef4444"></div>
+                    <div class="dot" style="background:#eab308"></div>
+                    <div class="dot" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">listas_seguras.py</span>
+                </div>
+                <div class="term-body">
+                    <div class="code-section active" id="code-list"><pre><span class="cm"># ── LISTAS SEGURAS ──────────────────────────────</span>
+
+<span class="cm"># ✅ Verificar índice antes de acceder</span>
+<span class="va">notas</span> = [<span class="num">6.5</span>, <span class="num">5.8</span>, <span class="num">7.0</span>, <span class="num">4.2</span>]
+<span class="va">idx</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Índice: "</span>))
+<span class="kw">if</span> <span class="num">0</span> <span class="op">&lt;=</span> <span class="va">idx</span> <span class="op">&lt;</span> <span class="fn">len</span>(<span class="va">notas</span>):
+    <span class="fn">print</span>(<span class="va">notas</span>[<span class="va">idx</span>])
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="st">"Índice fuera de rango."</span>)
+
+<span class="cm"># ✅ Copiar lista, no crear referencia</span>
+<span class="va">original</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+<span class="va">copia</span>    = <span class="va">original</span>.<span class="fn">copy</span>()   <span class="cm"># o list(original)</span>
+<span class="va">copia</span>.<span class="fn">append</span>(<span class="num">4</span>)
+<span class="fn">print</span>(<span class="va">original</span>)  <span class="cm"># [1, 2, 3] — no cambia</span>
+
+<span class="cm"># ✅ Nunca modificar la lista mientras se itera</span>
+<span class="va">items</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]
+<span class="cm"># ❌ INSEGURO: for i in items: if i%2==0: items.remove(i)</span>
+<span class="va">pares</span> = [<span class="va">i</span> <span class="kw">for</span> <span class="va">i</span> <span class="kw">in</span> <span class="va">items</span> <span class="kw">if</span> <span class="va">i</span> <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>]
+
+<span class="cm"># ✅ Validar antes de agregar</span>
+<span class="kw">def</span> <span class="fn">agregar_nota</span>(<span class="va">lista</span>, <span class="va">nota</span>):
+    <span class="kw">if not</span> <span class="fn">isinstance</span>(<span class="va">nota</span>, (<span class="fn">int</span>, <span class="fn">float</span>)):
+        <span class="kw">raise</span> <span class="fn">TypeError</span>(<span class="st">"La nota debe ser numérica."</span>)
+    <span class="kw">if not</span> (<span class="num">1.0</span> <span class="op">&lt;=</span> <span class="va">nota</span> <span class="op">&lt;=</span> <span class="num">7.0</span>):
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"Nota entre 1.0 y 7.0"</span>)
+    <span class="va">lista</span>.<span class="fn">append</span>(<span class="va">nota</span>)</pre></div>
+
+                    <div class="code-section" id="code-tuple"><pre><span class="cm"># ── TUPLAS SEGURAS ──────────────────────────────</span>
+
+<span class="cm"># ✅ Usar tuplas para datos inmutables (configuración)</span>
+<span class="va">DB_CONFIG</span> = (<span class="st">"localhost"</span>, <span class="num">5432</span>, <span class="st">"mi_db"</span>)
+<span class="va">host</span>, <span class="va">port</span>, <span class="va">nombre</span> = <span class="va">DB_CONFIG</span>
+
+<span class="cm"># ✅ Retornar múltiples valores con tupla</span>
+<span class="kw">def</span> <span class="fn">procesar_nota</span>(<span class="va">nota</span>: <span class="fn">float</span>) <span class="op">-&gt;</span> <span class="fn">tuple</span>:
+    <span class="kw">if</span> <span class="va">nota</span> <span class="op">&gt;=</span> <span class="num">4.0</span>:
+        <span class="kw">return</span> (<span class="kw">True</span>, <span class="st">"Aprobado"</span>, <span class="va">nota</span>)
+    <span class="kw">return</span> (<span class="kw">False</span>, <span class="st">"Reprobado"</span>, <span class="va">nota</span>)
+
+<span class="va">aprobado</span>, <span class="va">estado</span>, <span class="va">n</span> = <span class="fn">procesar_nota</span>(<span class="num">5.5</span>)
+
+<span class="cm"># ✅ Tupla como clave de diccionario (inmutable)</span>
+<span class="va">registro</span> = {}
+<span class="va">registro</span>[(<span class="st">"Ana"</span>, <span class="st">"TI3011"</span>)] = <span class="num">6.5</span>
+
+<span class="cm"># ✅ Proteger datos sensibles con namedtuple</span>
+<span class="kw">from</span> <span class="fn">collections</span> <span class="kw">import</span> <span class="fn">namedtuple</span>
+<span class="va">Credencial</span> = <span class="fn">namedtuple</span>(<span class="st">"Credencial"</span>,
+                         [<span class="st">"usuario"</span>, <span class="st">"rol"</span>])
+<span class="va">cred</span> = <span class="va">Credencial</span>(<span class="st">"ana@inacap.cl"</span>, <span class="st">"alumno"</span>)
+<span class="cm"># cred.usuario → acceso legible</span>
+<span class="cm"># cred.usuario = "x" → AttributeError (inmutable)</span></pre></div>
+
+                    <div class="code-section" id="code-dict"><pre><span class="cm"># ── DICCIONARIOS SEGUROS ────────────────────────</span>
+
+<span class="cm"># ✅ Usar .get() con valor por defecto</span>
+<span class="va">usuario</span> = {<span class="st">"nombre"</span>: <span class="st">"Ana"</span>, <span class="st">"rol"</span>: <span class="st">"alumno"</span>}
+
+<span class="cm"># ❌ INSEGURO: puede lanzar KeyError</span>
+<span class="cm"># email = usuario["email"]</span>
+
+<span class="cm"># ✅ SEGURO: valor por defecto controlado</span>
+<span class="va">email</span> = <span class="va">usuario</span>.<span class="fn">get</span>(<span class="st">"email"</span>, <span class="st">"no-registrado"</span>)
+
+<span class="cm"># ✅ Validar clave antes de acceder</span>
+<span class="kw">if</span> <span class="st">"rol"</span> <span class="kw">in</span> <span class="va">usuario</span>:
+    <span class="fn">print</span>(<span class="st">f"Rol: </span>{<span class="va">usuario</span>[<span class="st">'rol'</span>]}<span class="st">"</span>)
+
+<span class="cm"># ✅ Nunca guardar contraseñas en texto plano</span>
+<span class="cm"># ❌ usuario["password"] = "admin123"</span>
+<span class="kw">import</span> <span class="fn">hashlib</span>
+<span class="kw">def</span> <span class="fn">hash_pass</span>(<span class="va">pw</span>: <span class="fn">str</span>) <span class="op">-&gt;</span> <span class="fn">str</span>:
+    <span class="kw">return</span> <span class="fn">hashlib</span>.<span class="fn">sha256</span>(<span class="va">pw</span>.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()
+
+<span class="va">usuario</span>[<span class="st">"pw_hash"</span>] = <span class="fn">hash_pass</span>(<span class="st">"miPassword"</span>)
+
+<span class="cm"># ✅ Copiar dict antes de modificar</span>
+<span class="va">config_base</span> = {<span class="st">"debug"</span>: <span class="kw">False</span>, <span class="st">"max_req"</span>: <span class="num">100</span>}
+<span class="va">config_local</span> = <span class="va">config_base</span>.<span class="fn">copy</span>()
+<span class="va">config_local</span>[<span class="st">"debug"</span>] = <span class="kw">True</span>  <span class="cm"># no afecta config_base</span></pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Visualización -->
+        <div class="right-panel">
+
+            <!-- LIST INFO -->
+            <div class="type-info active" id="info-list">
+                <div class="info-header" style="background:linear-gradient(135deg,rgba(45,212,191,0.18),rgba(45,212,191,0.04));border:1px solid rgba(45,212,191,0.3);">
+                    <h2 style="color:#2dd4bf">list — Mutable</h2>
+                    <span class="tag">[ ] · ordenada · mutable · permite duplicados</span>
+                    <p style="color:var(--text-dim);">La mutabilidad permite modificar datos en runtime, lo que puede ser fuente de bugs y vulnerabilidades si no se controla.</p>
+                </div>
+                <div class="mem-viz">
+                    <h3>Visualización de índices</h3>
+                    <div class="cell-row">
+                        <div class="cell"><div class="cell-val" style="background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.4);color:#2dd4bf">6.5</div><div class="cell-idx">0 / -4</div></div>
+                        <div class="cell"><div class="cell-val" style="background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.4);color:#2dd4bf">5.8</div><div class="cell-idx">1 / -3</div></div>
+                        <div class="cell"><div class="cell-val" style="background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.4);color:#2dd4bf">7.0</div><div class="cell-idx">2 / -2</div></div>
+                        <div class="cell"><div class="cell-val" style="background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.4);color:#2dd4bf">4.2</div><div class="cell-idx">3 / -1</div></div>
+                    </div>
+                </div>
+                <div class="security-compare">
+                    <div class="sec-box sec-unsafe">
+                        <div class="sec-label">❌ Inseguro</div>
+                        <code>ref = original<br>ref.append(99)<br># original también cambia!</code>
+                    </div>
+                    <div class="sec-box sec-safe">
+                        <div class="sec-label">✅ Seguro</div>
+                        <code>copia = original.copy()<br>copia.append(99)<br># original intacto</code>
+                    </div>
+                </div>
+                <div class="prop-list">
+                    <div class="prop-row"><span class="prop-name">Mutable</span><span class="prop-val badge-unsafe">Sí — riesgo de modificación</span></div>
+                    <div class="prop-row"><span class="prop-name">Ordered</span><span class="prop-val badge-safe">Sí — índice predecible</span></div>
+                    <div class="prop-row"><span class="prop-name">Duplicados</span><span class="prop-val badge-neutral">Permitidos</span></div>
+                    <div class="prop-row"><span class="prop-name">Copiar seguro</span><span class="prop-val badge-safe">.copy() o list()</span></div>
+                    <div class="prop-row"><span class="prop-name">Validar índice</span><span class="prop-val badge-safe">0 &lt;= i &lt; len()</span></div>
+                </div>
+            </div>
+
+            <!-- TUPLE INFO -->
+            <div class="type-info" id="info-tuple">
+                <div class="info-header" style="background:linear-gradient(135deg,rgba(251,191,36,0.18),rgba(251,191,36,0.04));border:1px solid rgba(251,191,36,0.3);">
+                    <h2 style="color:#fbbf24">tuple — Inmutable</h2>
+                    <span class="tag">( ) · ordenada · inmutable · más segura</span>
+                    <p style="color:var(--text-dim);">La inmutabilidad garantiza que los datos no cambien accidentalmente. Ideal para configuración, credenciales de acceso y retorno de funciones.</p>
+                </div>
+                <div class="mem-viz">
+                    <h3>Tupla bloqueada</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <div style="display:inline-flex;align-items:center;gap:0.3rem;font-family:'Fira Code',monospace;font-size:0.88rem;padding:0.5rem 0.9rem;background:rgba(251,191,36,0.1);border:1px dashed rgba(251,191,36,0.45);border-radius:8px;color:#fbbf24;font-weight:600;">
+                            ("localhost", 5432, "mi_db") <span style="font-size:0.72rem;color:var(--text-dim);margin-left:0.5rem">🔒 inmutable</span>
+                        </div>
+                        <div style="display:inline-flex;align-items:center;gap:0.3rem;font-family:'Fira Code',monospace;font-size:0.88rem;padding:0.5rem 0.9rem;background:rgba(251,191,36,0.1);border:1px dashed rgba(251,191,36,0.45);border-radius:8px;color:#fbbf24;font-weight:600;">
+                            (True, "Aprobado", 5.5) <span style="font-size:0.72rem;color:var(--text-dim);margin-left:0.5rem">🔒 inmutable</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="security-compare">
+                    <div class="sec-box sec-safe">
+                        <div class="sec-label">✅ Seguro — config</div>
+                        <code>DB = ("host", 5432)<br>host, port = DB<br># no puede cambiar</code>
+                    </div>
+                    <div class="sec-box sec-unsafe">
+                        <div class="sec-label">❌ Intentar mutar</div>
+                        <code>DB[0] = "otro"<br># TypeError:<br># tuple immutable</code>
+                    </div>
+                </div>
+                <div class="prop-list">
+                    <div class="prop-row"><span class="prop-name">Mutable</span><span class="prop-val badge-safe">No — datos protegidos</span></div>
+                    <div class="prop-row"><span class="prop-name">Hashable</span><span class="prop-val badge-safe">Sí — usable como clave</span></div>
+                    <div class="prop-row"><span class="prop-name">Rendimiento</span><span class="prop-val badge-safe">Más rápida que list</span></div>
+                    <div class="prop-row"><span class="prop-name">Uso recomendado</span><span class="prop-val badge-neutral">Config, retorno múltiple</span></div>
+                </div>
+            </div>
+
+            <!-- DICT INFO -->
+            <div class="type-info" id="info-dict">
+                <div class="info-header" style="background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(56,189,248,0.04));border:1px solid rgba(56,189,248,0.3);">
+                    <h2 style="color:#38bdf8">dict — Clave-Valor</h2>
+                    <span class="tag">{ k: v } · mutable · acceso O(1) · claves únicas</span>
+                    <p style="color:var(--text-dim);">Potentes pero con riesgos. Nunca almacenar contraseñas en texto plano; usar .get() para evitar KeyError; copiar antes de modificar.</p>
+                </div>
+                <div class="mem-viz">
+                    <h3>Mapa clave → valor</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.4rem;font-family:'Fira Code',monospace;font-size:0.82rem;">
+                        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.5rem;align-items:center;">
+                            <div style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;border-radius:6px;padding:0.35rem 0.6rem;text-align:center;font-weight:600">"nombre"</div>
+                            <div style="color:var(--text-dim)">→</div>
+                            <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;border-radius:6px;padding:0.35rem 0.6rem;text-align:center;font-weight:600">"Ana"</div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.5rem;align-items:center;">
+                            <div style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;border-radius:6px;padding:0.35rem 0.6rem;text-align:center;font-weight:600">"rol"</div>
+                            <div style="color:var(--text-dim)">→</div>
+                            <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;border-radius:6px;padding:0.35rem 0.6rem;text-align:center;font-weight:600">"alumno"</div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.5rem;align-items:center;">
+                            <div style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;border-radius:6px;padding:0.35rem 0.6rem;text-align:center;font-weight:600">"pw_hash"</div>
+                            <div style="color:var(--text-dim)">→</div>
+                            <div style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);color:#34d399;border-radius:6px;padding:0.35rem 0.6rem;text-align:center;font-weight:600">sha256(...)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="security-compare">
+                    <div class="sec-box sec-unsafe">
+                        <div class="sec-label">❌ Inseguro</div>
+                        <code>u["email"]<br># KeyError si no existe<br>u["pw"]="admin"<br># texto plano</code>
+                    </div>
+                    <div class="sec-box sec-safe">
+                        <div class="sec-label">✅ Seguro</div>
+                        <code>u.get("email","-")<br># sin error<br>u["pw"]=hash(pw)<br># hasheado</code>
+                    </div>
+                </div>
+                <div class="prop-list">
+                    <div class="prop-row"><span class="prop-name">Acceso</span><span class="prop-val badge-safe">O(1) — por clave (hash)</span></div>
+                    <div class="prop-row"><span class="prop-name">Claves faltantes</span><span class="prop-val badge-unsafe">KeyError si no .get()</span></div>
+                    <div class="prop-row"><span class="prop-name">Contraseñas</span><span class="prop-val badge-unsafe">Nunca en texto plano</span></div>
+                    <div class="prop-row"><span class="prop-name">Copiar</span><span class="prop-val badge-safe">.copy() antes de mutar</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+
+        const filenames = { list: 'listas_seguras.py', tuple: 'tuplas_seguras.py', dict: 'diccionarios_seguros.py' };
+        function switchType(type) {
+            document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-info').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('code-' + type).classList.add('active');
+            document.getElementById('info-' + type).classList.add('active');
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            document.getElementById('filename').textContent = filenames[type];
+        }
+    </script>
+</body>
+</html>
