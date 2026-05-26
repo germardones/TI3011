@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Errores y Excepciones | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #f87171; --accent-glow: rgba(248,113,113,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #dc2626; --accent-glow: rgba(220,38,38,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+
+        .workspace { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 57px); }
+        @media(max-width:900px) { .workspace { grid-template-columns: 1fr; } }
+
+        .left-panel { padding: 2.5rem; border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        [data-theme="light"] .left-panel { border-right: 1px solid rgba(0,0,0,0.08); }
+        .left-panel h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .left-panel > p { color: var(--text-dim); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .type-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .type-tab {
+            padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: var(--text-dim); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+        }
+        [data-theme="light"] .type-tab { border: 1px solid rgba(0,0,0,0.1); }
+        .type-tab.active { color: var(--c); border-color: var(--c); background: rgba(255,255,255,0.05); }
+        .type-tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+        .terminal { background: var(--panel-bg); border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .terminal { border: 1px solid rgba(0,0,0,0.1); }
+        .term-header { background: rgba(255,255,255,0.04); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .term-header { background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .term-body { padding: 1.5rem; line-height: 1.9; font-size: 0.82rem; color: #cdd9e5; overflow-x: auto; }
+        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; } .st { color: #98c379; }
+        .num { color: #d19a66; } .va { color: #e06c75; } .op { color: #56b6c2; }
+        [data-theme="light"] .kw { color: #7c3aed; } [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; } [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .va { color: #e11d48; } [data-theme="light"] .op { color: #0891b2; }
+        [data-theme="light"] .cm { color: #94a3b8; } [data-theme="light"] .term-body { color: #1e293b; }
+        .code-section { display: none; } .code-section.active { display: block; }
+
+        .right-panel { padding: 2.5rem; background: var(--card-bg); overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .type-info { display: none; flex-direction: column; gap: 1.25rem; }
+        .type-info.active { display: flex; }
+
+        .exc-hierarchy { background: rgba(255,255,255,0.04); border-radius: 1rem; padding: 1.25rem; font-family: 'Fira Code', monospace; font-size: 0.82rem; }
+        [data-theme="light"] .exc-hierarchy { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+        .exc-hierarchy h3 { font-family: 'Inter', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.9rem; }
+        .exc-node { padding: 0.3rem 0; }
+        .exc-node .exc-name { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; font-size: 0.8rem; }
+        .exc-base { color: #a78bfa; } .exc-std { color: #f87171; } .exc-other { color: #fbbf24; }
+        .exc-children { margin-left: 1.5rem; border-left: 2px solid rgba(255,255,255,0.08); padding-left: 1rem; }
+        [data-theme="light"] .exc-children { border-left: 2px solid rgba(0,0,0,0.08); }
+
+        .compare-card { border-radius: 0.75rem; padding: 1rem 1.25rem; }
+        .compare-unsafe { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); }
+        .compare-safe { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); }
+        .compare-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .compare-unsafe .compare-label { color: #f87171; }
+        .compare-safe .compare-label { color: #34d399; }
+        .compare-card p { font-size: 0.88rem; color: var(--text-dim); }
+
+        .sec-rule { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 0.6rem; }
+        [data-theme="light"] .sec-rule { background: rgba(0,0,0,0.03); }
+        .sec-rule .rule-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+        .sec-rule .rule-text { font-size: 0.88rem; color: var(--text-dim); }
+        .sec-rule .rule-text strong { color: var(--text-main); }
+
+        .severity-bar { display: flex; flex-direction: column; gap: 0.4rem; }
+        .sev-row { display: flex; align-items: center; gap: 0.75rem; font-size: 0.82rem; }
+        .sev-label { width: 80px; font-weight: 600; }
+        .sev-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .sev-desc { color: var(--text-dim); }
+        @media (max-width: 768px) { .workspace { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <!-- LEFT: Código -->
+        <div class="left-panel">
+            <h1>🚨 Errores y Excepciones</h1>
+            <p>Captura y maneja errores de forma segura, evitando exponer información sensible del sistema. Aprende las mejores prácticas orientadas a seguridad.</p>
+
+            <div class="type-tabs">
+                <button class="type-tab active" style="--c:#f87171" data-type="try" onclick="switchTab('try')">try/except</button>
+                <button class="type-tab" style="--c:#a78bfa" data-type="raise" onclick="switchTab('raise')">raise</button>
+                <button class="type-tab" style="--c:#38bdf8" data-type="logging" onclick="switchTab('logging')">logging</button>
+            </div>
+
+            <div class="terminal">
+                <div class="term-header">
+                    <div class="dot" style="background:#ef4444"></div>
+                    <div class="dot" style="background:#eab308"></div>
+                    <div class="dot" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">excepciones_seguras.py</span>
+                </div>
+                <div class="term-body">
+                    <div class="code-section active" id="code-try"><pre><span class="cm"># INSEGURO: captura genérica expone info del sistema</span>
+<span class="kw">try</span>:
+    <span class="va">archivo</span> = <span class="fn">open</span>(<span class="va">ruta</span>, <span class="st">"r"</span>)
+    <span class="va">datos</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Número: "</span>))
+<span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="va">e</span>:
+    <span class="fn">print</span>(<span class="st">f"Error: </span>{<span class="va">e</span>}<span class="st">"</span>)  <span class="cm"># ¡expone detalles internos!</span>
+
+<span class="cm"># ─────────────────────────────────────────────────</span>
+
+<span class="cm"># SEGURO: captura específica + mensaje controlado</span>
+<span class="kw">try</span>:
+    <span class="kw">with</span> <span class="fn">open</span>(<span class="va">ruta</span>, <span class="st">"r"</span>) <span class="kw">as</span> <span class="va">archivo</span>:
+        <span class="va">contenido</span> = <span class="va">archivo</span>.<span class="fn">read</span>()
+    <span class="va">numero</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Número: "</span>))
+<span class="kw">except</span> <span class="fn">FileNotFoundError</span>:
+    <span class="fn">print</span>(<span class="st">"Archivo no encontrado."</span>)   <span class="cm"># mensaje genérico</span>
+<span class="kw">except</span> <span class="fn">ValueError</span>:
+    <span class="fn">print</span>(<span class="st">"Ingresa un número válido."</span>)
+<span class="kw">except</span> <span class="fn">PermissionError</span>:
+    <span class="fn">print</span>(<span class="st">"Sin permiso para acceder."</span>)
+<span class="kw">finally</span>:
+    <span class="fn">print</span>(<span class="st">"Operación finalizada."</span>)</pre></div>
+
+                    <div class="code-section" id="code-raise"><pre><span class="kw">def</span> <span class="fn">validar_edad</span>(<span class="va">edad</span>):
+    <span class="kw">if not</span> <span class="fn">isinstance</span>(<span class="va">edad</span>, <span class="fn">int</span>):
+        <span class="kw">raise</span> <span class="fn">TypeError</span>(<span class="st">"La edad debe ser un entero."</span>)
+    <span class="kw">if</span> <span class="va">edad</span> <span class="op">&lt;</span> <span class="num">0</span> <span class="kw">or</span> <span class="va">edad</span> <span class="op">&gt;</span> <span class="num">150</span>:
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"Edad fuera de rango válido."</span>)
+    <span class="kw">return</span> <span class="va">edad</span>
+
+<span class="kw">def</span> <span class="fn">dividir</span>(<span class="va">a</span>, <span class="va">b</span>):
+    <span class="kw">if</span> <span class="va">b</span> <span class="op">==</span> <span class="num">0</span>:
+        <span class="kw">raise</span> <span class="fn">ZeroDivisionError</span>(
+            <span class="st">"No se puede dividir por cero."</span>)
+    <span class="kw">return</span> <span class="va">a</span> <span class="op">/</span> <span class="va">b</span>
+
+<span class="cm"># Excepciones propias para validaciones específicas</span>
+<span class="kw">class</span> <span class="fn">ErrorValidacion</span>(<span class="fn">Exception</span>):
+    <span class="kw">pass</span>
+
+<span class="kw">def</span> <span class="fn">procesar_rut</span>(<span class="va">rut</span>):
+    <span class="kw">if not</span> <span class="va">rut</span>.<span class="fn">strip</span>():
+        <span class="kw">raise</span> <span class="fn">ErrorValidacion</span>(
+            <span class="st">"El RUT no puede estar vacío."</span>)
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="va">rut</span>) <span class="op">&lt;</span> <span class="num">8</span>:
+        <span class="kw">raise</span> <span class="fn">ErrorValidacion</span>(
+            <span class="st">"Formato de RUT inválido."</span>)</pre></div>
+
+                    <div class="code-section" id="code-logging"><pre><span class="kw">import</span> <span class="fn">logging</span>
+
+<span class="cm"># Configuración segura del logger</span>
+<span class="fn">logging</span>.<span class="fn">basicConfig</span>(
+    <span class="va">level</span>=<span class="fn">logging</span>.<span class="va">WARNING</span>,
+    <span class="va">format</span>=<span class="st">'%(asctime)s - %(levelname)s - %(message)s'</span>,
+    <span class="va">filename</span>=<span class="st">'app.log'</span>  <span class="cm"># guardar en archivo</span>
+)
+
+<span class="kw">try</span>:
+    <span class="va">resultado</span> = <span class="num">10</span> <span class="op">/</span> <span class="num">0</span>
+<span class="kw">except</span> <span class="fn">ZeroDivisionError</span>:
+    <span class="cm"># Log técnico → al archivo (no al usuario)</span>
+    <span class="fn">logging</span>.<span class="fn">error</span>(<span class="st">"División por cero detectada."</span>)
+    <span class="cm"># ❌ NO: logging.error(f"Error: {e} datos: {datos}")</span>
+    <span class="fn">print</span>(<span class="st">"Ocurrió un error interno."</span>)  <span class="cm"># vago al usuario</span>
+
+<span class="cm"># Niveles de logging (de menor a mayor severidad)</span>
+<span class="cm"># DEBUG → INFO → WARNING → ERROR → CRITICAL</span>
+<span class="fn">logging</span>.<span class="fn">debug</span>(<span class="st">"Mensaje de depuración"</span>)
+<span class="fn">logging</span>.<span class="fn">info</span>(<span class="st">"Operación completada"</span>)
+<span class="fn">logging</span>.<span class="fn">warning</span>(<span class="st">"Alerta: recurso bajo"</span>)
+<span class="fn">logging</span>.<span class="fn">error</span>(<span class="st">"Error recuperable"</span>)
+<span class="fn">logging</span>.<span class="fn">critical</span>(<span class="st">"Error crítico del sistema"</span>)</pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Visualización -->
+        <div class="right-panel">
+
+            <!-- TRY/EXCEPT INFO -->
+            <div class="type-info active" id="info-try">
+                <div style="background:linear-gradient(135deg,rgba(248,113,113,0.18),rgba(248,113,113,0.04));border:1px solid rgba(248,113,113,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#f87171;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">try / except</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">captura específica · never catch all · finally siempre</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Capturar excepciones genéricas (Exception) puede ocultar errores reales y exponer información sensible. Siempre captura lo más específico posible.</p>
+                </div>
+                <div class="compare-card compare-unsafe">
+                    <div class="compare-label">❌ Anti-patrón peligroso</div>
+                    <p>Usar <strong style="color:#f87171">except Exception as e: print(e)</strong> imprime trazas del sistema al usuario, lo que puede revelar rutas de archivos, versiones, estructura interna.</p>
+                </div>
+                <div class="compare-card compare-safe">
+                    <div class="compare-label">✅ Patrón seguro</div>
+                    <p>Captura <strong style="color:#34d399">FileNotFoundError, ValueError, PermissionError</strong> por separado. Muestra mensajes genéricos al usuario; registra los detalles en un log interno.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                    <div class="sec-rule"><span class="rule-icon">🎯</span><div class="rule-text"><strong>Captura específica</strong> — identifica qué puede fallar y captura solo eso</div></div>
+                    <div class="sec-rule"><span class="rule-icon">🔒</span><div class="rule-text"><strong>Mensajes genéricos al usuario</strong> — no reveles rutas, variables o versiones</div></div>
+                    <div class="sec-rule"><span class="rule-icon">🧹</span><div class="rule-text"><strong>finally</strong> — garantiza limpieza de recursos siempre (archivos, conexiones)</div></div>
+                    <div class="sec-rule"><span class="rule-icon">📁</span><div class="rule-text"><strong>with open()</strong> — cierra archivos automáticamente aunque haya excepción</div></div>
+                </div>
+            </div>
+
+            <!-- RAISE INFO -->
+            <div class="type-info" id="info-raise">
+                <div style="background:linear-gradient(135deg,rgba(167,139,250,0.18),rgba(167,139,250,0.04));border:1px solid rgba(167,139,250,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#a78bfa;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">raise</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">validación activa · fail fast · excepciones propias</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Lanzar excepciones de forma controlada permite validar datos al entrada, garantizando que el programa no continúe con datos inválidos o peligrosos.</p>
+                </div>
+                <div class="exc-hierarchy">
+                    <h3>Jerarquía de excepciones Python</h3>
+                    <div class="exc-node"><span class="exc-name exc-base">BaseException</span>
+                        <div class="exc-children">
+                            <div class="exc-node"><span class="exc-name exc-base">Exception</span>
+                                <div class="exc-children">
+                                    <div class="exc-node"><span class="exc-name exc-std">ValueError</span> <span style="color:var(--text-dim);font-size:0.75rem">— valor incorrecto</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">TypeError</span> <span style="color:var(--text-dim);font-size:0.75rem">— tipo incorrecto</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">FileNotFoundError</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">PermissionError</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">ZeroDivisionError</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-other">ErrorValidacion</span> <span style="color:var(--text-dim);font-size:0.75rem">— propia</span></div>
+                                </div>
+                            </div>
+                            <div class="exc-node"><span class="exc-name" style="color:#38bdf8">KeyboardInterrupt</span></div>
+                            <div class="exc-node"><span class="exc-name" style="color:#38bdf8">SystemExit</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                    <div class="sec-rule"><span class="rule-icon">🛡️</span><div class="rule-text"><strong>Fail Fast</strong> — detecta y lanza el error lo antes posible en el flujo</div></div>
+                    <div class="sec-rule"><span class="rule-icon">📐</span><div class="rule-text"><strong>isinstance()</strong> — verifica tipo antes de operar con el valor</div></div>
+                    <div class="sec-rule"><span class="rule-icon">🏷️</span><div class="rule-text"><strong>Excepciones propias</strong> — crea clases que heredan de Exception para tu dominio</div></div>
+                </div>
+            </div>
+
+            <!-- LOGGING INFO -->
+            <div class="type-info" id="info-logging">
+                <div style="background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(56,189,248,0.04));border:1px solid rgba(56,189,248,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#38bdf8;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">logging</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">separar log técnico del mensaje al usuario · niveles</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">El módulo <code style="font-family:'Fira Code',monospace">logging</code> permite registrar eventos del sistema de forma segura, sin exponer información al usuario final.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;">
+                    <h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.9rem;font-family:'Inter',sans-serif;">Niveles de severidad</h3>
+                    <div class="severity-bar">
+                        <div class="sev-row"><div class="sev-dot" style="background:#94a3b8"></div><span class="sev-label" style="color:#94a3b8">DEBUG</span><span class="sev-desc">Información de depuración detallada</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#38bdf8"></div><span class="sev-label" style="color:#38bdf8">INFO</span><span class="sev-desc">Confirmación de operación normal</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#fbbf24"></div><span class="sev-label" style="color:#fbbf24">WARNING</span><span class="sev-desc">Alerta de comportamiento inesperado</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#f87171"></div><span class="sev-label" style="color:#f87171">ERROR</span><span class="sev-desc">Error grave, función falla</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#ef4444"></div><span class="sev-label" style="color:#ef4444">CRITICAL</span><span class="sev-desc">Error crítico, sistema puede detenerse</span></div>
+                    </div>
+                </div>
+                <div class="compare-card compare-unsafe">
+                    <div class="compare-label">❌ Nunca hagas esto</div>
+                    <p>Loggear datos del usuario, contraseñas, tokens o trazas completas con variables sensibles: <strong style="color:#f87171">logging.error(f"datos: {datos_usuario}")</strong></p>
+                </div>
+                <div class="compare-card compare-safe">
+                    <div class="compare-label">✅ Forma correcta</div>
+                    <p>Loggear solo el tipo de error y contexto mínimo necesario. Al usuario: mensaje genérico. Al log: evento sin datos privados.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+
+        const filenames = { try: 'excepciones_seguras.py', raise: 'raise_validacion.py', logging: 'logging_seguro.py' };
+        function switchTab(type) {
+            document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-info').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('code-' + type).classList.add('active');
+            document.getElementById('info-' + type).classList.add('active');
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            document.getElementById('filename').textContent = filenames[type];
+        }
+    </script>
+</body>
+</html>

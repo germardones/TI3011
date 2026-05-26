@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda y Ordenamiento | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #a78bfa; --accent-glow: rgba(167,139,250,0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #7c3aed; --accent-glow: rgba(124,58,237,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1,h2,h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+
+        .workspace { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 57px); }
+        @media(max-width:900px) { .workspace { grid-template-columns: 1fr; } }
+
+        .left-panel { padding: 2.5rem; border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+        [data-theme="light"] .left-panel { border-right: 1px solid rgba(0,0,0,0.08); }
+        .left-panel h1 { font-size: 2rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .left-panel > p { color: var(--text-dim); margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .type-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .type-tab {
+            padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: var(--text-dim); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; font-family: 'Fira Code', monospace;
+            transition: var(--transition);
+        }
+        [data-theme="light"] .type-tab { border: 1px solid rgba(0,0,0,0.1); }
+        .type-tab.active { color: var(--c); border-color: var(--c); background: rgba(255,255,255,0.05); }
+        .type-tab:hover:not(.active) { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+        .terminal { background: var(--panel-bg); border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; }
+        [data-theme="light"] .terminal { border: 1px solid rgba(0,0,0,0.1); }
+        .term-header { background: rgba(255,255,255,0.04); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .term-header { background: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .term-body { padding: 1.5rem; line-height: 1.9; font-size: 0.82rem; color: #cdd9e5; overflow-x: auto; }
+        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; } .st { color: #98c379; }
+        .num { color: #d19a66; } .va { color: #e06c75; } .op { color: #56b6c2; }
+        [data-theme="light"] .kw { color: #7c3aed; } [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; } [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .va { color: #e11d48; } [data-theme="light"] .op { color: #0891b2; }
+        [data-theme="light"] .cm { color: #94a3b8; } [data-theme="light"] .term-body { color: #1e293b; }
+        .code-section { display: none; } .code-section.active { display: block; }
+
+        /* RIGHT */
+        .right-panel { padding: 2.5rem; background: var(--card-bg); overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .type-info { display: none; flex-direction: column; gap: 1.25rem; }
+        .type-info.active { display: flex; }
+
+        /* Array visualization */
+        .array-viz { background: rgba(255,255,255,0.04); border-radius: 0.75rem; padding: 1.1rem; }
+        [data-theme="light"] .array-viz { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06); }
+        .array-viz h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 0.75rem; font-family: 'Inter', sans-serif; }
+        .arr-row { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .arr-cell { text-align: center; min-width: 44px; }
+        .arr-val { border-radius: 6px; padding: 0.4rem 0.5rem; font-family: 'Fira Code', monospace; font-size: 0.82rem; font-weight: 600; border: 2px solid transparent; transition: all 0.3s; }
+        .arr-idx { font-size: 0.65rem; color: var(--text-dim); margin-top: 0.2rem; font-family: 'Fira Code', monospace; }
+        .arr-label { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.25rem; text-align: center; font-family: 'Fira Code', monospace; }
+
+        .cell-normal { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.3); color: #a78bfa; }
+        .cell-active { background: rgba(251,191,36,0.2); border-color: #fbbf24; color: #fbbf24; }
+        .cell-found { background: rgba(52,211,153,0.2); border-color: #34d399; color: #34d399; }
+        .cell-left { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.4); color: #38bdf8; }
+        .cell-right { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.4); color: #f87171; }
+        .cell-mid { background: rgba(251,191,36,0.2); border-color: #fbbf24; color: #fbbf24; }
+
+        .ptr-row { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+        .ptr-cell { min-width: 44px; text-align: center; font-size: 0.65rem; font-family: 'Fira Code', monospace; color: var(--text-dim); }
+
+        /* Complexity card */
+        .complexity-card { border-radius: 0.75rem; padding: 1.1rem; display: flex; align-items: center; gap: 1rem; }
+        .complexity-o { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; }
+        .complexity-desc { font-size: 0.88rem; color: var(--text-dim); }
+        .complexity-desc strong { color: var(--text-main); }
+
+        .info-prop { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; font-size: 0.85rem; }
+        [data-theme="light"] .info-prop { background: rgba(0,0,0,0.03); }
+        .ip-key { color: var(--text-dim); font-family: 'Fira Code', monospace; font-size: 0.8rem; }
+        .ip-val { font-weight: 600; font-family: 'Fira Code', monospace; }
+
+        /* Sort bars */
+        .sort-bars { display: flex; gap: 0.35rem; align-items: flex-end; height: 90px; }
+        .sort-bar { border-radius: 4px 4px 0 0; transition: all 0.4s; position: relative; display: flex; align-items: flex-end; justify-content: center; }
+        .sort-bar span { font-size: 0.68rem; font-family: 'Fira Code', monospace; font-weight: 700; padding-bottom: 0.25rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="workspace">
+        <!-- LEFT: Código -->
+        <div class="left-panel">
+            <h1>🔍 Búsqueda y Ordenamiento</h1>
+            <p>Implementa y comprende los algoritmos de búsqueda y ordenamiento en Python. Visualiza su comportamiento y complejidad.</p>
+
+            <div class="type-tabs">
+                <button class="type-tab active" style="--c:#a78bfa" data-type="lineal" onclick="switchTab('lineal')">Lineal</button>
+                <button class="type-tab" style="--c:#38bdf8" data-type="binaria" onclick="switchTab('binaria')">Binaria</button>
+                <button class="type-tab" style="--c:#34d399" data-type="sorted" onclick="switchTab('sorted')">sorted()</button>
+                <button class="type-tab" style="--c:#fbbf24" data-type="sort" onclick="switchTab('sort')">sort()</button>
+            </div>
+
+            <div class="terminal">
+                <div class="term-header">
+                    <div class="dot" style="background:#ef4444"></div>
+                    <div class="dot" style="background:#eab308"></div>
+                    <div class="dot" style="background:#10b981"></div>
+                    <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">busqueda_lineal.py</span>
+                </div>
+                <div class="term-body">
+                    <div class="code-section active" id="code-lineal"><pre><span class="kw">def</span> <span class="fn">busqueda_lineal</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
+    <span class="st">"""O(n) — recorre cada elemento."""</span>
+    <span class="kw">for</span> <span class="va">i</span>, <span class="va">elemento</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">lista</span>):
+        <span class="kw">if</span> <span class="va">elemento</span> <span class="op">==</span> <span class="va">objetivo</span>:
+            <span class="kw">return</span> <span class="va">i</span>   <span class="cm"># retorna el índice</span>
+    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>        <span class="cm"># no encontrado</span>
+
+<span class="va">numeros</span> = [<span class="num">34</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">5</span>, <span class="num">62</span>]
+<span class="va">pos</span> = <span class="fn">busqueda_lineal</span>(<span class="va">numeros</span>, <span class="num">23</span>)
+<span class="fn">print</span>(<span class="st">f"Encontrado en índice: </span>{<span class="va">pos</span>}<span class="st">"</span>)  <span class="cm"># → 2</span>
+
+<span class="cm"># Caso no encontrado</span>
+<span class="va">pos2</span> = <span class="fn">busqueda_lineal</span>(<span class="va">numeros</span>, <span class="num">99</span>)
+<span class="fn">print</span>(<span class="va">pos2</span>)  <span class="cm"># → -1</span>
+
+<span class="cm"># ¿Cuándo usar?</span>
+<span class="cm"># ✅ Lista no ordenada</span>
+<span class="cm"># ✅ Lista pequeña (&lt; 100 elementos)</span>
+<span class="cm"># ❌ Lista grande y ordenada → usar binaria</span></pre></div>
+
+                    <div class="code-section" id="code-binaria"><pre><span class="kw">def</span> <span class="fn">busqueda_binaria</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
+    <span class="st">"""O(log n) — requiere lista ORDENADA."""</span>
+    <span class="va">izq</span>, <span class="va">der</span> = <span class="num">0</span>, <span class="fn">len</span>(<span class="va">lista</span>) <span class="op">-</span> <span class="num">1</span>
+    <span class="kw">while</span> <span class="va">izq</span> <span class="op">&lt;=</span> <span class="va">der</span>:
+        <span class="va">medio</span> = (<span class="va">izq</span> <span class="op">+</span> <span class="va">der</span>) <span class="op">//</span> <span class="num">2</span>
+        <span class="kw">if</span> <span class="va">lista</span>[<span class="va">medio</span>] <span class="op">==</span> <span class="va">objetivo</span>:
+            <span class="kw">return</span> <span class="va">medio</span>
+        <span class="kw">elif</span> <span class="va">lista</span>[<span class="va">medio</span>] <span class="op">&lt;</span> <span class="va">objetivo</span>:
+            <span class="va">izq</span> = <span class="va">medio</span> <span class="op">+</span> <span class="num">1</span>
+        <span class="kw">else</span>:
+            <span class="va">der</span> = <span class="va">medio</span> <span class="op">-</span> <span class="num">1</span>
+    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>
+
+<span class="va">ordenados</span> = [<span class="num">5</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">34</span>, <span class="num">62</span>]
+<span class="va">pos</span> = <span class="fn">busqueda_binaria</span>(<span class="va">ordenados</span>, <span class="num">32</span>)
+<span class="fn">print</span>(<span class="st">f"Encontrado en índice: </span>{<span class="va">pos</span>}<span class="st">"</span>)  <span class="cm"># → 3</span>
+
+<span class="cm"># Alternativa con librería estándar</span>
+<span class="kw">import</span> <span class="fn">bisect</span>
+<span class="va">i</span> = <span class="fn">bisect</span>.<span class="fn">bisect_left</span>(<span class="va">ordenados</span>, <span class="num">32</span>)
+<span class="cm"># ¡Siempre verificar que lista[i] == objetivo!</span></pre></div>
+
+                    <div class="code-section" id="code-sorted"><pre><span class="va">nums</span> = [<span class="num">34</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">5</span>, <span class="num">62</span>]
+
+<span class="cm"># sorted() — devuelve NUEVA lista, no modifica original</span>
+<span class="va">asc</span>  = <span class="fn">sorted</span>(<span class="va">nums</span>)               <span class="cm"># [5, 7, 23, 32, 34, 62]</span>
+<span class="va">desc</span> = <span class="fn">sorted</span>(<span class="va">nums</span>, <span class="va">reverse</span>=<span class="kw">True</span>)  <span class="cm"># [62, 34, 32, 23, 7, 5]</span>
+<span class="fn">print</span>(<span class="va">nums</span>)  <span class="cm"># [34, 7, 23, 32, 5, 62] — ¡intacto!</span>
+
+<span class="cm"># Ordenar objetos complejos con key=</span>
+<span class="va">estudiantes</span> = [
+    {<span class="st">"nombre"</span>: <span class="st">"Ana"</span>,   <span class="st">"nota"</span>: <span class="num">6.5</span>},
+    {<span class="st">"nombre"</span>: <span class="st">"Luis"</span>,  <span class="st">"nota"</span>: <span class="num">5.8</span>},
+    {<span class="st">"nombre"</span>: <span class="st">"Sofía"</span>, <span class="st">"nota"</span>: <span class="num">7.0</span>},
+]
+<span class="va">por_nota</span> = <span class="fn">sorted</span>(
+    <span class="va">estudiantes</span>, <span class="va">key</span>=<span class="kw">lambda</span> <span class="va">e</span>: <span class="va">e</span>[<span class="st">"nota"</span>])
+<span class="va">desc_nota</span> = <span class="fn">sorted</span>(
+    <span class="va">estudiantes</span>,
+    <span class="va">key</span>=<span class="kw">lambda</span> <span class="va">e</span>: <span class="va">e</span>[<span class="st">"nota"</span>], <span class="va">reverse</span>=<span class="kw">True</span>)</pre></div>
+
+                    <div class="code-section" id="code-sort"><pre><span class="va">numeros</span> = [<span class="num">34</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">5</span>, <span class="num">62</span>]
+
+<span class="cm"># sort() — modifica la lista EN LUGAR (in-place)</span>
+<span class="va">numeros</span>.<span class="fn">sort</span>()              <span class="cm"># [5, 7, 23, 32, 34, 62]</span>
+<span class="va">numeros</span>.<span class="fn">sort</span>(<span class="va">reverse</span>=<span class="kw">True</span>)  <span class="cm"># [62, 34, 32, 23, 7, 5]</span>
+
+<span class="cm"># Ordenar por múltiples criterios</span>
+<span class="va">personas</span> = [(<span class="st">"Ana"</span>, <span class="num">21</span>), (<span class="st">"Luis"</span>, <span class="num">19</span>), (<span class="st">"Sofía"</span>, <span class="num">21</span>)]
+<span class="va">personas</span>.<span class="fn">sort</span>(<span class="va">key</span>=<span class="kw">lambda</span> <span class="va">p</span>: (<span class="va">p</span>[<span class="num">1</span>], <span class="va">p</span>[<span class="num">0</span>]))
+<span class="cm"># → [('Luis', 19), ('Ana', 21), ('Sofía', 21)]</span>
+
+<span class="cm"># Diferencia clave:</span>
+<span class="cm"># sort()   → modifica original (in-place)</span>
+<span class="cm"># sorted() → devuelve nueva lista (funcional)</span>
+<span class="va">copia_ord</span> = <span class="fn">sorted</span>(<span class="va">numeros</span>)  <span class="cm"># preserva numeros</span></pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Visualización animada -->
+        <div class="right-panel">
+
+            <!-- LINEAL INFO -->
+            <div class="type-info active" id="info-lineal">
+                <div style="background:linear-gradient(135deg,rgba(167,139,250,0.18),rgba(167,139,250,0.04));border:1px solid rgba(167,139,250,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#a78bfa;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">Búsqueda Lineal</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">O(n) · sin requisitos · simple</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Recorre cada elemento uno por uno hasta encontrar el objetivo. No requiere que la lista esté ordenada.</p>
+                </div>
+                <div class="complexity-card" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);border-radius:0.75rem;">
+                    <span class="complexity-o" style="color:#a78bfa">O(n)</span>
+                    <div class="complexity-desc"><strong>Complejidad lineal</strong><br>En el peor caso, recorre todos los n elementos. Con 1000 elementos: hasta 1000 comparaciones.</div>
+                </div>
+                <div class="array-viz">
+                    <h3>Animación: buscando 23 en [34, 7, 23, 32, 5, 62]</h3>
+                    <div class="arr-row" id="linear-cells">
+                        <div class="arr-cell"><div class="arr-val cell-active">34</div><div class="arr-idx">0</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-normal">7</div><div class="arr-idx">1</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-normal">23</div><div class="arr-idx">2</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-normal">32</div><div class="arr-idx">3</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-normal">5</div><div class="arr-idx">4</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-normal">62</div><div class="arr-idx">5</div></div>
+                    </div>
+                    <div style="margin-top:0.6rem;font-size:0.78rem;color:var(--text-dim);font-family:'Fira Code',monospace" id="linear-status">Comparando índice 0: 34 ≠ 23 → siguiente</div>
+                </div>
+                <button onclick="animateLinear()" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;padding:0.5rem 1.25rem;border-radius:100px;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:'Inter',sans-serif;transition:all 0.2s;">▶ Animar búsqueda</button>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Lista ordenada requerida</span><span class="ip-val" style="color:#34d399">No</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad</span><span class="ip-val" style="color:#a78bfa">O(n)</span></div>
+                    <div class="info-prop"><span class="ip-key">Ideal para</span><span class="ip-val">listas pequeñas / sin ordenar</span></div>
+                </div>
+            </div>
+
+            <!-- BINARIA INFO -->
+            <div class="type-info" id="info-binaria">
+                <div style="background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(56,189,248,0.04));border:1px solid rgba(56,189,248,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#38bdf8;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">Búsqueda Binaria</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">O(log n) · lista ordenada · divide y vencerás</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Divide el espacio de búsqueda a la mitad en cada paso. Mucho más eficiente que la lineal, pero requiere lista ordenada.</p>
+                </div>
+                <div class="complexity-card" style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:0.75rem;">
+                    <span class="complexity-o" style="color:#38bdf8">O(log n)</span>
+                    <div class="complexity-desc"><strong>Complejidad logarítmica</strong><br>Con 1000 elementos: máximo ~10 comparaciones. Con 1.000.000: ~20 comparaciones.</div>
+                </div>
+                <div class="array-viz">
+                    <h3>Animación: buscando 32 en [5, 7, 23, 32, 34, 62]</h3>
+                    <div class="arr-row" id="binary-cells">
+                        <div class="arr-cell"><div class="arr-val cell-left">5</div><div class="arr-idx">0</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-left">7</div><div class="arr-idx">1</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-mid">23</div><div class="arr-idx">2</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-right">32</div><div class="arr-idx">3</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-right">34</div><div class="arr-idx">4</div></div>
+                        <div class="arr-cell"><div class="arr-val cell-right">62</div><div class="arr-idx">5</div></div>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;margin-top:0.5rem;font-size:0.7rem;font-family:'Fira Code',monospace;">
+                        <span style="color:#38bdf8">■ izq/der</span>
+                        <span style="color:#fbbf24">■ medio</span>
+                        <span style="color:#34d399">■ encontrado</span>
+                    </div>
+                    <div style="margin-top:0.4rem;font-size:0.78rem;color:var(--text-dim);font-family:'Fira Code',monospace" id="binary-status">Paso 1: medio=2 (23) &lt; 32 → buscar derecha</div>
+                </div>
+                <button onclick="animateBinary()" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;padding:0.5rem 1.25rem;border-radius:100px;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:'Inter',sans-serif;transition:all 0.2s;">▶ Animar búsqueda</button>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Lista ordenada requerida</span><span class="ip-val" style="color:#f87171">Sí — obligatorio</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad</span><span class="ip-val" style="color:#38bdf8">O(log n)</span></div>
+                    <div class="info-prop"><span class="ip-key">Ideal para</span><span class="ip-val">listas grandes y ordenadas</span></div>
+                </div>
+            </div>
+
+            <!-- SORTED INFO -->
+            <div class="type-info" id="info-sorted">
+                <div style="background:linear-gradient(135deg,rgba(52,211,153,0.18),rgba(52,211,153,0.04));border:1px solid rgba(52,211,153,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#34d399;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">sorted()</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">O(n log n) · nueva lista · seguro · funcional</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Devuelve una <strong style="color:var(--text-main)">nueva lista</strong> ordenada sin modificar la original. Implementa Timsort (combinación de merge sort e insertion sort).</p>
+                </div>
+                <div class="array-viz">
+                    <h3>Antes y después</h3>
+                    <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:0.5rem;font-family:'Fira Code',monospace">Original (sin cambios):</p>
+                    <div class="arr-row">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171">34</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171">7</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171">23</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171">32</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171">5</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171">62</div></div>
+                    </div>
+                    <p style="font-size:0.78rem;color:var(--text-dim);margin:0.6rem 0 0.5rem;font-family:'Fira Code',monospace">sorted(nums) — nueva lista:</p>
+                    <div class="arr-row">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.4);color:#34d399">5</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.4);color:#34d399">7</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.4);color:#34d399">23</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.4);color:#34d399">32</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.4);color:#34d399">34</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(52,211,153,0.12);border:2px solid rgba(52,211,153,0.4);color:#34d399">62</div></div>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Modifica original</span><span class="ip-val" style="color:#34d399">No — crea nueva lista</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad</span><span class="ip-val">O(n log n) — Timsort</span></div>
+                    <div class="info-prop"><span class="ip-key">Soporta key=</span><span class="ip-val" style="color:#34d399">Sí — lambda o función</span></div>
+                    <div class="info-prop"><span class="ip-key">Soporta reverse=</span><span class="ip-val" style="color:#34d399">Sí — True/False</span></div>
+                </div>
+            </div>
+
+            <!-- SORT INFO -->
+            <div class="type-info" id="info-sort">
+                <div style="background:linear-gradient(135deg,rgba(251,191,36,0.18),rgba(251,191,36,0.04));border:1px solid rgba(251,191,36,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#fbbf24;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">.sort()</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">O(n log n) · in-place · modifica original</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Método de lista que ordena <strong style="color:var(--text-main)">en su lugar</strong> (in-place). Más eficiente en memoria, pero destruye el orden original.</p>
+                </div>
+                <div class="array-viz">
+                    <h3>In-place: misma lista, orden cambiado</h3>
+                    <p style="font-size:0.78rem;color:var(--text-dim);margin-bottom:0.5rem;font-family:'Fira Code',monospace">Antes de .sort():</p>
+                    <div class="arr-row">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.4);color:#fbbf24">34</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.4);color:#fbbf24">7</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.4);color:#fbbf24">23</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.4);color:#fbbf24">32</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.4);color:#fbbf24">5</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.12);border:2px solid rgba(251,191,36,0.4);color:#fbbf24">62</div></div>
+                    </div>
+                    <div style="text-align:center;margin:0.5rem 0;font-family:'Fira Code',monospace;font-size:0.9rem;color:var(--text-dim)">⬇ numeros.sort()</div>
+                    <div class="arr-row">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.2);border:2px solid #fbbf24;color:#fbbf24">5</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.2);border:2px solid #fbbf24;color:#fbbf24">7</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.2);border:2px solid #fbbf24;color:#fbbf24">23</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.2);border:2px solid #fbbf24;color:#fbbf24">32</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.2);border:2px solid #fbbf24;color:#fbbf24">34</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(251,191,36,0.2);border:2px solid #fbbf24;color:#fbbf24">62</div></div>
+                    </div>
+                    <p style="font-size:0.75rem;color:#f87171;margin-top:0.5rem;font-family:'Fira Code',monospace">⚠ El orden original se pierde</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Modifica original</span><span class="ip-val" style="color:#f87171">Sí — in-place</span></div>
+                    <div class="info-prop"><span class="ip-key">Memoria extra</span><span class="ip-val" style="color:#34d399">O(1) — más eficiente</span></div>
+                    <div class="info-prop"><span class="ip-key">Solo para</span><span class="ip-val">listas — no funciona con tuplas</span></div>
+                    <div class="info-prop"><span class="ip-key">Retorna</span><span class="ip-val" style="color:#f87171">None — no asignar</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') { root.setAttribute('data-theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') { root.removeAttribute('data-theme'); localStorage.setItem('theme', 'dark'); toggleBtn.innerHTML = '☀️ Modo Claro'; }
+            else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
+        });
+
+        const filenames = { lineal: 'busqueda_lineal.py', binaria: 'busqueda_binaria.py', sorted: 'sorted_ejemplo.py', sort: 'sort_ejemplo.py' };
+        function switchTab(type) {
+            document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-info').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('code-' + type).classList.add('active');
+            document.getElementById('info-' + type).classList.add('active');
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+            document.getElementById('filename').textContent = filenames[type];
+        }
+
+        // Linear search animation
+        const linearData = [34, 7, 23, 32, 5, 62];
+        const linearTarget = 23;
+        let linearStep = 0;
+        function animateLinear() {
+            const cells = document.querySelectorAll('#linear-cells .arr-val');
+            const status = document.getElementById('linear-status');
+            if (linearStep >= linearData.length) { linearStep = 0; }
+            cells.forEach((c, i) => {
+                c.className = 'arr-val ' + (i < linearStep ? 'cell-normal' : 'cell-normal');
+                if (i < linearStep && linearData[i] !== linearTarget) c.style.opacity = '0.4';
+                else c.style.opacity = '1';
+            });
+            cells[linearStep].className = 'arr-val cell-active';
+            cells[linearStep].style.opacity = '1';
+            if (linearData[linearStep] === linearTarget) {
+                cells[linearStep].className = 'arr-val cell-found';
+                status.textContent = `Encontrado en índice ${linearStep}: ${linearData[linearStep]} = ${linearTarget} ✓`;
+                linearStep = linearData.length;
+            } else {
+                status.textContent = `Comparando índice ${linearStep}: ${linearData[linearStep]} ≠ ${linearTarget} → siguiente`;
+                linearStep++;
+            }
+        }
+
+        // Binary search animation
+        const binaryData = [5, 7, 23, 32, 34, 62];
+        const binaryTarget = 32;
+        const binarySteps = [
+            { izq: 0, der: 5, mid: 2, msg: 'Paso 1: medio=2 (23) < 32 → buscar derecha (izq=3)' },
+            { izq: 3, der: 5, mid: 4, msg: 'Paso 2: medio=4 (34) > 32 → buscar izquierda (der=3)' },
+            { izq: 3, der: 3, mid: 3, msg: 'Paso 3: medio=3 (32) = 32 → ¡Encontrado en índice 3! ✓' },
+        ];
+        let binaryStep = 0;
+        function animateBinary() {
+            const cells = document.querySelectorAll('#binary-cells .arr-val');
+            const status = document.getElementById('binary-status');
+            if (binaryStep >= binarySteps.length) { binaryStep = 0; }
+            const s = binarySteps[binaryStep];
+            cells.forEach((c, i) => {
+                c.style.opacity = '1';
+                if (i >= s.izq && i <= s.der) {
+                    if (i === s.mid) {
+                        if (binaryData[i] === binaryTarget) c.className = 'arr-val cell-found';
+                        else c.className = 'arr-val cell-mid';
+                    } else c.className = 'arr-val cell-left';
+                } else c.className = 'arr-val cell-normal', c.style.opacity = '0.35';
+            });
+            status.textContent = s.msg;
+            binaryStep++;
+        }
+    </script>
+</body>
+</html>

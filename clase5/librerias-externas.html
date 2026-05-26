@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librerías Externas | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #34d399; --accent-glow: rgba(52,211,153,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #059669; --accent-glow: rgba(5,150,105,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+        .page-header { margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .page-header p { color: var(--text-dim); font-size: 1.1rem; }
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.5rem; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(52,211,153,0.15); }
+        [data-theme="light"] .section h2 { border-bottom: 2px solid rgba(5,150,105,0.15); }
+        .card { background: var(--card-bg); border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; }
+        [data-theme="light"] .card { border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+        .accent-text { color: var(--accent); }
+        .code-block { background: var(--panel-bg); border-radius: 0.75rem; padding: 1.25rem 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.84rem; line-height: 1.9; border: 1px solid rgba(255,255,255,0.08); overflow-x: auto; color: #cdd9e5; }
+        [data-theme="light"] .code-block { border: 1px solid rgba(0,0,0,0.1); color: #1e293b; }
+        .warning-card { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .warning-card p { font-size: 0.9rem; color: var(--text-dim); }
+        .warning-card strong { color: #fbbf24; }
+        .cm { color: #5c6370; }
+        [data-theme="light"] .cm { color: #94a3b8; }
+
+        /* PyPI card mock */
+        .pypi-card { border: 1px solid rgba(52,211,153,0.25); border-radius: 1rem; overflow: hidden; }
+        .pypi-header { background: rgba(52,211,153,0.08); padding: 1.1rem 1.5rem; border-bottom: 1px solid rgba(52,211,153,0.15); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; }
+        .pypi-name { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .pypi-version { background: rgba(52,211,153,0.15); color: var(--accent); padding: 0.2rem 0.75rem; border-radius: 100px; font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 600; }
+        .pypi-body { padding: 1.1rem 1.5rem; }
+        .pypi-desc { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem; }
+        .pypi-meta { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.6rem; }
+        .pypi-meta-item { font-size: 0.82rem; }
+        .pypi-meta-label { color: var(--text-dim); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+        .pypi-meta-val { font-weight: 600; color: var(--text-main); }
+
+        /* Steps */
+        .step { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem 1.25rem; background: rgba(255,255,255,0.03); border-radius: 0.75rem; margin-bottom: 0.6rem; border: 1px solid rgba(255,255,255,0.05); }
+        [data-theme="light"] .step { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05); }
+        .step-num { width: 32px; height: 32px; border-radius: 50%; background: rgba(52,211,153,0.15); border: 1.5px solid rgba(52,211,153,0.4); color: var(--accent); font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.9rem; }
+        .step-content h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .step-content p { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: rgba(52,211,153,0.1); color: var(--accent); padding: 0.75rem 1rem; text-align: left; font-family: 'Outfit', sans-serif; }
+        td { padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-dim); }
+        [data-theme="light"] td { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        tr:last-child td { border-bottom: none; }
+        td:first-child { color: var(--text-main); font-weight: 600; }
+        td:nth-child(2) { color: var(--accent); font-family: 'Fira Code', monospace; font-size: 0.88em; }
+        td:nth-child(3) { font-family: 'Fira Code', monospace; font-size: 0.82em; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        [data-theme="light"] tr:hover td { background: rgba(0,0,0,0.02); }
+        .table-wrap { border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+        [data-theme="light"] .table-wrap { border: 1px solid rgba(0,0,0,0.08); }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .container { padding: 2rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📦 Librerías Externas Seguras</h1>
+            <p>Aprende a evaluar, instalar y gestionar dependencias de forma segura usando repositorios oficiales.</p>
+        </div>
+
+        <!-- PyPI -->
+        <div class="section">
+            <h2>PyPI — El repositorio oficial de Python</h2>
+            <div class="card">
+                <p style="font-size:0.95rem;line-height:1.7;margin-bottom:1rem"><strong class="accent-text">PyPI</strong> (Python Package Index) es el repositorio oficial de paquetes Python, disponible en <strong>pypi.org</strong>. Cuando ejecutas <code style="font-family:'Fira Code',monospace;color:var(--accent);font-size:0.9em">pip install nombre</code>, pip descarga el paquete desde PyPI.</p>
+                <div class="code-block"><span class="cm"># Instalar desde PyPI (repositorio oficial)</span>
+pip install requests
+
+<span class="cm"># Instalar versión específica (más predecible y seguro)</span>
+pip install requests==2.31.0
+
+<span class="cm"># PyPI también tiene mirrors no oficiales — siempre usar el oficial</span>
+pip install requests --index-url https://pypi.org/simple/</div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:1rem;color:var(--accent)">Ejemplo de paquete en PyPI (simulado):</h3>
+                <div class="pypi-card">
+                    <div class="pypi-header">
+                        <div>
+                            <div class="pypi-name">requests</div>
+                            <div style="font-size:0.85rem;color:var(--text-dim);margin-top:0.15rem">HTTP for Humans</div>
+                        </div>
+                        <div class="pypi-version">2.31.0</div>
+                    </div>
+                    <div class="pypi-body">
+                        <p class="pypi-desc">Requests is a simple, yet elegant, HTTP library. It allows you to send HTTP/1.1 requests extremely easily.</p>
+                        <div class="pypi-meta">
+                            <div class="pypi-meta-item"><div class="pypi-meta-label">Autor</div><div class="pypi-meta-val">Kenneth Reitz</div></div>
+                            <div class="pypi-meta-item"><div class="pypi-meta-label">Licencia</div><div class="pypi-meta-val">Apache 2.0</div></div>
+                            <div class="pypi-meta-item"><div class="pypi-meta-label">Descargas/semana</div><div class="pypi-meta-val" style="color:var(--accent)">~85M</div></div>
+                            <div class="pypi-meta-item"><div class="pypi-meta-label">Última versión</div><div class="pypi-meta-val">2024-05-29</div></div>
+                            <div class="pypi-meta-item"><div class="pypi-meta-label">Repositorio</div><div class="pypi-meta-val" style="font-family:'Fira Code',monospace;font-size:0.85em">github.com/psf/requests</div></div>
+                            <div class="pypi-meta-item"><div class="pypi-meta-label">Dependencias</div><div class="pypi-meta-val">certifi, urllib3, charset-normalizer, idna</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cómo validar -->
+        <div class="section">
+            <h2>Cómo validar una librería antes de usarla</h2>
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h4>🔍 Buscar en pypi.org — verificar nombre exacto</h4>
+                    <p>El <strong>typosquatting</strong> es cuando atacantes publican paquetes con nombres casi idénticos a los populares: <code style="font-family:'Fira Code',monospace;color:#f87171;font-size:0.9em">request</code> vs <code style="font-family:'Fira Code',monospace;color:#34d399;font-size:0.9em">requests</code>. Siempre verifica el nombre exacto en pypi.org antes de instalar.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h4>📊 Revisar estadísticas de uso</h4>
+                    <p>Un paquete legítimo y popular tiene millones de descargas/semana, historial de versiones que abarca años, y actualizaciones frecuentes. Un paquete con 10 descargas y creado ayer es sospechoso.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h4>👥 Revisar el repositorio GitHub</h4>
+                    <p>Verifica la actividad de commits (cuándo fue el último), issues abiertos y cerrados, cantidad de contribuidores, y si tiene tests. Un repositorio abandonado es una señal de alerta.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h4>🔒 Revisar dependencias transitivas</h4>
+                    <p>Cada paquete que instalas puede traer otros paquetes. Usa <code style="font-family:'Fira Code',monospace;color:var(--accent);font-size:0.9em">pip show nombre</code> para ver sus dependencias y verifica que también sean seguras.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- pip seguro -->
+        <div class="section">
+            <h2>pip seguro — comandos esenciales</h2>
+            <div class="card">
+                <div class="code-block"><span class="cm"># Ver información detallada de un paquete instalado</span>
+pip show requests
+
+<span class="cm"># Instalar versión específica (reproducible, más seguro)</span>
+pip install requests==2.31.0
+
+<span class="cm"># Listar todos los paquetes instalados con sus versiones</span>
+pip list
+
+<span class="cm"># Verificar vulnerabilidades conocidas (Python 3.11+)</span>
+pip audit
+
+<span class="cm"># Crear archivo de dependencias exactas (para reproducibilidad)</span>
+pip freeze > requirements.txt
+
+<span class="cm"># Instalar desde requirements.txt (versiones fijas)</span>
+pip install -r requirements.txt
+
+<span class="cm"># Actualizar un paquete (verificar compatibilidad antes)</span>
+pip install --upgrade requests
+
+<span class="cm"># Desinstalar un paquete que ya no se necesita</span>
+pip uninstall requests</div>
+            </div>
+        </div>
+
+        <!-- Señales de alerta -->
+        <div class="section">
+            <h2>Señales de alerta — paquetes sospechosos</h2>
+            <div class="warning-card">
+                <p><strong>⚠ Nombre similar a librerías populares (typosquatting)</strong> — <code style="font-family:'Fira Code',monospace">request</code> (falso) vs <code style="font-family:'Fira Code',monospace">requests</code> (real). Siempre busca el nombre exacto.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ Sin historial de versiones o autor anónimo</strong> — Paquetes legítimos tienen múltiples versiones y mantenedores identificables con repositorios públicos.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ Código fuente no disponible públicamente</strong> — Si no puedes leer el código fuente, no puedes verificar qué hace realmente el paquete.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ Pocas descargas o explosión repentina de popularidad</strong> — Librerías muy nuevas con muchas descargas pueden indicar actividad artificial para parecer legítimas.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ Solicita permisos innecesarios en setup.py</strong> — Un paquete de utilidades de strings que accede a la red o al sistema de archivos es sospechoso.</p>
+            </div>
+        </div>
+
+        <!-- Alternativas verificadas -->
+        <div class="section">
+            <h2>Alternativas verificadas para tareas comunes</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarea</th>
+                            <th>Librería</th>
+                            <th>PyPI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>HTTP requests</td>
+                            <td>requests</td>
+                            <td>pypi.org/project/requests</td>
+                        </tr>
+                        <tr>
+                            <td>Datos / CSV / DataFrames</td>
+                            <td>pandas</td>
+                            <td>pypi.org/project/pandas</td>
+                        </tr>
+                        <tr>
+                            <td>Criptografía moderna</td>
+                            <td>cryptography</td>
+                            <td>pypi.org/project/cryptography</td>
+                        </tr>
+                        <tr>
+                            <td>Variables de entorno</td>
+                            <td>python-dotenv</td>
+                            <td>pypi.org/project/python-dotenv</td>
+                        </tr>
+                        <tr>
+                            <td>Validación de datos</td>
+                            <td>pydantic</td>
+                            <td>pypi.org/project/pydantic</td>
+                        </tr>
+                        <tr>
+                            <td>Análisis estático seguridad</td>
+                            <td>bandit</td>
+                            <td>pypi.org/project/bandit</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>pytest</td>
+                            <td>pypi.org/project/pytest</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+    </script>
+</body>
+</html>
