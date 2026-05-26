@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ética en IA | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #fbbf24; --accent-glow: rgba(251,191,36,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #d97706; --accent-glow: rgba(217,119,6,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+        .page-header { margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .page-header p { color: var(--text-dim); font-size: 1.1rem; }
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.5rem; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(251,191,36,0.15); }
+        [data-theme="light"] .section h2 { border-bottom: 2px solid rgba(217,119,6,0.15); }
+        .card { background: var(--card-bg); border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; }
+        [data-theme="light"] .card { border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+        .accent-text { color: var(--accent); }
+        .warning-card { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .danger-card { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .success-card { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .warning-card p, .danger-card p, .success-card p { font-size: 0.9rem; color: var(--text-dim); }
+        .warning-card strong { color: #fbbf24; }
+        .danger-card strong { color: #f87171; }
+        .success-card strong { color: #34d399; }
+
+        /* Environment cards */
+        .env-card { border-radius: 1rem; padding: 1.4rem; border: 1px solid rgba(255,255,255,0.08); display: flex; gap: 1.1rem; align-items: flex-start; margin-bottom: 0.75rem; transition: var(--transition); }
+        [data-theme="light"] .env-card { border: 1px solid rgba(0,0,0,0.07); }
+        .env-card:hover { transform: translateX(4px); }
+        .env-icon { font-size: 1.8rem; flex-shrink: 0; }
+        .env-content h4 { font-size: 1rem; margin-bottom: 0.35rem; }
+        .env-content p { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; }
+
+        /* Numbered principles */
+        .principle-num { display: flex; gap: 1.1rem; align-items: flex-start; padding: 1rem 1.25rem; background: rgba(255,255,255,0.03); border-radius: 0.75rem; margin-bottom: 0.6rem; border-left: 3px solid var(--accent); }
+        [data-theme="light"] .principle-num { background: rgba(0,0,0,0.03); }
+        .p-num { width: 28px; height: 28px; background: rgba(251,191,36,0.15); border: 1.5px solid rgba(251,191,36,0.4); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.88rem; flex-shrink: 0; }
+        .p-content h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .p-content p { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* Scenario cards (flip/reveal) */
+        .scenario { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; overflow: hidden; margin-bottom: 1rem; }
+        [data-theme="light"] .scenario { border: 1px solid rgba(0,0,0,0.08); }
+        .scenario-question { padding: 1.25rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem; user-select: none; }
+        .scenario-question:hover { background: rgba(255,255,255,0.03); }
+        [data-theme="light"] .scenario-question:hover { background: rgba(0,0,0,0.02); }
+        .scenario-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .scenario-q { font-size: 0.95rem; font-weight: 600; line-height: 1.5; }
+        .scenario-toggle { color: var(--accent); font-size: 1.2rem; flex-shrink: 0; transition: transform 0.3s; }
+        .scenario.open .scenario-toggle { transform: rotate(180deg); }
+        .scenario-answer { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1); }
+        .scenario.open .scenario-answer { max-height: 200px; }
+        .scenario-answer-inner { padding: 0 1.5rem 1.25rem; display: flex; gap: 0.75rem; align-items: flex-start; }
+        .answer-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .answer-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+        .answer-text strong { color: var(--text-main); }
+
+        /* Intro block */
+        .intro-block { background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(251,191,36,0.03)); border: 1px solid rgba(251,191,36,0.2); border-radius: 1rem; padding: 1.75rem; margin-bottom: 1rem; }
+        .intro-block p { font-size: 1rem; line-height: 1.8; color: var(--text-dim); }
+        .intro-block strong { color: var(--text-main); }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .container { padding: 2rem 1.25rem; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>⚖️ Ética en el Uso de IA</h1>
+            <p>Reflexiona sobre las implicancias éticas del uso de inteligencia artificial en tu formación y vida profesional.</p>
+        </div>
+
+        <!-- Sección 1: Por qué importa -->
+        <div class="section">
+            <h2>¿Por qué importa la ética en IA?</h2>
+            <div class="intro-block">
+                <p>Las herramientas de IA como <strong>GitHub Copilot, ChatGPT</strong> y otras son extremadamente poderosas y pueden acelerar enormemente tu trabajo como programador. Sin embargo, su uso tiene consecuencias éticas que van más allá de si el código funciona o no.</p>
+                <p style="margin-top:0.75rem">Estas consecuencias afectan tu <strong>aprendizaje</strong> como estudiante, tu <strong>responsabilidad</strong> como profesional, y el <strong>impacto</strong> que tu trabajo tiene en las personas que usan el software que desarrollas.</p>
+            </div>
+        </div>
+
+        <!-- Sección 2: Entorno educativo -->
+        <div class="section">
+            <h2>En el entorno educativo</h2>
+            <div class="env-card" style="background:rgba(251,191,36,0.05);">
+                <span class="env-icon">🎓</span>
+                <div class="env-content">
+                    <h4>Integridad académica</h4>
+                    <p>Usar IA para generar trabajos sin comprenderlos priva al estudiante de aprender. Hay una diferencia fundamental entre <strong style="color:var(--text-main)">usar IA como herramienta de apoyo</strong> — para entender un concepto, ver alternativas — y <strong style="color:#f87171">dejar que la IA trabaje por ti</strong>. El primero te hace mejor profesional; el segundo solo engaña al sistema y a ti mismo.</p>
+                </div>
+            </div>
+            <div class="env-card" style="background:rgba(167,139,250,0.05);">
+                <span class="env-icon">🧠</span>
+                <div class="env-content">
+                    <h4>Pensamiento crítico</h4>
+                    <p>Aceptar ciegamente el código de IA sin revisarlo puede introducir bugs o vulnerabilidades de seguridad. Desarrolla la habilidad de <strong style="color:var(--text-main)">evaluar y cuestionar</strong> el output de la IA, no solo copiarlo. Un buen programador sabe cuándo la IA está equivocada.</p>
+                </div>
+            </div>
+            <div class="env-card" style="background:rgba(56,189,248,0.05);">
+                <span class="env-icon">📋</span>
+                <div class="env-content">
+                    <h4>Transparencia académica</h4>
+                    <p>En muchos contextos académicos es necesario declarar el uso de IA en trabajos. Consulta siempre las políticas de tu institución. La transparencia no solo es ética — también te protege de acusaciones de deshonestidad académica.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Entorno profesional -->
+        <div class="section">
+            <h2>En el entorno profesional</h2>
+            <div class="env-card" style="background:rgba(248,113,113,0.05);">
+                <span class="env-icon">🔐</span>
+                <div class="env-content">
+                    <h4>Datos confidenciales</h4>
+                    <p><strong style="color:#f87171">Nunca</strong> pegues código con datos sensibles, credenciales, tokens o información de clientes en herramientas de IA externas como ChatGPT o Copilot. Los prompts pueden ser almacenados, analizados o usados para entrenamiento. Un error así puede constituir una violación de datos (data breach).</p>
+                </div>
+            </div>
+            <div class="env-card" style="background:rgba(251,191,36,0.05);">
+                <span class="env-icon">⚖️</span>
+                <div class="env-content">
+                    <h4>Responsabilidad legal</h4>
+                    <p>El código generado por IA puede contener fragmentos con licencias de terceros. El desarrollador es <strong style="color:var(--text-main)">legalmente responsable</strong> del código que sube a producción, independientemente de si lo generó una IA. Las licencias de software son contratos legales.</p>
+                </div>
+            </div>
+            <div class="env-card" style="background:rgba(52,211,153,0.05);">
+                <span class="env-icon">👥</span>
+                <div class="env-content">
+                    <h4>Impacto en el equipo</h4>
+                    <p>Declarar el uso de herramientas de IA en proyectos colaborativos es una práctica profesional. La <strong style="color:var(--text-main)">transparencia construye confianza</strong> en el equipo y permite que todos evalúen el código con el contexto adecuado.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Principios guía -->
+        <div class="section">
+            <h2>Principios guía</h2>
+            <div class="principle-num">
+                <div class="p-num">1</div>
+                <div class="p-content">
+                    <h4>Comprensión antes de uso</h4>
+                    <p>Solo usa código que puedas explicar línea por línea. Si no lo entiendes, no está listo para producción.</p>
+                </div>
+            </div>
+            <div class="principle-num">
+                <div class="p-num">2</div>
+                <div class="p-content">
+                    <h4>Verificación continua</h4>
+                    <p>Prueba siempre el output de la IA con casos de prueba, incluyendo casos borde e inputs inesperados.</p>
+                </div>
+            </div>
+            <div class="principle-num">
+                <div class="p-num">3</div>
+                <div class="p-content">
+                    <h4>Privacidad primero</h4>
+                    <p>Nunca compartas datos sensibles, credenciales o información personal con sistemas de IA externos.</p>
+                </div>
+            </div>
+            <div class="principle-num">
+                <div class="p-num">4</div>
+                <div class="p-content">
+                    <h4>Transparencia</h4>
+                    <p>Declara cuándo y cómo usas IA en tu trabajo académico y profesional. La honestidad es siempre la mejor política.</p>
+                </div>
+            </div>
+            <div class="principle-num">
+                <div class="p-num">5</div>
+                <div class="p-content">
+                    <h4>Mejora continua</h4>
+                    <p>Usa la IA para aprender y mejorar tus habilidades, no para evitar aprender. La IA debería hacer que seas mejor programador, no que dejes de serlo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 5: Dilemas éticos -->
+        <div class="section">
+            <h2>Dilemas éticos — ¿Qué harías tú?</h2>
+            <p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:1.25rem">Haz clic en cada escenario para revelar la reflexión recomendada.</p>
+
+            <div class="scenario" id="s1">
+                <div class="scenario-question" onclick="toggleScenario('s1')">
+                    <span class="scenario-icon">🎓</span>
+                    <div class="scenario-q">Tu profesor pide un programa de Python para la evaluación. GitHub Copilot te lo genera completo en 30 segundos. ¿Lo entregas directamente?</div>
+                    <span class="scenario-toggle">▼</span>
+                </div>
+                <div class="scenario-answer">
+                    <div class="scenario-answer-inner">
+                        <span class="answer-icon">💡</span>
+                        <div class="answer-text">
+                            <strong>No directamente.</strong> Primero entiéndelo completamente — ¿puedes explicar cada función, cada variable, la lógica completa? Luego modifícalo y hazlo tuyo: agrega comentarios, mejora la estructura, adapta los nombres al contexto. Si no puedes explicarlo en una defensa oral, no estás listo para entregarlo. El objetivo de la evaluación es medir tu aprendizaje, no el de la IA.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scenario" id="s2">
+                <div class="scenario-question" onclick="toggleScenario('s2')">
+                    <span class="scenario-icon">🔐</span>
+                    <div class="scenario-q">Un cliente te pide analizar datos de sus clientes usando herramientas de IA para encontrar patrones. ¿Qué consideras primero?</div>
+                    <span class="scenario-toggle">▼</span>
+                </div>
+                <div class="scenario-answer">
+                    <div class="scenario-answer-inner">
+                        <span class="answer-icon">💡</span>
+                        <div class="answer-text">
+                            <strong>La privacidad de los datos.</strong> Antes de enviar cualquier dato a una herramienta de IA externa, debes: (1) verificar que tienes autorización del cliente, (2) revisar la política de privacidad de la herramienta de IA, (3) anonimizar o pseudoanonimizar los datos cuando sea posible, (4) considerar usar soluciones locales o privadas. En Chile, la Ley 19.628 y próximamente la nueva Ley de Protección de Datos regulan esto.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scenario" id="s3">
+                <div class="scenario-question" onclick="toggleScenario('s3')">
+                    <span class="scenario-icon">🐛</span>
+                    <div class="scenario-q">Mientras usas código generado por IA en producción, descubres una vulnerabilidad de seguridad grave en el código que la IA sugirió. ¿Qué haces?</div>
+                    <span class="scenario-toggle">▼</span>
+                </div>
+                <div class="scenario-answer">
+                    <div class="scenario-answer-inner">
+                        <span class="answer-icon">💡</span>
+                        <div class="answer-text">
+                            <strong>Reportar de forma responsable (responsible disclosure).</strong> Primero, deshabilita o parchea la vulnerabilidad en tu sistema. Luego reporta al proveedor de la herramienta de IA con detalles técnicos suficientes para reproducirla. No publiques la vulnerabilidad públicamente hasta que esté corregida. Recuerda: eres responsable del código que pusiste en producción, independientemente de si lo generó la IA.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+
+        function toggleScenario(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramientas de Seguridad | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #fb923c; --accent-glow: rgba(251,146,60,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #ea580c; --accent-glow: rgba(234,88,12,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+        .page-header { margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .page-header p { color: var(--text-dim); font-size: 1.1rem; }
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.5rem; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(251,146,60,0.15); }
+        [data-theme="light"] .section h2 { border-bottom: 2px solid rgba(234,88,12,0.15); }
+        .card { background: var(--card-bg); border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; }
+        [data-theme="light"] .card { border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .code-block { background: var(--panel-bg); border-radius: 0.75rem; padding: 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.84rem; line-height: 1.8; border: 1px solid rgba(255,255,255,0.08); overflow-x: auto; color: #cdd9e5; }
+        [data-theme="light"] .code-block { border: 1px solid rgba(0,0,0,0.1); color: #1e293b; }
+        .warning-card { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .danger-card { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .success-card { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .warning-card p, .danger-card p, .success-card p { font-size: 0.9rem; color: var(--text-dim); }
+        .accent-text { color: var(--accent); }
+        .cm { color: #5c6370; } .kw { color: #c678dd; font-weight: bold; }
+        .fn { color: #61afef; } .st { color: #98c379; }
+        .num { color: #d19a66; } .va { color: #e06c75; }
+        [data-theme="light"] .kw { color: #7c3aed; } [data-theme="light"] .fn { color: #2563eb; }
+        [data-theme="light"] .st { color: #059669; } [data-theme="light"] .num { color: #d97706; }
+        [data-theme="light"] .va { color: #e11d48; } [data-theme="light"] .cm { color: #94a3b8; }
+        [data-theme="light"] .code-block { color: #1e293b; }
+
+        /* Bandit report mock */
+        .bandit-report { background: var(--panel-bg); border-radius: 0.75rem; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; font-family: 'Fira Code', monospace; font-size: 0.82rem; }
+        [data-theme="light"] .bandit-report { border: 1px solid rgba(0,0,0,0.1); }
+        .bandit-header { background: rgba(251,146,60,0.1); padding: 0.6rem 1.2rem; border-bottom: 1px solid rgba(251,146,60,0.2); color: var(--accent); font-weight: 600; }
+        .bandit-issue { padding: 0.75rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; gap: 0.75rem; align-items: flex-start; }
+        [data-theme="light"] .bandit-issue { border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .sev-badge { padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; }
+        .sev-high { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .sev-med { background: rgba(234,179,8,0.2); color: #eab308; }
+        .sev-low { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .bandit-desc { color: var(--text-dim); font-family: 'Inter', sans-serif; font-size: 0.82rem; }
+        .bandit-code { color: #a78bfa; font-size: 0.8rem; margin-top: 0.15rem; }
+        .bandit-footer { padding: 0.6rem 1.2rem; color: var(--text-dim); font-size: 0.78rem; display: flex; gap: 1.5rem; }
+
+        /* SonarQube dashboard mock */
+        .sonar-dashboard { background: var(--panel-bg); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; }
+        [data-theme="light"] .sonar-dashboard { border: 1px solid rgba(0,0,0,0.1); }
+        .sonar-header { background: rgba(56,189,248,0.08); padding: 0.75rem 1.5rem; border-bottom: 1px solid rgba(56,189,248,0.15); display: flex; align-items: center; gap: 0.75rem; }
+        .sonar-title { font-weight: 700; font-size: 0.9rem; }
+        .sonar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding: 1.25rem; }
+        @media(max-width:480px) { .sonar-grid { grid-template-columns: 1fr; } }
+        .sonar-metric { border-radius: 0.75rem; padding: 1rem; text-align: center; }
+        .sonar-metric .metric-val { font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 800; }
+        .sonar-metric .metric-label { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; }
+        .grade-badge { display: inline-block; width: 40px; height: 40px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; line-height: 40px; text-align: center; }
+
+        /* Comparison table */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { background: rgba(251,146,60,0.1); color: var(--accent); padding: 0.75rem 1rem; text-align: left; font-family: 'Outfit', sans-serif; }
+        td { padding: 0.7rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-dim); }
+        [data-theme="light"] td { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        tr:last-child td { border-bottom: none; }
+        td:first-child { color: var(--text-main); font-weight: 600; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        [data-theme="light"] tr:hover td { background: rgba(0,0,0,0.02); }
+        .table-wrap { border-radius: 0.75rem; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+        [data-theme="light"] .table-wrap { border: 1px solid rgba(0,0,0,0.08); }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .container { padding: 2rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🔬 Herramientas de Seguridad</h1>
+            <p>Analiza tu código automáticamente para detectar vulnerabilidades antes de que sean un problema en producción.</p>
+        </div>
+
+        <!-- Bandit -->
+        <div class="section">
+            <h2>Bandit — Análisis estático para Python</h2>
+            <div class="card">
+                <p style="font-size:0.95rem;line-height:1.7;margin-bottom:1rem"><strong class="accent-text">Bandit</strong> es una herramienta de análisis estático de seguridad desarrollada por PyCQA. Escanea código Python en busca de patrones de seguridad comunes como inyección de comandos, deserialización insegura y contraseñas hardcodeadas.</p>
+                <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+                    <div style="flex:1;min-width:200px;">
+                        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.4rem;font-family:'Fira Code',monospace">Instalación:</p>
+                        <div class="code-block" style="padding:0.75rem 1.1rem">pip install bandit</div>
+                    </div>
+                    <div style="flex:2;min-width:280px;">
+                        <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:0.4rem;font-family:'Fira Code',monospace">Uso:</p>
+                        <div class="code-block" style="padding:0.75rem 1.1rem">bandit archivo.py<br>bandit -r mi_proyecto/</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:1rem;color:var(--accent)">Código que Bandit detectaría como inseguro:</h3>
+                <div class="code-block"><pre><span class="cm"># ❌ INSEGURO — Bandit detecta estos problemas</span>
+<span class="kw">import</span> <span class="fn">subprocess</span>
+
+<span class="cm"># B602: subprocess con shell=True — riesgo de inyección</span>
+<span class="va">comando</span> = <span class="fn">input</span>(<span class="st">"Ingresa comando: "</span>)
+<span class="fn">subprocess</span>.<span class="fn">call</span>(<span class="va">comando</span>, <span class="va">shell</span>=<span class="kw">True</span>)
+
+<span class="kw">import</span> <span class="fn">pickle</span>
+<span class="cm"># B301: deserialización insegura</span>
+<span class="va">datos</span> = <span class="fn">pickle</span>.<span class="fn">loads</span>(<span class="va">entrada_usuario</span>)
+
+<span class="cm"># B105: contraseña hardcodeada</span>
+<span class="va">password</span> = <span class="st">"admin123"</span>
+
+<span class="kw">import</span> <span class="fn">hashlib</span>
+<span class="cm"># B324: uso de MD5 (algoritmo débil)</span>
+<span class="va">h</span> = <span class="fn">hashlib</span>.<span class="fn">md5</span>(<span class="va">dato</span>.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()</pre></div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:1rem;color:#34d399">Reporte de Bandit (simulado):</h3>
+                <div class="bandit-report">
+                    <div class="bandit-header">📋 Bandit Security Report — archivo.py</div>
+                    <div class="bandit-issue">
+                        <span class="sev-badge sev-high">HIGH</span>
+                        <div>
+                            <div class="bandit-desc">subprocess call with shell=True — permite inyección de comandos del sistema operativo</div>
+                            <div class="bandit-code">B602 · Línea 5: subprocess.call(comando, shell=True)</div>
+                        </div>
+                    </div>
+                    <div class="bandit-issue">
+                        <span class="sev-badge sev-high">HIGH</span>
+                        <div>
+                            <div class="bandit-desc">Use of pickle.loads() — deserialización insegura puede ejecutar código arbitrario</div>
+                            <div class="bandit-code">B301 · Línea 9: pickle.loads(entrada_usuario)</div>
+                        </div>
+                    </div>
+                    <div class="bandit-issue">
+                        <span class="sev-badge sev-med">MEDIUM</span>
+                        <div>
+                            <div class="bandit-desc">Possible hardcoded password — credencial detectada en código fuente</div>
+                            <div class="bandit-code">B105 · Línea 12: password = "admin123"</div>
+                        </div>
+                    </div>
+                    <div class="bandit-issue">
+                        <span class="sev-badge sev-low">LOW</span>
+                        <div>
+                            <div class="bandit-desc">Use of MD5 — algoritmo de hash débil, no recomendado para seguridad</div>
+                            <div class="bandit-code">B324 · Línea 16: hashlib.md5(...)</div>
+                        </div>
+                    </div>
+                    <div class="bandit-footer">
+                        <span style="color:#ef4444">HIGH: 2</span>
+                        <span style="color:#eab308">MEDIUM: 1</span>
+                        <span style="color:#22c55e">LOW: 1</span>
+                        <span>Total: 4 issues</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:1rem;color:#34d399">Versiones corregidas:</h3>
+                <div class="code-block"><pre><span class="cm"># ✅ SEGURO — versiones corregidas</span>
+<span class="kw">import</span> <span class="fn">subprocess</span>
+
+<span class="cm"># Sin shell=True, argumentos como lista</span>
+<span class="fn">subprocess</span>.<span class="fn">run</span>([<span class="st">"ls"</span>, <span class="st">"-la"</span>], <span class="va">capture_output</span>=<span class="kw">True</span>)
+
+<span class="cm"># Usar json en lugar de pickle para datos externos</span>
+<span class="kw">import</span> <span class="fn">json</span>
+<span class="va">datos</span> = <span class="fn">json</span>.<span class="fn">loads</span>(<span class="va">entrada_usuario</span>)
+
+<span class="cm"># Cargar contraseña desde variable de entorno</span>
+<span class="kw">import</span> <span class="fn">os</span>
+<span class="va">password</span> = <span class="fn">os</span>.<span class="fn">environ</span>.<span class="fn">get</span>(<span class="st">"DB_PASSWORD"</span>)
+
+<span class="cm"># Usar SHA-256 en lugar de MD5</span>
+<span class="kw">import</span> <span class="fn">hashlib</span>
+<span class="va">h</span> = <span class="fn">hashlib</span>.<span class="fn">sha256</span>(<span class="va">dato</span>.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()</pre></div>
+            </div>
+        </div>
+
+        <!-- SonarQube -->
+        <div class="section">
+            <h2>SonarQube — Plataforma de calidad de código</h2>
+            <div class="card">
+                <p style="font-size:0.95rem;line-height:1.7;margin-bottom:1rem"><strong class="accent-text">SonarQube</strong> es una plataforma web para inspección continua de calidad de código. Detecta bugs, vulnerabilidades, code smells y mide cobertura de tests. Soporta más de 30 lenguajes incluyendo Python.</p>
+                <div class="code-block" style="margin-bottom:1rem"><span class="cm"># sonar-project.properties</span>
+sonar.projectKey=mi-proyecto-python
+sonar.projectName=Mi Proyecto Python
+sonar.sources=src
+sonar.python.version=3.11
+sonar.host.url=http://localhost:9000</div>
+                <div class="code-block"><span class="cm"># Ejecutar análisis</span>
+sonar-scanner</div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:1rem;color:var(--accent)">Dashboard de SonarQube (simulado):</h3>
+                <div class="sonar-dashboard">
+                    <div class="sonar-header">
+                        <span style="font-size:1.2rem">📊</span>
+                        <div>
+                            <div class="sonar-title">mi-proyecto-python</div>
+                            <div style="font-size:0.75rem;color:var(--text-dim)">Último análisis: hace 5 minutos</div>
+                        </div>
+                        <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
+                            <span class="grade-badge" style="background:rgba(52,211,153,0.2);color:#34d399">A</span>
+                            <span style="font-size:0.78rem;color:var(--text-dim)">Calificación</span>
+                        </div>
+                    </div>
+                    <div class="sonar-grid">
+                        <div class="sonar-metric" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);">
+                            <div class="metric-val" style="color:#34d399">0</div>
+                            <div class="metric-label">Bugs</div>
+                        </div>
+                        <div class="sonar-metric" style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);">
+                            <div class="metric-val" style="color:#f87171">2</div>
+                            <div class="metric-label">Vulnerabilidades</div>
+                        </div>
+                        <div class="sonar-metric" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);">
+                            <div class="metric-val" style="color:#fbbf24">5</div>
+                            <div class="metric-label">Code Smells</div>
+                        </div>
+                        <div class="sonar-metric" style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);">
+                            <div class="metric-val" style="color:#38bdf8">78%</div>
+                            <div class="metric-label">Cobertura de tests</div>
+                        </div>
+                    </div>
+                    <div style="padding:0.75rem 1.25rem;border-top:1px solid rgba(255,255,255,0.05);font-size:0.8rem;color:var(--text-dim);display:flex;gap:1.5rem;flex-wrap:wrap;">
+                        <span>Security Rating: <span style="color:#34d399;font-weight:700">A</span></span>
+                        <span>Reliability: <span style="color:#34d399;font-weight:700">A</span></span>
+                        <span>Maintainability: <span style="color:#fbbf24;font-weight:700">B</span></span>
+                        <span>Duplicaciones: <span style="color:var(--text-main);font-weight:700">3.2%</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla comparativa -->
+        <div class="section">
+            <h2>Comparación: Bandit vs SonarQube</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>Bandit</th>
+                            <th>SonarQube</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Tipo</td><td>CLI / local</td><td>Plataforma web</td></tr>
+                        <tr><td>Lenguaje</td><td>Python (solo)</td><td>Multi-lenguaje (+30)</td></tr>
+                        <tr><td>Instalación</td><td><code style="font-family:'Fira Code',monospace;font-size:0.85em">pip install bandit</code></td><td>Servidor Java + SonarScanner</td></tr>
+                        <tr><td>Ideal para</td><td>Scripts rápidos, CI/CD sencillo</td><td>Proyectos grandes, equipos</td></tr>
+                        <tr><td>Foco</td><td>Solo seguridad</td><td>Seguridad + calidad + cobertura</td></tr>
+                        <tr><td>Costo</td><td>Gratuito (open source)</td><td>Community gratis / Enterprise pago</td></tr>
+                        <tr><td>Curva de aprendizaje</td><td>Baja — un comando</td><td>Media — requiere configuración</td></tr>
+                        <tr><td>Integración CI/CD</td><td>GitHub Actions, GitLab CI</td><td>Jenkins, GitHub, Azure DevOps</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+    </script>
+</body>
+</html>
