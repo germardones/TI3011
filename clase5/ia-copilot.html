@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Copilot | Módulo 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a; --card-bg: #1e293b; --panel-bg: #111827;
+            --text-main: #f8fafc; --text-dim: #94a3b8;
+            --accent: #38bdf8; --accent-glow: rgba(56,189,248,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="light"] {
+            --bg-color: #f1f5f9; --card-bg: #ffffff; --panel-bg: #f8fafc;
+            --text-main: #0f172a; --text-dim: #475569; --accent: #0284c7; --accent-glow: rgba(2,132,199,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; transition: var(--transition); }
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        nav { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); position: sticky; top: 0; background: var(--bg-color); z-index: 10; }
+        [data-theme="light"] nav { border-bottom: 1px solid rgba(0,0,0,0.08); }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .back-link:hover { transform: translateX(-5px); }
+        .theme-btn { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 0.5rem 1rem; border-radius: 100px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: var(--transition); }
+        [data-theme="light"] .theme-btn { border: 1px solid rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 0 auto; padding: 3rem 2rem; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .container { animation: fadeInUp 0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+        .page-header { margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+        .page-header p { color: var(--text-dim); font-size: 1.1rem; }
+        .section { margin-bottom: 3rem; }
+        .section h2 { font-size: 1.5rem; margin-bottom: 1.25rem; padding-bottom: 0.5rem; border-bottom: 2px solid rgba(56,189,248,0.15); }
+        [data-theme="light"] .section h2 { border-bottom: 2px solid rgba(2,132,199,0.15); }
+        .card { background: var(--card-bg); border-radius: 1rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem; }
+        [data-theme="light"] .card { border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+        .accent-text { color: var(--accent); }
+        .code-block { background: var(--panel-bg); border-radius: 0.75rem; padding: 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; line-height: 1.8; border: 1px solid rgba(255,255,255,0.08); overflow-x: auto; color: #cdd9e5; }
+        [data-theme="light"] .code-block { border: 1px solid rgba(0,0,0,0.1); color: #1e293b; }
+        .warning-card { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .success-card { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .success-card p, .warning-card p { font-size: 0.9rem; color: var(--text-dim); }
+        .success-card strong { color: #34d399; }
+        .warning-card strong { color: #fbbf24; }
+
+        /* Flow diagram */
+        .flow { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 1rem 0; }
+        .flow-step { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); border-radius: 0.75rem; padding: 0.75rem 1.1rem; font-size: 0.88rem; font-weight: 600; color: var(--accent); text-align: center; }
+        .flow-arrow { color: var(--text-dim); font-size: 1.2rem; }
+
+        /* Keyboard shortcuts */
+        .shortcuts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+        .shortcut-card { background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); border-radius: 0.75rem; padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.4rem; }
+        [data-theme="light"] .shortcut-card { border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+        .key-combo { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .key { display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; padding: 0.2rem 0.5rem; font-family: 'Fira Code', monospace; font-size: 0.78rem; font-weight: 600; color: var(--accent); }
+        [data-theme="light"] .key { background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.12); }
+        .shortcut-desc { font-size: 0.82rem; color: var(--text-dim); }
+
+        /* Principles list */
+        .principle { display: flex; gap: 1rem; align-items: flex-start; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 0.75rem; margin-bottom: 0.6rem; }
+        [data-theme="light"] .principle { background: rgba(0,0,0,0.03); }
+        .principle-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .principle-text h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .principle-text p { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* Code example with comment+suggestion */
+        .code-demo { border-radius: 1rem; overflow: hidden; border: 1px solid rgba(56,189,248,0.2); }
+        .code-demo-header { background: rgba(56,189,248,0.08); padding: 0.6rem 1.2rem; font-size: 0.82rem; color: var(--accent); font-weight: 600; border-bottom: 1px solid rgba(56,189,248,0.15); display: flex; align-items: center; gap: 0.5rem; }
+        .cm-code { color: #5c6370; } .kw-code { color: #c678dd; font-weight: bold; }
+        .fn-code { color: #61afef; } .st-code { color: #98c379; }
+        .num-code { color: #d19a66; } .va-code { color: #e06c75; }
+        [data-theme="light"] .kw-code { color: #7c3aed; } [data-theme="light"] .fn-code { color: #2563eb; }
+        [data-theme="light"] .st-code { color: #059669; } [data-theme="light"] .num-code { color: #d97706; }
+        [data-theme="light"] .va-code { color: #e11d48; } [data-theme="light"] .cm-code { color: #94a3b8; }
+
+        .copilot-suggestion { background: rgba(56,189,248,0.06); border-left: 3px solid #38bdf8; }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .container { padding: 2rem 1.25rem; }
+            .flow { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="clase5.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            Volver a Módulo 5
+        </a>
+        <button class="theme-btn" id="themeToggle">☀️ Modo Claro</button>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🤖 GitHub Copilot</h1>
+            <p>Asistente de IA para programación. Aprende a usarlo de forma efectiva y responsable en tu flujo de desarrollo.</p>
+        </div>
+
+        <!-- Sección 1: ¿Qué es? -->
+        <div class="section">
+            <h2>¿Qué es GitHub Copilot?</h2>
+            <div class="card">
+                <p style="font-size:0.95rem;line-height:1.7;margin-bottom:1rem">GitHub Copilot es un <strong class="accent-text">asistente de programación con IA</strong> desarrollado por GitHub en colaboración con OpenAI. Usa modelos como GPT-4 (Codex) para sugerir líneas y funciones completas mientras escribes código.</p>
+                <div class="cards-grid">
+                    <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:0.75rem;padding:1rem;">
+                        <div style="font-size:1.5rem;margin-bottom:0.4rem">⚡</div>
+                        <h4 style="margin-bottom:0.3rem;font-size:0.95rem">Autocompletado inteligente</h4>
+                        <p style="font-size:0.82rem;color:var(--text-dim)">Sugiere código en tiempo real mientras escribes, basándose en el contexto de tu archivo</p>
+                    </div>
+                    <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:0.75rem;padding:1rem;">
+                        <div style="font-size:1.5rem;margin-bottom:0.4rem">💬</div>
+                        <h4 style="margin-bottom:0.3rem;font-size:0.95rem">Entiende comentarios</h4>
+                        <p style="font-size:0.82rem;color:var(--text-dim)">Convierte comentarios descriptivos en código funcional automáticamente</p>
+                    </div>
+                    <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:0.75rem;padding:1rem;">
+                        <div style="font-size:1.5rem;margin-bottom:0.4rem">🧩</div>
+                        <h4 style="margin-bottom:0.3rem;font-size:0.95rem">Extensión VS Code</h4>
+                        <p style="font-size:0.82rem;color:var(--text-dim)">Se instala como extensión de VS Code, disponible con cuenta GitHub Education (gratis para estudiantes)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 2: Cómo funciona -->
+        <div class="section">
+            <h2>Cómo funciona</h2>
+            <div class="card">
+                <p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:1rem">El modelo fue entrenado con millones de repositorios públicos de GitHub. Cuando escribes, envía el contexto de tu código a la API y devuelve sugerencias.</p>
+                <div class="flow">
+                    <div class="flow-step">📝 Tu código<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-dim)">(contexto actual)</span></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">🌐 Copilot API<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-dim)">(GPT-4 Codex)</span></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">💡 Sugerencia<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-dim)">(en VS Code)</span></div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">✅ Tú decides<br><span style="font-size:0.75rem;font-weight:400;color:var(--text-dim)">(aceptar/rechazar)</span></div>
+                </div>
+                <div class="warning-card" style="margin-top:0.5rem">
+                    <strong>⚠ Concepto clave:</strong> <span style="font-size:0.9rem;color:var(--text-dim)">El contexto que envías a Copilot incluye el código visible en tu editor. Nunca incluyas contraseñas, tokens o datos sensibles en archivos abiertos mientras usas Copilot.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Comandos -->
+        <div class="section">
+            <h2>Comandos clave en VS Code</h2>
+            <div class="shortcuts-grid">
+                <div class="shortcut-card">
+                    <div class="key-combo"><span class="key">Tab</span></div>
+                    <div class="shortcut-desc">Aceptar sugerencia completa</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key-combo"><span class="key">Esc</span></div>
+                    <div class="shortcut-desc">Rechazar sugerencia actual</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key-combo"><span class="key">Alt</span><span style="color:var(--text-dim)">+</span><span class="key">]</span></div>
+                    <div class="shortcut-desc">Siguiente sugerencia alternativa</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key-combo"><span class="key">Alt</span><span style="color:var(--text-dim)">+</span><span class="key">[</span></div>
+                    <div class="shortcut-desc">Sugerencia alternativa anterior</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key-combo"><span class="key">Ctrl</span><span style="color:var(--text-dim)">+</span><span class="key">Enter</span></div>
+                    <div class="shortcut-desc">Abrir panel de múltiples sugerencias</div>
+                </div>
+                <div class="shortcut-card">
+                    <div class="key-combo"><span class="key">Ctrl</span><span style="color:var(--text-dim)">+</span><span class="key">I</span></div>
+                    <div class="shortcut-desc">Abrir Copilot Chat inline</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Buenas prácticas -->
+        <div class="section">
+            <h2>Buenas prácticas</h2>
+            <div class="principle">
+                <span class="principle-icon">✅</span>
+                <div class="principle-text">
+                    <h4>Revisar siempre el código sugerido antes de aceptar</h4>
+                    <p>Copilot puede sugerir código que funciona pero que contiene vulnerabilidades. Cada línea que aceptas es tu responsabilidad.</p>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="principle-icon">✅</span>
+                <div class="principle-text">
+                    <h4>Usar comentarios descriptivos para guiar la sugerencia</h4>
+                    <p>Un comentario claro como <code style="font-family:'Fira Code',monospace;color:var(--accent);font-size:0.85em"># función que valida email y retorna True/False</code> produce mejores sugerencias.</p>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="principle-icon">✅</span>
+                <div class="principle-text">
+                    <h4>Verificar que no se incluya información sensible en el contexto</h4>
+                    <p>El contexto del archivo activo se envía a la API. Nunca trabajes con archivos de configuración con contraseñas reales mientras usas Copilot.</p>
+                </div>
+            </div>
+            <div class="principle">
+                <span class="principle-icon">✅</span>
+                <div class="principle-text">
+                    <h4>Entender el código antes de usarlo en producción</h4>
+                    <p>Si no puedes explicar qué hace el código sugerido, no lo uses. La IA puede producir código correcto en apariencia pero incorrecto en comportamiento.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 5: Limitaciones -->
+        <div class="section">
+            <h2>Limitaciones y riesgos</h2>
+            <div class="warning-card">
+                <p><strong>⚠ Vulnerabilidades conocidas</strong> — Puede sugerir código con patrones inseguros aprendidos de repositorios públicos con malas prácticas.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ No garantiza corrección</strong> — El código puede compilar y ejecutarse sin errores, pero producir resultados incorrectos en casos borde.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ Reproduce patrones inseguros</strong> — Si el proyecto ya tiene código inseguro, Copilot puede seguir el mismo patrón. Garbage in, garbage out.</p>
+            </div>
+            <div class="warning-card">
+                <p><strong>⚠ No reemplaza al programador</strong> — Es un asistente, no un desarrollador. La comprensión, el diseño y la responsabilidad del código siguen siendo tuyas.</p>
+            </div>
+        </div>
+
+        <!-- Sección 6: Ejemplo práctico -->
+        <div class="section">
+            <h2>Ejemplo práctico</h2>
+            <p style="font-size:0.9rem;color:var(--text-dim);margin-bottom:1rem">Copilot convierte comentarios descriptivos en código. Así funciona el flujo comentario → sugerencia:</p>
+            <div class="code-demo">
+                <div class="code-demo-header">🤖 copilot_demo.py — flujo comentario → sugerencia</div>
+                <div class="code-block" style="border-radius:0;border:none;border-bottom:1px solid rgba(56,189,248,0.15);">
+<span class="cm-code"># Función que valida un RUT chileno</span>
+<span class="cm-code"># Retorna True si es válido, False si no</span></div>
+                <div class="code-block copilot-suggestion" style="border-radius:0;border:none;">
+<span class="kw-code">def</span> <span class="fn-code">validar_rut</span>(<span class="va-code">rut</span>: <span class="fn-code">str</span>) <span class="va-code">-></span> <span class="fn-code">bool</span>:
+    <span class="st-code">"""Valida un RUT chileno con dígito verificador."""</span>
+    <span class="va-code">rut</span> = <span class="va-code">rut</span>.<span class="fn-code">replace</span>(<span class="st-code">"-"</span>, <span class="st-code">""</span>).<span class="fn-code">replace</span>(<span class="st-code">"."</span>, <span class="st-code">""</span>).<span class="fn-code">upper</span>()
+    <span class="kw-code">if</span> <span class="fn-code">len</span>(<span class="va-code">rut</span>) <span class="va-code">&lt;</span> <span class="num-code">2</span>:
+        <span class="kw-code">return</span> <span class="kw-code">False</span>
+    <span class="va-code">cuerpo</span>, <span class="va-code">dv</span> = <span class="va-code">rut</span>[:<span class="va-code">-</span><span class="num-code">1</span>], <span class="va-code">rut</span>[<span class="va-code">-</span><span class="num-code">1</span>]
+    <span class="va-code">suma</span>, <span class="va-code">mult</span> = <span class="num-code">0</span>, <span class="num-code">2</span>
+    <span class="kw-code">for</span> <span class="va-code">d</span> <span class="kw-code">in</span> <span class="fn-code">reversed</span>(<span class="va-code">cuerpo</span>):
+        <span class="va-code">suma</span> <span class="va-code">+=</span> <span class="fn-code">int</span>(<span class="va-code">d</span>) <span class="va-code">*</span> <span class="va-code">mult</span>
+        <span class="va-code">mult</span> = <span class="num-code">2</span> <span class="kw-code">if</span> <span class="va-code">mult</span> <span class="va-code">==</span> <span class="num-code">7</span> <span class="kw-code">else</span> <span class="va-code">mult</span> <span class="va-code">+</span> <span class="num-code">1</span>
+    <span class="va-code">esperado</span> = <span class="fn-code">str</span>(<span class="num-code">11</span> <span class="va-code">-</span> (<span class="va-code">suma</span> <span class="va-code">%</span> <span class="num-code">11</span>)).<span class="fn-code">replace</span>(<span class="st-code">"10"</span>,<span class="st-code">"K"</span>).<span class="fn-code">replace</span>(<span class="st-code">"11"</span>,<span class="st-code">"0"</span>)
+    <span class="kw-code">return</span> <span class="va-code">dv</span> <span class="va-code">==</span> <span class="va-code">esperado</span>
+                </div>
+            </div>
+            <div class="success-card" style="margin-top:0.75rem">
+                <p><strong>✅ Qué hacer después de recibir una sugerencia:</strong> Lee el código, entiende la lógica del módulo, pruébalo con casos de prueba (RUTs válidos e inválidos), y solo entonces acepta o adapta la función.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+        if (localStorage.getItem('theme') === 'light') {
+            root.setAttribute('data-theme', 'light');
+            toggleBtn.innerHTML = '🌙 Modo Oscuro';
+        }
+        toggleBtn.addEventListener('click', () => {
+            if (root.getAttribute('data-theme') === 'light') {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = '☀️ Modo Claro';
+            } else {
+                root.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = '🌙 Modo Oscuro';
+            }
+        });
+    </script>
+</body>
+</html>
