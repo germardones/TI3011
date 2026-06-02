@@ -100,6 +100,25 @@
         .sort-bars { display: flex; gap: 0.35rem; align-items: flex-end; height: 90px; }
         .sort-bar { border-radius: 4px 4px 0 0; transition: all 0.4s; position: relative; display: flex; align-items: flex-end; justify-content: center; }
         .sort-bar span { font-size: 0.68rem; font-family: 'Fira Code', monospace; font-weight: 700; padding-bottom: 0.25rem; }
+
+        /* Dict key-value table */
+        .dict-table { width: 100%; border-collapse: collapse; font-family: 'Fira Code', monospace; font-size: 0.82rem; }
+        .dict-table td { padding: 0.4rem 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        [data-theme="light"] .dict-table td { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .dict-table td:first-child { color: #fb923c; font-weight: 700; }
+        .dict-table td:nth-child(2) { color: var(--text-dim); text-align: center; }
+        .dict-table td:last-child { color: var(--text-main); }
+
+        /* Unpack visual */
+        .unpack-viz { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+        .unpack-cells { display: flex; gap: 0.5rem; }
+        .unpack-arrows { display: flex; gap: 0.5rem; }
+        .unpack-arrow { min-width: 44px; text-align: center; font-size: 0.75rem; color: var(--text-dim); }
+        .unpack-vars { display: flex; gap: 0.5rem; }
+        .unpack-var { min-width: 44px; text-align: center; font-size: 0.72rem; font-family: 'Fira Code', monospace; background: rgba(244,114,182,0.12); border: 1px solid rgba(244,114,182,0.4); border-radius: 4px; padding: 0.3rem 0.4rem; color: #f472b6; font-weight: 700; }
+
+        /* Badge */
+        .badge { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 100px; font-size: 0.72rem; font-family: 'Fira Code', monospace; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -124,6 +143,19 @@
                 <button class="type-tab" style="--c:#fbbf24" data-type="sort" onclick="switchTab('sort')">sort()</button>
             </div>
 
+            <!-- Divider -->
+            <div style="display:flex;align-items:center;gap:0.75rem;margin:1.5rem 0 0.75rem;">
+                <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
+                <span style="font-size:0.72rem;color:var(--text-dim);font-family:'Fira Code',monospace;white-space:nowrap">estructuras de datos</span>
+                <div style="flex:1;height:1px;background:rgba(255,255,255,0.08)"></div>
+            </div>
+            <div class="type-tabs">
+                <button class="type-tab" style="--c:#60a5fa" data-type="lista" onclick="switchTab('lista')">Lista</button>
+                <button class="type-tab" style="--c:#f472b6" data-type="tupla" onclick="switchTab('tupla')">Tupla</button>
+                <button class="type-tab" style="--c:#fb923c" data-type="dict" onclick="switchTab('dict')">Diccionario</button>
+                <button class="type-tab" style="--c:#a3e635" data-type="set" onclick="switchTab('set')">Set</button>
+            </div>
+
             <div class="terminal">
                 <div class="term-header">
                     <div class="dot" style="background:#ef4444"></div>
@@ -132,47 +164,101 @@
                     <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">busqueda_lineal.py</span>
                 </div>
                 <div class="term-body">
-                    <div class="code-section active" id="code-lineal"><pre><span class="kw">def</span> <span class="fn">busqueda_lineal</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
-    <span class="st">"""O(n) — recorre cada elemento."""</span>
+                    <div class="code-section active" id="code-lineal"><pre><span class="cm"># ── BÚSQUEDA LINEAL ─────────────────────────────</span>
+<span class="cm"># Recorre cada elemento de izquierda a derecha</span>
+<span class="cm"># comparando con el objetivo. Para cuando lo encuentra.</span>
+
+<span class="kw">def</span> <span class="fn">busqueda_lineal</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
     <span class="kw">for</span> <span class="va">i</span>, <span class="va">elemento</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">lista</span>):
         <span class="kw">if</span> <span class="va">elemento</span> <span class="op">==</span> <span class="va">objetivo</span>:
-            <span class="kw">return</span> <span class="va">i</span>   <span class="cm"># retorna el índice</span>
-    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>        <span class="cm"># no encontrado</span>
+            <span class="kw">return</span> <span class="va">i</span>   <span class="cm"># índice del primer encontrado</span>
+    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>        <span class="cm"># -1 si no existe</span>
 
 <span class="va">numeros</span> = [<span class="num">34</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">5</span>, <span class="num">62</span>]
-<span class="va">pos</span> = <span class="fn">busqueda_lineal</span>(<span class="va">numeros</span>, <span class="num">23</span>)
-<span class="fn">print</span>(<span class="st">f"Encontrado en índice: </span>{<span class="va">pos</span>}<span class="st">"</span>)  <span class="cm"># → 2</span>
+<span class="fn">print</span>(<span class="fn">busqueda_lineal</span>(<span class="va">numeros</span>, <span class="num">23</span>))  <span class="cm"># → 2</span>
+<span class="fn">print</span>(<span class="fn">busqueda_lineal</span>(<span class="va">numeros</span>, <span class="num">99</span>))  <span class="cm"># → -1</span>
 
-<span class="cm"># Caso no encontrado</span>
-<span class="va">pos2</span> = <span class="fn">busqueda_lineal</span>(<span class="va">numeros</span>, <span class="num">99</span>)
-<span class="fn">print</span>(<span class="va">pos2</span>)  <span class="cm"># → -1</span>
+<span class="cm"># ── VARIANTE: buscar TODOS los índices ───────────</span>
+<span class="kw">def</span> <span class="fn">buscar_todos</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
+    <span class="kw">return</span> [<span class="va">i</span> <span class="kw">for</span> <span class="va">i</span>, <span class="va">x</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">lista</span>) <span class="kw">if</span> <span class="va">x</span> <span class="op">==</span> <span class="va">objetivo</span>]
 
-<span class="cm"># ¿Cuándo usar?</span>
-<span class="cm"># ✅ Lista no ordenada</span>
-<span class="cm"># ✅ Lista pequeña (&lt; 100 elementos)</span>
+<span class="va">datos</span> = [<span class="num">3</span>, <span class="num">7</span>, <span class="num">3</span>, <span class="num">9</span>, <span class="num">3</span>]
+<span class="fn">print</span>(<span class="fn">buscar_todos</span>(<span class="va">datos</span>, <span class="num">3</span>))  <span class="cm"># → [0, 2, 4]</span>
+
+<span class="cm"># ── VARIANTE: buscar en lista de objetos ─────────</span>
+<span class="va">alumnos</span> = [
+    {<span class="st">"nombre"</span>: <span class="st">"Ana"</span>,  <span class="st">"nota"</span>: <span class="num">6.5</span>},
+    {<span class="st">"nombre"</span>: <span class="st">"Luis"</span>, <span class="st">"nota"</span>: <span class="num">4.0</span>},
+    {<span class="st">"nombre"</span>: <span class="st">"Sofía"</span>,<span class="st">"nota"</span>: <span class="num">7.0</span>},
+]
+
+<span class="kw">def</span> <span class="fn">buscar_alumno</span>(<span class="va">lista</span>, <span class="va">nombre</span>):
+    <span class="kw">for</span> <span class="va">alumno</span> <span class="kw">in</span> <span class="va">lista</span>:
+        <span class="kw">if</span> <span class="va">alumno</span>[<span class="st">"nombre"</span>] <span class="op">==</span> <span class="va">nombre</span>:
+            <span class="kw">return</span> <span class="va">alumno</span>
+    <span class="kw">return</span> <span class="kw">None</span>
+
+<span class="fn">print</span>(<span class="fn">buscar_alumno</span>(<span class="va">alumnos</span>, <span class="st">"Sofía"</span>))
+<span class="cm"># → {"nombre": "Sofía", "nota": 7.0}</span>
+
+<span class="cm"># ── VARIANTE: búsqueda con condición ─────────────</span>
+<span class="kw">def</span> <span class="fn">primer_aprobado</span>(<span class="va">alumnos</span>):
+    <span class="kw">for</span> <span class="va">a</span> <span class="kw">in</span> <span class="va">alumnos</span>:
+        <span class="kw">if</span> <span class="va">a</span>[<span class="st">"nota"</span>] <span class="op">&gt;=</span> <span class="num">4.0</span>:
+            <span class="kw">return</span> <span class="va">a</span>[<span class="st">"nombre"</span>]
+    <span class="kw">return</span> <span class="st">"Nadie aprobó"</span>
+
+<span class="cm"># ¿Cuándo usar lineal?</span>
+<span class="cm"># ✅ Lista NO ordenada</span>
+<span class="cm"># ✅ Lista pequeña (&lt; 500 elementos)</span>
+<span class="cm"># ✅ Buscar por condición compleja (no solo igualdad)</span>
 <span class="cm"># ❌ Lista grande y ordenada → usar binaria</span></pre></div>
 
-                    <div class="code-section" id="code-binaria"><pre><span class="kw">def</span> <span class="fn">busqueda_binaria</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
-    <span class="st">"""O(log n) — requiere lista ORDENADA."""</span>
-    <span class="va">izq</span>, <span class="va">der</span> = <span class="num">0</span>, <span class="fn">len</span>(<span class="va">lista</span>) <span class="op">-</span> <span class="num">1</span>
-    <span class="kw">while</span> <span class="va">izq</span> <span class="op">&lt;=</span> <span class="va">der</span>:
-        <span class="va">medio</span> = (<span class="va">izq</span> <span class="op">+</span> <span class="va">der</span>) <span class="op">//</span> <span class="num">2</span>
+                    <div class="code-section" id="code-binaria"><pre><span class="cm"># ── BÚSQUEDA BINARIA ─────────────────────────────</span>
+<span class="cm"># REQUIERE lista ORDENADA. En cada paso descarta</span>
+<span class="cm"># la mitad de los elementos restantes.</span>
+
+<span class="kw">def</span> <span class="fn">busqueda_binaria</span>(<span class="va">lista</span>, <span class="va">objetivo</span>):
+    <span class="va">izq</span> = <span class="num">0</span>                   <span class="cm"># límite izquierdo</span>
+    <span class="va">der</span> = <span class="fn">len</span>(<span class="va">lista</span>) <span class="op">-</span> <span class="num">1</span>    <span class="cm"># límite derecho</span>
+
+    <span class="kw">while</span> <span class="va">izq</span> <span class="op">&lt;=</span> <span class="va">der</span>:        <span class="cm"># mientras haya rango</span>
+        <span class="va">medio</span> = (<span class="va">izq</span> <span class="op">+</span> <span class="va">der</span>) <span class="op">//</span> <span class="num">2</span>  <span class="cm"># punto central</span>
+
         <span class="kw">if</span> <span class="va">lista</span>[<span class="va">medio</span>] <span class="op">==</span> <span class="va">objetivo</span>:
-            <span class="kw">return</span> <span class="va">medio</span>
+            <span class="kw">return</span> <span class="va">medio</span>               <span class="cm"># ¡encontrado!</span>
         <span class="kw">elif</span> <span class="va">lista</span>[<span class="va">medio</span>] <span class="op">&lt;</span> <span class="va">objetivo</span>:
-            <span class="va">izq</span> = <span class="va">medio</span> <span class="op">+</span> <span class="num">1</span>
+            <span class="va">izq</span> = <span class="va">medio</span> <span class="op">+</span> <span class="num">1</span>           <span class="cm"># buscar en mitad derecha</span>
         <span class="kw">else</span>:
-            <span class="va">der</span> = <span class="va">medio</span> <span class="op">-</span> <span class="num">1</span>
-    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>
+            <span class="va">der</span> = <span class="va">medio</span> <span class="op">-</span> <span class="num">1</span>           <span class="cm"># buscar en mitad izquierda</span>
 
-<span class="va">ordenados</span> = [<span class="num">5</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">34</span>, <span class="num">62</span>]
-<span class="va">pos</span> = <span class="fn">busqueda_binaria</span>(<span class="va">ordenados</span>, <span class="num">32</span>)
-<span class="fn">print</span>(<span class="st">f"Encontrado en índice: </span>{<span class="va">pos</span>}<span class="st">"</span>)  <span class="cm"># → 3</span>
+    <span class="kw">return</span> <span class="op">-</span><span class="num">1</span>                    <span class="cm"># no existe en la lista</span>
 
-<span class="cm"># Alternativa con librería estándar</span>
+<span class="cm"># ── Ejemplo paso a paso: buscar 32 ───────────────</span>
+<span class="va">lista</span> = [<span class="num">5</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">34</span>, <span class="num">62</span>]
+
+<span class="cm"># Paso 1: izq=0 der=5 → medio=2 → lista[2]=23 &lt; 32</span>
+<span class="cm">#         23 &lt; 32, entonces izq = 2+1 = 3</span>
+<span class="cm"># Paso 2: izq=3 der=5 → medio=4 → lista[4]=34 &gt; 32</span>
+<span class="cm">#         34 &gt; 32, entonces der = 4-1 = 3</span>
+<span class="cm"># Paso 3: izq=3 der=3 → medio=3 → lista[3]=32 == 32 ✓</span>
+
+<span class="fn">print</span>(<span class="fn">busqueda_binaria</span>(<span class="va">lista</span>, <span class="num">32</span>))   <span class="cm"># → 3</span>
+<span class="fn">print</span>(<span class="fn">busqueda_binaria</span>(<span class="va">lista</span>, <span class="num">10</span>))   <span class="cm"># → -1 (no existe)</span>
+
+<span class="cm"># ── Librería estándar: bisect ─────────────────────</span>
 <span class="kw">import</span> <span class="fn">bisect</span>
-<span class="va">i</span> = <span class="fn">bisect</span>.<span class="fn">bisect_left</span>(<span class="va">ordenados</span>, <span class="num">32</span>)
-<span class="cm"># ¡Siempre verificar que lista[i] == objetivo!</span></pre></div>
+
+<span class="va">i</span> = <span class="fn">bisect</span>.<span class="fn">bisect_left</span>(<span class="va">lista</span>, <span class="num">32</span>)
+<span class="kw">if</span> <span class="va">i</span> <span class="op">&lt;</span> <span class="fn">len</span>(<span class="va">lista</span>) <span class="kw">and</span> <span class="va">lista</span>[<span class="va">i</span>] <span class="op">==</span> <span class="num">32</span>:
+    <span class="fn">print</span>(<span class="st">f"Encontrado en índice </span>{<span class="va">i</span>}<span class="st">"</span>)
+
+<span class="cm"># ── Cuándo usar binaria ───────────────────────────</span>
+<span class="cm"># ✅ Lista ORDENADA (condición obligatoria)</span>
+<span class="cm"># ✅ Listas grandes (1000+ elementos)</span>
+<span class="cm"># ✅ Búsquedas frecuentes sobre el mismo conjunto</span>
+<span class="cm"># ❌ Lista no ordenada → primero ordenar o usar lineal</span>
+<span class="cm"># ❌ Si ordenar cuesta más que buscar → usar lineal</span></pre></div>
 
                     <div class="code-section" id="code-sorted"><pre><span class="va">nums</span> = [<span class="num">34</span>, <span class="num">7</span>, <span class="num">23</span>, <span class="num">32</span>, <span class="num">5</span>, <span class="num">62</span>]
 
@@ -208,6 +294,105 @@
 <span class="cm"># sort()   → modifica original (in-place)</span>
 <span class="cm"># sorted() → devuelve nueva lista (funcional)</span>
 <span class="va">copia_ord</span> = <span class="fn">sorted</span>(<span class="va">numeros</span>)  <span class="cm"># preserva numeros</span></pre></div>
+
+                    <!-- ── LISTA ── -->
+                    <div class="code-section" id="code-lista"><pre><span class="cm"># Lista — mutable, ordenada, permite duplicados</span>
+<span class="va">frutas</span> = [<span class="st">"manzana"</span>, <span class="st">"pera"</span>, <span class="st">"uva"</span>, <span class="st">"manzana"</span>]
+
+<span class="cm"># Acceso por índice</span>
+<span class="fn">print</span>(<span class="va">frutas</span>[<span class="num">0</span>])    <span class="cm"># "manzana"</span>
+<span class="fn">print</span>(<span class="va">frutas</span>[<span class="op">-</span><span class="num">1</span>])   <span class="cm"># "manzana" (último)</span>
+
+<span class="cm"># Recorrido con for</span>
+<span class="kw">for</span> <span class="va">fruta</span> <span class="kw">in</span> <span class="va">frutas</span>:
+    <span class="fn">print</span>(<span class="va">fruta</span>)
+
+<span class="cm"># Recorrido con índice (enumerate)</span>
+<span class="kw">for</span> <span class="va">i</span>, <span class="va">fruta</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">frutas</span>):
+    <span class="fn">print</span>(<span class="st">f"</span>{<span class="va">i</span>}<span class="st">: </span>{<span class="va">fruta</span>}<span class="st">"</span>)
+
+<span class="cm"># Operaciones comunes</span>
+<span class="va">frutas</span>.<span class="fn">append</span>(<span class="st">"kiwi"</span>)    <span class="cm"># agregar al final</span>
+<span class="va">frutas</span>.<span class="fn">remove</span>(<span class="st">"pera"</span>)    <span class="cm"># eliminar por valor</span>
+<span class="fn">len</span>(<span class="va">frutas</span>)              <span class="cm"># cantidad de elementos</span>
+<span class="st">"uva"</span> <span class="kw">in</span> <span class="va">frutas</span>          <span class="cm"># True — verificar pertenencia</span></pre></div>
+
+                    <!-- ── TUPLA ── -->
+                    <div class="code-section" id="code-tupla"><pre><span class="cm"># Tupla — inmutable, ordenada, permite duplicados</span>
+<span class="va">coordenada</span> = (<span class="num">40.7</span>, <span class="op">-</span><span class="num">74.0</span>)   <span class="cm"># latitud, longitud</span>
+
+<span class="cm"># Acceso por índice (igual que lista)</span>
+<span class="fn">print</span>(<span class="va">coordenada</span>[<span class="num">0</span>])   <span class="cm"># 40.7</span>
+<span class="fn">print</span>(<span class="va">coordenada</span>[<span class="num">1</span>])   <span class="cm"># -74.0</span>
+
+<span class="cm"># Recorrido con for</span>
+<span class="kw">for</span> <span class="va">valor</span> <span class="kw">in</span> <span class="va">coordenada</span>:
+    <span class="fn">print</span>(<span class="va">valor</span>)
+
+<span class="cm"># Desempaquetado (muy útil)</span>
+<span class="va">lat</span>, <span class="va">lon</span> = <span class="va">coordenada</span>
+<span class="fn">print</span>(<span class="st">f"Lat: </span>{<span class="va">lat</span>}<span class="st">, Lon: </span>{<span class="va">lon</span>}<span class="st">"</span>)
+
+<span class="cm"># Tupla como registro de datos</span>
+<span class="va">persona</span> = (<span class="st">"Ana"</span>, <span class="num">21</span>, <span class="st">"Ingeniería"</span>)
+<span class="va">nombre</span>, <span class="va">edad</span>, <span class="va">carrera</span> = <span class="va">persona</span>
+
+<span class="cm"># ¿Por qué tupla y no lista?</span>
+<span class="cm"># ✅ Datos que no deben cambiar</span>
+<span class="cm"># ✅ Claves de diccionarios</span>
+<span class="cm"># ❌ No puedes usar .append() ni .remove()</span></pre></div>
+
+                    <!-- ── DICT ── -->
+                    <div class="code-section" id="code-dict"><pre><span class="cm"># Diccionario — pares clave:valor, mutable</span>
+<span class="va">alumno</span> = {
+    <span class="st">"nombre"</span>: <span class="st">"Luis"</span>,
+    <span class="st">"edad"</span>: <span class="num">20</span>,
+    <span class="st">"notas"</span>: [<span class="num">6.0</span>, <span class="num">5.5</span>, <span class="num">7.0</span>]
+}
+
+<span class="cm"># Acceso por clave</span>
+<span class="fn">print</span>(<span class="va">alumno</span>[<span class="st">"nombre"</span>])          <span class="cm"># "Luis"</span>
+<span class="fn">print</span>(<span class="va">alumno</span>.<span class="fn">get</span>(<span class="st">"edad"</span>, <span class="num">0</span>))     <span class="cm"># 20 (con valor por defecto)</span>
+
+<span class="cm"># Recorrido — solo claves</span>
+<span class="kw">for</span> <span class="va">clave</span> <span class="kw">in</span> <span class="va">alumno</span>:
+    <span class="fn">print</span>(<span class="va">clave</span>)
+
+<span class="cm"># Recorrido — claves y valores</span>
+<span class="kw">for</span> <span class="va">clave</span>, <span class="va">valor</span> <span class="kw">in</span> <span class="va">alumno</span>.<span class="fn">items</span>():
+    <span class="fn">print</span>(<span class="st">f"</span>{<span class="va">clave</span>}<span class="st">: </span>{<span class="va">valor</span>}<span class="st">"</span>)
+
+<span class="cm"># Recorrido — solo valores</span>
+<span class="kw">for</span> <span class="va">valor</span> <span class="kw">in</span> <span class="va">alumno</span>.<span class="fn">values</span>():
+    <span class="fn">print</span>(<span class="va">valor</span>)
+
+<span class="cm"># Agregar / modificar</span>
+<span class="va">alumno</span>[<span class="st">"carrera"</span>] = <span class="st">"Civil"</span>
+<span class="va">alumno</span>[<span class="st">"edad"</span>] = <span class="num">21</span></pre></div>
+
+                    <!-- ── SET ── -->
+                    <div class="code-section" id="code-set"><pre><span class="cm"># Set (conjunto) — sin duplicados, sin orden</span>
+<span class="va">colores</span> = {<span class="st">"rojo"</span>, <span class="st">"verde"</span>, <span class="st">"azul"</span>, <span class="st">"rojo"</span>}
+<span class="fn">print</span>(<span class="va">colores</span>)  <span class="cm"># {"rojo", "verde", "azul"} — solo 3</span>
+
+<span class="cm"># Recorrido (sin garantía de orden)</span>
+<span class="kw">for</span> <span class="va">color</span> <span class="kw">in</span> <span class="va">colores</span>:
+    <span class="fn">print</span>(<span class="va">color</span>)
+
+<span class="cm"># Operaciones de conjuntos</span>
+<span class="va">a</span> = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>}
+<span class="va">b</span> = {<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>}
+
+<span class="va">union</span>        = <span class="va">a</span> <span class="op">|</span> <span class="va">b</span>   <span class="cm"># {1, 2, 3, 4, 5, 6}</span>
+<span class="va">interseccion</span> = <span class="va">a</span> <span class="op">&amp;</span> <span class="va">b</span>   <span class="cm"># {3, 4}</span>
+<span class="va">diferencia</span>   = <span class="va">a</span> <span class="op">-</span> <span class="va">b</span>   <span class="cm"># {1, 2}</span>
+
+<span class="cm"># Verificar pertenencia — O(1), más rápido que lista</span>
+<span class="st">"rojo"</span> <span class="kw">in</span> <span class="va">colores</span>   <span class="cm"># True</span>
+
+<span class="cm"># Eliminar duplicados de una lista</span>
+<span class="va">lista</span> = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">3</span>, <span class="num">3</span>]
+<span class="va">unicos</span> = <span class="fn">list</span>(<span class="fn">set</span>(<span class="va">lista</span>))  <span class="cm"># [1, 2, 3]</span></pre></div>
                 </div>
             </div>
         </div>
@@ -239,10 +424,52 @@
                     <div style="margin-top:0.6rem;font-size:0.78rem;color:var(--text-dim);font-family:'Fira Code',monospace" id="linear-status">Comparando índice 0: 34 ≠ 23 → siguiente</div>
                 </div>
                 <button onclick="animateLinear()" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.4);color:#a78bfa;padding:0.5rem 1.25rem;border-radius:100px;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:'Inter',sans-serif;transition:all 0.2s;">▶ Animar búsqueda</button>
+
+                <!-- Tabla de comparaciones -->
+                <div class="array-viz">
+                    <h3>Tabla de comparaciones — buscando 23</h3>
+                    <table style="width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:0.78rem;">
+                        <thead><tr style="color:var(--text-dim);">
+                            <td style="padding:0.3rem 0.5rem">Paso</td>
+                            <td style="padding:0.3rem 0.5rem">Índice</td>
+                            <td style="padding:0.3rem 0.5rem">Valor</td>
+                            <td style="padding:0.3rem 0.5rem">¿Es 23?</td>
+                            <td style="padding:0.3rem 0.5rem">Acción</td>
+                        </tr></thead>
+                        <tbody>
+                            <tr style="background:rgba(248,113,113,0.06)"><td style="padding:0.3rem 0.5rem">1</td><td style="padding:0.3rem 0.5rem;color:#a78bfa">0</td><td style="padding:0.3rem 0.5rem">34</td><td style="padding:0.3rem 0.5rem;color:#f87171">No</td><td style="padding:0.3rem 0.5rem;color:var(--text-dim)">siguiente →</td></tr>
+                            <tr style="background:rgba(248,113,113,0.06)"><td style="padding:0.3rem 0.5rem">2</td><td style="padding:0.3rem 0.5rem;color:#a78bfa">1</td><td style="padding:0.3rem 0.5rem">7</td><td style="padding:0.3rem 0.5rem;color:#f87171">No</td><td style="padding:0.3rem 0.5rem;color:var(--text-dim)">siguiente →</td></tr>
+                            <tr style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2)"><td style="padding:0.3rem 0.5rem">3</td><td style="padding:0.3rem 0.5rem;color:#34d399">2</td><td style="padding:0.3rem 0.5rem;color:#34d399;font-weight:700">23</td><td style="padding:0.3rem 0.5rem;color:#34d399">✓ Sí</td><td style="padding:0.3rem 0.5rem;color:#34d399">retornar 2</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size:0.72rem;color:var(--text-dim);margin-top:0.5rem;font-family:'Fira Code',monospace">Solo 3 de 6 comparaciones. Peor caso: 6 comparaciones (O(n)).</p>
+                </div>
+
+                <!-- Variantes -->
+                <div class="array-viz">
+                    <h3>Variantes útiles</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.8rem;">
+                        <div style="background:rgba(167,139,250,0.08);border-left:3px solid #a78bfa;padding:0.6rem 0.75rem;border-radius:0 6px 6px 0;">
+                            <span style="color:#a78bfa;font-family:'Fira Code',monospace;font-weight:700">buscar_todos(lista, x)</span><br>
+                            <span style="color:var(--text-dim)">Retorna <em>todos</em> los índices donde aparece x, no solo el primero.</span>
+                        </div>
+                        <div style="background:rgba(251,191,36,0.08);border-left:3px solid #fbbf24;padding:0.6rem 0.75rem;border-radius:0 6px 6px 0;">
+                            <span style="color:#fbbf24;font-family:'Fira Code',monospace;font-weight:700">buscar con condición</span><br>
+                            <span style="color:var(--text-dim)">Comparar por campo: <code style="color:#fbbf24">alumno["nota"] >= 4.0</code>. Útil en listas de diccionarios.</span>
+                        </div>
+                        <div style="background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;padding:0.6rem 0.75rem;border-radius:0 6px 6px 0;">
+                            <span style="color:#38bdf8;font-family:'Fira Code',monospace;font-weight:700">Python nativo: in</span><br>
+                            <span style="color:var(--text-dim)">Si solo necesitas saber si <em>existe</em>, usa <code style="color:#38bdf8">if x in lista</code> — hace búsqueda lineal internamente.</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display:flex;flex-direction:column;gap:0.4rem;">
                     <div class="info-prop"><span class="ip-key">Lista ordenada requerida</span><span class="ip-val" style="color:#34d399">No</span></div>
-                    <div class="info-prop"><span class="ip-key">Complejidad</span><span class="ip-val" style="color:#a78bfa">O(n)</span></div>
-                    <div class="info-prop"><span class="ip-key">Ideal para</span><span class="ip-val">listas pequeñas / sin ordenar</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad promedio</span><span class="ip-val" style="color:#a78bfa">O(n/2)</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad peor caso</span><span class="ip-val" style="color:#a78bfa">O(n)</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad mejor caso</span><span class="ip-val" style="color:#34d399">O(1) — primer elemento</span></div>
+                    <div class="info-prop"><span class="ip-key">Tipos soportados</span><span class="ip-val">lista, tupla, string, dict</span></div>
                 </div>
             </div>
 
@@ -275,9 +502,77 @@
                     <div style="margin-top:0.4rem;font-size:0.78rem;color:var(--text-dim);font-family:'Fira Code',monospace" id="binary-status">Paso 1: medio=2 (23) &lt; 32 → buscar derecha</div>
                 </div>
                 <button onclick="animateBinary()" style="background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.4);color:#38bdf8;padding:0.5rem 1.25rem;border-radius:100px;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:'Inter',sans-serif;transition:all 0.2s;">▶ Animar búsqueda</button>
+
+                <!-- Tabla de pasos -->
+                <div class="array-viz">
+                    <h3>Tabla de pasos — buscando 32 en [5,7,23,32,34,62]</h3>
+                    <table style="width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:0.78rem;">
+                        <thead><tr style="color:var(--text-dim);">
+                            <td style="padding:0.3rem 0.5rem">Paso</td>
+                            <td style="padding:0.3rem 0.5rem;color:#38bdf8">izq</td>
+                            <td style="padding:0.3rem 0.5rem;color:#f87171">der</td>
+                            <td style="padding:0.3rem 0.5rem;color:#fbbf24">medio</td>
+                            <td style="padding:0.3rem 0.5rem">lista[medio]</td>
+                            <td style="padding:0.3rem 0.5rem">Decisión</td>
+                        </tr></thead>
+                        <tbody>
+                            <tr style="background:rgba(255,255,255,0.03)"><td style="padding:0.3rem 0.5rem">1</td><td style="padding:0.3rem 0.5rem;color:#38bdf8">0</td><td style="padding:0.3rem 0.5rem;color:#f87171">5</td><td style="padding:0.3rem 0.5rem;color:#fbbf24">2</td><td style="padding:0.3rem 0.5rem">23</td><td style="padding:0.3rem 0.5rem;color:var(--text-dim)">23 &lt; 32 → izq=3</td></tr>
+                            <tr style="background:rgba(255,255,255,0.03)"><td style="padding:0.3rem 0.5rem">2</td><td style="padding:0.3rem 0.5rem;color:#38bdf8">3</td><td style="padding:0.3rem 0.5rem;color:#f87171">5</td><td style="padding:0.3rem 0.5rem;color:#fbbf24">4</td><td style="padding:0.3rem 0.5rem">34</td><td style="padding:0.3rem 0.5rem;color:var(--text-dim)">34 &gt; 32 → der=3</td></tr>
+                            <tr style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2)"><td style="padding:0.3rem 0.5rem">3</td><td style="padding:0.3rem 0.5rem;color:#38bdf8">3</td><td style="padding:0.3rem 0.5rem;color:#f87171">3</td><td style="padding:0.3rem 0.5rem;color:#fbbf24">3</td><td style="padding:0.3rem 0.5rem;color:#34d399;font-weight:700">32</td><td style="padding:0.3rem 0.5rem;color:#34d399">32 == 32 ✓</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size:0.72rem;color:var(--text-dim);margin-top:0.5rem;font-family:'Fira Code',monospace">Solo 3 comparaciones para 6 elementos. Lineal habría necesitado 4.</p>
+                </div>
+
+                <!-- Visual de división de espacio -->
+                <div class="array-viz">
+                    <h3>Cómo se divide el espacio de búsqueda</h3>
+                    <div style="font-family:'Fira Code',monospace;font-size:0.78rem;display:flex;flex-direction:column;gap:0.5rem;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <span style="color:var(--text-dim);min-width:50px">Inicio:</span>
+                            <div style="flex:1;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:4px;padding:0.25rem 0.5rem;color:#38bdf8">6 elementos</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <span style="color:var(--text-dim);min-width:50px">Paso 1:</span>
+                            <div style="flex:0.5;background:rgba(56,189,248,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:0.25rem 0.5rem;color:var(--text-dim);text-decoration:line-through">descartado</div>
+                            <div style="flex:0.5;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:4px;padding:0.25rem 0.5rem;color:#38bdf8">3 elementos</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <span style="color:var(--text-dim);min-width:50px">Paso 2:</span>
+                            <div style="flex:0.5;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:4px;padding:0.25rem 0.5rem;color:#38bdf8">2 elementos</div>
+                            <div style="flex:0.5;background:rgba(56,189,248,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:0.25rem 0.5rem;color:var(--text-dim);text-decoration:line-through">descartado</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <span style="color:var(--text-dim);min-width:50px">Paso 3:</span>
+                            <div style="flex:1;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.4);border-radius:4px;padding:0.25rem 0.5rem;color:#34d399">1 elemento → ¡encontrado! ✓</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparación de eficiencia -->
+                <div class="array-viz">
+                    <h3>Comparación de eficiencia</h3>
+                    <table style="width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:0.78rem;">
+                        <thead><tr style="color:var(--text-dim)">
+                            <td style="padding:0.3rem 0.5rem">Elementos</td>
+                            <td style="padding:0.3rem 0.5rem;color:#a78bfa">Lineal O(n)</td>
+                            <td style="padding:0.3rem 0.5rem;color:#38bdf8">Binaria O(log n)</td>
+                        </tr></thead>
+                        <tbody>
+                            <tr><td style="padding:0.3rem 0.5rem">10</td><td style="padding:0.3rem 0.5rem;color:#a78bfa">10</td><td style="padding:0.3rem 0.5rem;color:#38bdf8">4</td></tr>
+                            <tr style="background:rgba(255,255,255,0.03)"><td style="padding:0.3rem 0.5rem">100</td><td style="padding:0.3rem 0.5rem;color:#a78bfa">100</td><td style="padding:0.3rem 0.5rem;color:#38bdf8">7</td></tr>
+                            <tr><td style="padding:0.3rem 0.5rem">1.000</td><td style="padding:0.3rem 0.5rem;color:#a78bfa">1.000</td><td style="padding:0.3rem 0.5rem;color:#38bdf8">10</td></tr>
+                            <tr style="background:rgba(255,255,255,0.03)"><td style="padding:0.3rem 0.5rem">1.000.000</td><td style="padding:0.3rem 0.5rem;color:#f87171">1.000.000</td><td style="padding:0.3rem 0.5rem;color:#34d399">20</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="font-size:0.72rem;color:var(--text-dim);margin-top:0.5rem;font-family:'Fira Code',monospace">Valores = máximo de comparaciones en peor caso.</p>
+                </div>
+
                 <div style="display:flex;flex-direction:column;gap:0.4rem;">
                     <div class="info-prop"><span class="ip-key">Lista ordenada requerida</span><span class="ip-val" style="color:#f87171">Sí — obligatorio</span></div>
-                    <div class="info-prop"><span class="ip-key">Complejidad</span><span class="ip-val" style="color:#38bdf8">O(log n)</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad peor caso</span><span class="ip-val" style="color:#38bdf8">O(log n)</span></div>
+                    <div class="info-prop"><span class="ip-key">Complejidad mejor caso</span><span class="ip-val" style="color:#34d399">O(1) — elemento del medio</span></div>
+                    <div class="info-prop"><span class="ip-key">Librería estándar</span><span class="ip-val">bisect.bisect_left()</span></div>
                     <div class="info-prop"><span class="ip-key">Ideal para</span><span class="ip-val">listas grandes y ordenadas</span></div>
                 </div>
             </div>
@@ -355,6 +650,156 @@
                 </div>
             </div>
 
+            <!-- ═══════════ LISTA INFO ═══════════ -->
+            <div class="type-info" id="info-lista">
+                <div style="background:linear-gradient(135deg,rgba(96,165,250,0.18),rgba(96,165,250,0.04));border:1px solid rgba(96,165,250,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#60a5fa;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">Lista</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">mutable · ordenada · duplicados permitidos</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">La estructura más versátil de Python. Almacena elementos en orden y permite modificarlos libremente.</p>
+                </div>
+
+                <div class="array-viz">
+                    <h3>frutas = ["manzana", "pera", "uva", "manzana"]</h3>
+                    <div class="arr-row" id="lista-cells">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(96,165,250,0.15);border:2px solid rgba(96,165,250,0.4);color:#60a5fa;min-width:70px">manzana</div><div class="arr-idx">0</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(96,165,250,0.15);border:2px solid rgba(96,165,250,0.4);color:#60a5fa;min-width:54px">pera</div><div class="arr-idx">1</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(96,165,250,0.15);border:2px solid rgba(96,165,250,0.4);color:#60a5fa;min-width:48px">uva</div><div class="arr-idx">2</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(96,165,250,0.15);border:2px solid rgba(96,165,250,0.4);color:#60a5fa;min-width:70px">manzana</div><div class="arr-idx">3</div></div>
+                    </div>
+                    <div style="margin-top:0.6rem;font-size:0.78rem;color:var(--text-dim);font-family:'Fira Code',monospace" id="lista-status">Presiona ▶ para recorrer la lista</div>
+                </div>
+                <button onclick="traverseList()" style="background:rgba(96,165,250,0.15);border:1px solid rgba(96,165,250,0.4);color:#60a5fa;padding:0.5rem 1.25rem;border-radius:100px;cursor:pointer;font-weight:600;font-size:0.85rem;font-family:'Inter',sans-serif;transition:all 0.2s;">▶ Recorrer lista</button>
+
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Ordenada</span><span class="ip-val" style="color:#60a5fa">Sí — mantiene posición</span></div>
+                    <div class="info-prop"><span class="ip-key">Mutable</span><span class="ip-val" style="color:#60a5fa">Sí — se puede modificar</span></div>
+                    <div class="info-prop"><span class="ip-key">Duplicados</span><span class="ip-val">Permitidos</span></div>
+                    <div class="info-prop"><span class="ip-key">Acceso</span><span class="ip-val">O(1) por índice</span></div>
+                </div>
+            </div>
+
+            <!-- ═══════════ TUPLA INFO ═══════════ -->
+            <div class="type-info" id="info-tupla">
+                <div style="background:linear-gradient(135deg,rgba(244,114,182,0.18),rgba(244,114,182,0.04));border:1px solid rgba(244,114,182,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#f472b6;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">Tupla</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">inmutable · ordenada · duplicados permitidos</span>
+                    <span class="badge" style="background:rgba(244,114,182,0.2);border:1px solid rgba(244,114,182,0.5);color:#f472b6;margin-top:0.5rem;display:inline-block">🔒 inmutable</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Como una lista, pero no se puede modificar. Ideal para datos fijos como coordenadas o registros.</p>
+                </div>
+
+                <div class="array-viz">
+                    <h3>coordenada = (40.7, -74.0)</h3>
+                    <div class="arr-row">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(244,114,182,0.15);border:2px solid rgba(244,114,182,0.4);color:#f472b6;min-width:58px">40.7</div><div class="arr-idx">0</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(244,114,182,0.15);border:2px solid rgba(244,114,182,0.4);color:#f472b6;min-width:58px">-74.0</div><div class="arr-idx">1</div></div>
+                    </div>
+
+                    <p style="font-size:0.78rem;color:var(--text-dim);margin:0.9rem 0 0.4rem;font-family:'Fira Code',monospace">Desempaquetado: lat, lon = coordenada</p>
+                    <div class="unpack-viz">
+                        <div class="unpack-cells">
+                            <div class="arr-cell"><div class="arr-val" style="background:rgba(244,114,182,0.15);border:2px solid rgba(244,114,182,0.4);color:#f472b6;min-width:58px">40.7</div></div>
+                            <div class="arr-cell"><div class="arr-val" style="background:rgba(244,114,182,0.15);border:2px solid rgba(244,114,182,0.4);color:#f472b6;min-width:58px">-74.0</div></div>
+                        </div>
+                        <div class="unpack-arrows">
+                            <div class="unpack-arrow">↓</div>
+                            <div class="unpack-arrow">↓</div>
+                        </div>
+                        <div class="unpack-vars">
+                            <div class="unpack-var">lat</div>
+                            <div class="unpack-var">lon</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Ordenada</span><span class="ip-val" style="color:#f472b6">Sí — mantiene posición</span></div>
+                    <div class="info-prop"><span class="ip-key">Mutable</span><span class="ip-val" style="color:#f87171">No — inmutable</span></div>
+                    <div class="info-prop"><span class="ip-key">Duplicados</span><span class="ip-val">Permitidos</span></div>
+                    <div class="info-prop"><span class="ip-key">Uso típico</span><span class="ip-val">coordenadas, registros fijos</span></div>
+                </div>
+            </div>
+
+            <!-- ═══════════ DICT INFO ═══════════ -->
+            <div class="type-info" id="info-dict">
+                <div style="background:linear-gradient(135deg,rgba(251,146,60,0.18),rgba(251,146,60,0.04));border:1px solid rgba(251,146,60,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#fb923c;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">Diccionario</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">clave:valor · mutable · O(1) acceso</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Asocia claves únicas a valores. Perfecto para representar objetos, configuraciones o registros con nombre.</p>
+                </div>
+
+                <div class="array-viz">
+                    <h3>alumno = { "nombre": "Luis", "edad": 20, ... }</h3>
+                    <table class="dict-table">
+                        <tr>
+                            <td>"nombre"</td><td>→</td><td>"Luis"</td>
+                        </tr>
+                        <tr>
+                            <td>"edad"</td><td>→</td><td>20</td>
+                        </tr>
+                        <tr>
+                            <td>"notas"</td><td>→</td><td>[6.0, 5.5, 7.0]</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Ordenado</span><span class="ip-val" style="color:#fb923c">Sí (Python 3.7+)</span></div>
+                    <div class="info-prop"><span class="ip-key">Acceso por</span><span class="ip-val">clave (O(1))</span></div>
+                    <div class="info-prop"><span class="ip-key">Mutable</span><span class="ip-val" style="color:#fb923c">Sí</span></div>
+                    <div class="info-prop"><span class="ip-key">Clave única</span><span class="ip-val" style="color:#f87171">No puede repetirse</span></div>
+                </div>
+            </div>
+
+            <!-- ═══════════ SET INFO ═══════════ -->
+            <div class="type-info" id="info-set">
+                <div style="background:linear-gradient(135deg,rgba(163,230,53,0.18),rgba(163,230,53,0.04));border:1px solid rgba(163,230,53,0.3);border-radius:1rem;padding:1.5rem;">
+                    <h2 style="color:#a3e635;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">Set</h2>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">sin duplicados · sin orden · O(1) búsqueda</span>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Colección sin elementos repetidos. Excelente para verificar pertenencia y operaciones de conjuntos matemáticos.</p>
+                </div>
+
+                <div class="array-viz">
+                    <h3>colores = {"rojo", "verde", "azul"}</h3>
+                    <p style="font-size:0.75rem;color:#f87171;margin-bottom:0.6rem;font-family:'Fira Code',monospace">⚠ Sin orden garantizado</p>
+                    <div class="arr-row">
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(163,230,53,0.15);border:2px solid rgba(163,230,53,0.4);color:#a3e635;min-width:52px">rojo</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(163,230,53,0.15);border:2px solid rgba(163,230,53,0.4);color:#a3e635;min-width:58px">verde</div></div>
+                        <div class="arr-cell"><div class="arr-val" style="background:rgba(163,230,53,0.15);border:2px solid rgba(163,230,53,0.4);color:#a3e635;min-width:52px">azul</div></div>
+                    </div>
+
+                    <p style="font-size:0.78rem;color:var(--text-dim);margin:0.9rem 0 0.4rem;font-family:'Fira Code',monospace">Eliminar duplicados de una lista:</p>
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+                        <div>
+                            <p style="font-size:0.7rem;color:var(--text-dim);font-family:'Fira Code',monospace;margin-bottom:0.3rem">antes</p>
+                            <div class="arr-row" style="margin-bottom:0">
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171;min-width:28px">1</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171;min-width:28px">2</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171;opacity:0.55;min-width:28px">2</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171;min-width:28px">3</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171;opacity:0.55;min-width:28px">3</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(248,113,113,0.12);border:2px solid rgba(248,113,113,0.3);color:#f87171;opacity:0.55;min-width:28px">3</div></div>
+                            </div>
+                        </div>
+                        <span style="font-size:1.2rem;color:var(--text-dim)">→</span>
+                        <div>
+                            <p style="font-size:0.7rem;color:var(--text-dim);font-family:'Fira Code',monospace;margin-bottom:0.3rem">después</p>
+                            <div class="arr-row" style="margin-bottom:0">
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(163,230,53,0.15);border:2px solid rgba(163,230,53,0.4);color:#a3e635;min-width:28px">1</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(163,230,53,0.15);border:2px solid rgba(163,230,53,0.4);color:#a3e635;min-width:28px">2</div></div>
+                                <div class="arr-cell"><div class="arr-val" style="background:rgba(163,230,53,0.15);border:2px solid rgba(163,230,53,0.4);color:#a3e635;min-width:28px">3</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                    <div class="info-prop"><span class="ip-key">Ordenado</span><span class="ip-val" style="color:#f87171">No</span></div>
+                    <div class="info-prop"><span class="ip-key">Duplicados</span><span class="ip-val" style="color:#a3e635">Eliminados automáticamente</span></div>
+                    <div class="info-prop"><span class="ip-key">Búsqueda</span><span class="ip-val" style="color:#a3e635">O(1) — más rápido que lista</span></div>
+                    <div class="info-prop"><span class="ip-key">Mutable</span><span class="ip-val" style="color:#a3e635">Sí</span></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -367,7 +812,16 @@
             else { root.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); toggleBtn.innerHTML = '🌙 Modo Oscuro'; }
         });
 
-        const filenames = { lineal: 'busqueda_lineal.py', binaria: 'busqueda_binaria.py', sorted: 'sorted_ejemplo.py', sort: 'sort_ejemplo.py' };
+        const filenames = {
+            lineal: 'busqueda_lineal.py',
+            binaria: 'busqueda_binaria.py',
+            sorted: 'sorted_ejemplo.py',
+            sort: 'sort_ejemplo.py',
+            lista: 'estructuras_lista.py',
+            tupla: 'estructuras_tupla.py',
+            dict: 'estructuras_dict.py',
+            set: 'estructuras_set.py'
+        };
         function switchTab(type) {
             document.querySelectorAll('.code-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.type-info').forEach(s => s.classList.remove('active'));
@@ -428,6 +882,37 @@
             });
             status.textContent = s.msg;
             binaryStep++;
+        }
+
+        // Lista traverse animation
+        const listaData = ['manzana', 'pera', 'uva', 'manzana'];
+        let listaStep = 0;
+        function traverseList() {
+            const cells = document.querySelectorAll('#lista-cells .arr-val');
+            const status = document.getElementById('lista-status');
+            if (listaStep >= listaData.length) { listaStep = 0; }
+            cells.forEach((c, i) => {
+                c.style.opacity = i < listaStep ? '0.4' : '1';
+                c.style.background = 'rgba(96,165,250,0.15)';
+                c.style.borderColor = 'rgba(96,165,250,0.4)';
+                c.style.color = '#60a5fa';
+            });
+            cells[listaStep].style.background = 'rgba(251,191,36,0.2)';
+            cells[listaStep].style.borderColor = '#fbbf24';
+            cells[listaStep].style.color = '#fbbf24';
+            cells[listaStep].style.opacity = '1';
+            status.textContent = `for i=${listaStep}: frutas[${listaStep}] = "${listaData[listaStep]}"`;
+            listaStep++;
+            if (listaStep > listaData.length) {
+                cells.forEach(c => {
+                    c.style.opacity = '1';
+                    c.style.background = 'rgba(52,211,153,0.15)';
+                    c.style.borderColor = 'rgba(52,211,153,0.4)';
+                    c.style.color = '#34d399';
+                });
+                status.textContent = 'Recorrido completo ✓ — 4 elementos visitados';
+                listaStep = 0;
+            }
         }
     </script>
 </body>
