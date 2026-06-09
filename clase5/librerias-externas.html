@@ -41,7 +41,8 @@
         .code-block { background: var(--panel-bg); border-radius: 0.75rem; padding: 1.25rem 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.84rem; line-height: 1.9; border: 1px solid rgba(255,255,255,0.08); overflow-x: auto; color: #cdd9e5; }
         [data-theme="light"] .code-block { border: 1px solid rgba(0,0,0,0.1); color: #1e293b; }
         .warning-card { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
-        .warning-card p { font-size: 0.9rem; color: var(--text-dim); }
+        .warning-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; }
+        .warning-card p + p { margin-top: 0.35rem; }
         .warning-card strong { color: #fbbf24; }
         .cm { color: #5c6370; }
         [data-theme="light"] .cm { color: #94a3b8; }
@@ -104,7 +105,12 @@
         <div class="section">
             <h2>PyPI — El repositorio oficial de Python</h2>
             <div class="card">
-                <p style="font-size:0.95rem;line-height:1.7;margin-bottom:1rem"><strong class="accent-text">PyPI</strong> (Python Package Index) es el repositorio oficial de paquetes Python, disponible en <strong>pypi.org</strong>. Cuando ejecutas <code style="font-family:'Fira Code',monospace;color:var(--accent);font-size:0.9em">pip install nombre</code>, pip descarga el paquete desde PyPI.</p>
+                <p style="font-size:0.95rem;line-height:1.7;margin-bottom:0.75rem"><strong class="accent-text">PyPI</strong> (Python Package Index) es el repositorio oficial de paquetes Python, disponible en <strong>pypi.org</strong>.</p>
+                <ul style="font-size:0.9rem;line-height:1.8;color:var(--text-dim);padding-left:1.25rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:0.3rem">
+                    <li>Cuando ejecutas <code style="font-family:'Fira Code',monospace;color:var(--accent);font-size:0.9em">pip install nombre</code>, pip descarga el paquete directamente desde PyPI.</li>
+                    <li>Contiene más de 500 000 proyectos de código abierto.</li>
+                    <li>Es el canal de distribución estándar de la comunidad Python.</li>
+                </ul>
                 <div class="code-block"><span class="cm"># Instalar desde PyPI (repositorio oficial)</span>
 pip install requests
 
@@ -147,28 +153,48 @@ pip install requests --index-url https://pypi.org/simple/</div>
                 <div class="step-num">1</div>
                 <div class="step-content">
                     <h4>🔍 Buscar en pypi.org — verificar nombre exacto</h4>
-                    <p>El <strong>typosquatting</strong> es cuando atacantes publican paquetes con nombres casi idénticos a los populares: <code style="font-family:'Fira Code',monospace;color:#f87171;font-size:0.9em">request</code> vs <code style="font-family:'Fira Code',monospace;color:#34d399;font-size:0.9em">requests</code>. Siempre verifica el nombre exacto en pypi.org antes de instalar.</p>
+                    <p style="margin-bottom:0.5rem">El <strong>typosquatting</strong> ocurre cuando atacantes publican paquetes con nombres casi idénticos a los populares.</p>
+                    <ul style="font-size:0.82rem;color:var(--text-dim);padding-left:1.1rem;line-height:1.8;display:flex;flex-direction:column;gap:0.2rem">
+                        <li>Falso: <code style="font-family:'Fira Code',monospace;color:#f87171">request</code> &nbsp;→&nbsp; Real: <code style="font-family:'Fira Code',monospace;color:#34d399">requests</code></li>
+                        <li>Siempre busca el nombre exacto en <strong>pypi.org</strong> antes de instalar.</li>
+                    </ul>
                 </div>
             </div>
             <div class="step">
                 <div class="step-num">2</div>
                 <div class="step-content">
                     <h4>📊 Revisar estadísticas de uso</h4>
-                    <p>Un paquete legítimo y popular tiene millones de descargas/semana, historial de versiones que abarca años, y actualizaciones frecuentes. Un paquete con 10 descargas y creado ayer es sospechoso.</p>
+                    <p style="margin-bottom:0.5rem">Un paquete confiable muestra señales claras de uso real:</p>
+                    <ul style="font-size:0.82rem;color:var(--text-dim);padding-left:1.1rem;line-height:1.8;display:flex;flex-direction:column;gap:0.2rem">
+                        <li>Millones de descargas por semana.</li>
+                        <li>Historial de versiones que abarca meses o años.</li>
+                        <li>Actualizaciones recientes y frecuentes.</li>
+                        <li>Un paquete con 10 descargas y creado ayer es sospechoso.</li>
+                    </ul>
                 </div>
             </div>
             <div class="step">
                 <div class="step-num">3</div>
                 <div class="step-content">
                     <h4>👥 Revisar el repositorio GitHub</h4>
-                    <p>Verifica la actividad de commits (cuándo fue el último), issues abiertos y cerrados, cantidad de contribuidores, y si tiene tests. Un repositorio abandonado es una señal de alerta.</p>
+                    <p style="margin-bottom:0.5rem">Revisa el repositorio GitHub del paquete y verifica:</p>
+                    <ul style="font-size:0.82rem;color:var(--text-dim);padding-left:1.1rem;line-height:1.8;display:flex;flex-direction:column;gap:0.2rem">
+                        <li>Fecha del último commit (¿reciente?).</li>
+                        <li>Issues abiertos y cerrados (actividad de mantenimiento).</li>
+                        <li>Cantidad de contribuidores.</li>
+                        <li>Presencia de tests automatizados.</li>
+                    </ul>
                 </div>
             </div>
             <div class="step">
                 <div class="step-num">4</div>
                 <div class="step-content">
                     <h4>🔒 Revisar dependencias transitivas</h4>
-                    <p>Cada paquete que instalas puede traer otros paquetes. Usa <code style="font-family:'Fira Code',monospace;color:var(--accent);font-size:0.9em">pip show nombre</code> para ver sus dependencias y verifica que también sean seguras.</p>
+                    <p style="margin-bottom:0.5rem">Cada paquete puede traer otros paquetes consigo (dependencias transitivas).</p>
+                    <ul style="font-size:0.82rem;color:var(--text-dim);padding-left:1.1rem;line-height:1.8;display:flex;flex-direction:column;gap:0.2rem">
+                        <li>Usa <code style="font-family:'Fira Code',monospace;color:var(--accent)">pip show nombre</code> para listar sus dependencias.</li>
+                        <li>Cada dependencia debe ser también verificada individualmente.</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -207,19 +233,24 @@ pip uninstall requests</div>
         <div class="section">
             <h2>Señales de alerta — paquetes sospechosos</h2>
             <div class="warning-card">
-                <p><strong>⚠ Nombre similar a librerías populares (typosquatting)</strong> — <code style="font-family:'Fira Code',monospace">request</code> (falso) vs <code style="font-family:'Fira Code',monospace">requests</code> (real). Siempre busca el nombre exacto.</p>
+                <p><strong>⚠ Nombre similar a librerías populares (typosquatting)</strong></p>
+                <p><code style="font-family:'Fira Code',monospace">request</code> (falso) vs <code style="font-family:'Fira Code',monospace">requests</code> (real). Siempre verifica el nombre exacto en pypi.org antes de instalar.</p>
             </div>
             <div class="warning-card">
-                <p><strong>⚠ Sin historial de versiones o autor anónimo</strong> — Paquetes legítimos tienen múltiples versiones y mantenedores identificables con repositorios públicos.</p>
+                <p><strong>⚠ Sin historial de versiones o autor anónimo</strong></p>
+                <p>Los paquetes legítimos tienen múltiples versiones publicadas a lo largo del tiempo, mantenedores identificables y repositorios públicos activos.</p>
             </div>
             <div class="warning-card">
-                <p><strong>⚠ Código fuente no disponible públicamente</strong> — Si no puedes leer el código fuente, no puedes verificar qué hace realmente el paquete.</p>
+                <p><strong>⚠ Código fuente no disponible públicamente</strong></p>
+                <p>Si no puedes leer el código fuente, no puedes verificar qué hace realmente el paquete. Sin código abierto, no hay confianza.</p>
             </div>
             <div class="warning-card">
-                <p><strong>⚠ Pocas descargas o explosión repentina de popularidad</strong> — Librerías muy nuevas con muchas descargas pueden indicar actividad artificial para parecer legítimas.</p>
+                <p><strong>⚠ Pocas descargas o explosión repentina de popularidad</strong></p>
+                <p>Librerías muy nuevas con un número inusualmente alto de descargas pueden indicar actividad artificial para parecer legítimas.</p>
             </div>
             <div class="warning-card">
-                <p><strong>⚠ Solicita permisos innecesarios en setup.py</strong> — Un paquete de utilidades de strings que accede a la red o al sistema de archivos es sospechoso.</p>
+                <p><strong>⚠ Solicita permisos innecesarios en setup.py</strong></p>
+                <p>Un paquete de utilidades de texto que accede a la red o al sistema de archivos es una señal de alerta inmediata.</p>
             </div>
         </div>
 
