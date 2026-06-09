@@ -124,78 +124,86 @@
                     <span style="color:var(--text-dim);margin-left:0.75rem;font-size:0.75rem" id="filename">excepciones_seguras.py</span>
                 </div>
                 <div class="term-body">
-                    <div class="code-section active" id="code-try"><pre><span class="cm"># INSEGURO: captura genérica expone info del sistema</span>
-<span class="kw">try</span>:
-    <span class="va">archivo</span> = <span class="fn">open</span>(<span class="va">ruta</span>, <span class="st">"r"</span>)
-    <span class="va">datos</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Número: "</span>))
-<span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> <span class="va">e</span>:
-    <span class="fn">print</span>(<span class="st">f"Error: </span>{<span class="va">e</span>}<span class="st">"</span>)  <span class="cm"># ¡expone detalles internos!</span>
+                    <div class="code-section active" id="code-try"><pre><span class="cm"># El usuario ingresa dos números para dividir</span>
+<span class="cm"># ¿Qué pasa si escribe "hola" o divide entre 0?</span>
 
-<span class="cm"># ─────────────────────────────────────────────────</span>
+<span class="cm"># ── SIN manejo de errores ──────────────────────────</span>
+<span class="va">a</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Numerador: "</span>))    <span class="cm"># crash si escribe "hola"</span>
+<span class="va">b</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Denominador: "</span>))  <span class="cm"># crash si escribe "hola"</span>
+<span class="fn">print</span>(<span class="va">a</span> <span class="op">/</span> <span class="va">b</span>)                      <span class="cm"># crash si b == 0</span>
 
-<span class="cm"># SEGURO: captura específica + mensaje controlado</span>
+<span class="cm"># ── CON try/except ────────────────────────────────</span>
 <span class="kw">try</span>:
-    <span class="kw">with</span> <span class="fn">open</span>(<span class="va">ruta</span>, <span class="st">"r"</span>) <span class="kw">as</span> <span class="va">archivo</span>:
-        <span class="va">contenido</span> = <span class="va">archivo</span>.<span class="fn">read</span>()
-    <span class="va">numero</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Número: "</span>))
-<span class="kw">except</span> <span class="fn">FileNotFoundError</span>:
-    <span class="fn">print</span>(<span class="st">"Archivo no encontrado."</span>)   <span class="cm"># mensaje genérico</span>
+    <span class="va">a</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Numerador: "</span>))
+    <span class="va">b</span> = <span class="fn">int</span>(<span class="fn">input</span>(<span class="st">"Denominador: "</span>))
+    <span class="va">resultado</span> = <span class="va">a</span> <span class="op">/</span> <span class="va">b</span>
+    <span class="fn">print</span>(<span class="st">f"Resultado: </span>{<span class="va">resultado</span>}<span class="st">"</span>)
 <span class="kw">except</span> <span class="fn">ValueError</span>:
-    <span class="fn">print</span>(<span class="st">"Ingresa un número válido."</span>)
-<span class="kw">except</span> <span class="fn">PermissionError</span>:
-    <span class="fn">print</span>(<span class="st">"Sin permiso para acceder."</span>)
+    <span class="cm"># el usuario escribió texto en vez de un número</span>
+    <span class="fn">print</span>(<span class="st">"Error: ingresa solo números enteros."</span>)
+<span class="kw">except</span> <span class="fn">ZeroDivisionError</span>:
+    <span class="cm"># el usuario ingresó 0 como denominador</span>
+    <span class="fn">print</span>(<span class="st">"Error: no se puede dividir entre cero."</span>)
 <span class="kw">finally</span>:
-    <span class="fn">print</span>(<span class="st">"Operación finalizada."</span>)</pre></div>
+    <span class="cm"># esto se ejecuta SIEMPRE, haya error o no</span>
+    <span class="fn">print</span>(<span class="st">"--- Operación finalizada ---"</span>)</pre></div>
 
-                    <div class="code-section" id="code-raise"><pre><span class="kw">def</span> <span class="fn">validar_edad</span>(<span class="va">edad</span>):
-    <span class="kw">if not</span> <span class="fn">isinstance</span>(<span class="va">edad</span>, <span class="fn">int</span>):
-        <span class="kw">raise</span> <span class="fn">TypeError</span>(<span class="st">"La edad debe ser un entero."</span>)
-    <span class="kw">if</span> <span class="va">edad</span> <span class="op">&lt;</span> <span class="num">0</span> <span class="kw">or</span> <span class="va">edad</span> <span class="op">&gt;</span> <span class="num">150</span>:
-        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"Edad fuera de rango válido."</span>)
-    <span class="kw">return</span> <span class="va">edad</span>
+                    <div class="code-section" id="code-raise"><pre><span class="cm"># raise lanza un error de forma intencional</span>
+<span class="cm"># Se usa para validar datos ANTES de operar</span>
 
 <span class="kw">def</span> <span class="fn">dividir</span>(<span class="va">a</span>, <span class="va">b</span>):
+    <span class="kw">if not</span> <span class="fn">isinstance</span>(<span class="va">a</span>, (<span class="fn">int</span>, <span class="fn">float</span>)) <span class="kw">or</span> \
+       <span class="kw">not</span> <span class="fn">isinstance</span>(<span class="va">b</span>, (<span class="fn">int</span>, <span class="fn">float</span>)):
+        <span class="kw">raise</span> <span class="fn">TypeError</span>(<span class="st">"Ambos valores deben ser números."</span>)
     <span class="kw">if</span> <span class="va">b</span> <span class="op">==</span> <span class="num">0</span>:
-        <span class="kw">raise</span> <span class="fn">ZeroDivisionError</span>(
-            <span class="st">"No se puede dividir por cero."</span>)
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"El denominador no puede ser cero."</span>)
     <span class="kw">return</span> <span class="va">a</span> <span class="op">/</span> <span class="va">b</span>
 
-<span class="cm"># Excepciones propias para validaciones específicas</span>
-<span class="kw">class</span> <span class="fn">ErrorValidacion</span>(<span class="fn">Exception</span>):
+<span class="cm"># Uso correcto</span>
+<span class="fn">print</span>(<span class="fn">dividir</span>(<span class="num">10</span>, <span class="num">2</span>))   <span class="cm"># → 5.0</span>
+
+<span class="cm"># Estos llaman a raise internamente:</span>
+<span class="fn">dividir</span>(<span class="st">"hola"</span>, <span class="num">2</span>)     <span class="cm"># → TypeError</span>
+<span class="fn">dividir</span>(<span class="num">10</span>, <span class="num">0</span>)         <span class="cm"># → ValueError</span>
+
+<span class="cm"># ── Excepción propia ──────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">DivisorNegativoError</span>(<span class="fn">Exception</span>):
     <span class="kw">pass</span>
 
-<span class="kw">def</span> <span class="fn">procesar_rut</span>(<span class="va">rut</span>):
-    <span class="kw">if not</span> <span class="va">rut</span>.<span class="fn">strip</span>():
-        <span class="kw">raise</span> <span class="fn">ErrorValidacion</span>(
-            <span class="st">"El RUT no puede estar vacío."</span>)
-    <span class="kw">if</span> <span class="fn">len</span>(<span class="va">rut</span>) <span class="op">&lt;</span> <span class="num">8</span>:
-        <span class="kw">raise</span> <span class="fn">ErrorValidacion</span>(
-            <span class="st">"Formato de RUT inválido."</span>)</pre></div>
+<span class="kw">def</span> <span class="fn">dividir_positivo</span>(<span class="va">a</span>, <span class="va">b</span>):
+    <span class="kw">if</span> <span class="va">b</span> <span class="op">&lt;</span> <span class="num">0</span>:
+        <span class="kw">raise</span> <span class="fn">DivisorNegativoError</span>(
+            <span class="st">"El divisor debe ser positivo."</span>)
+    <span class="kw">return</span> <span class="va">a</span> <span class="op">/</span> <span class="va">b</span></pre></div>
 
                     <div class="code-section" id="code-logging"><pre><span class="kw">import</span> <span class="fn">logging</span>
 
-<span class="cm"># Configuración segura del logger</span>
+<span class="cm"># Configurar logging para guardar en archivo</span>
 <span class="fn">logging</span>.<span class="fn">basicConfig</span>(
-    <span class="va">level</span>=<span class="fn">logging</span>.<span class="va">WARNING</span>,
-    <span class="va">format</span>=<span class="st">'%(asctime)s - %(levelname)s - %(message)s'</span>,
-    <span class="va">filename</span>=<span class="st">'app.log'</span>  <span class="cm"># guardar en archivo</span>
+    <span class="va">level</span>=<span class="fn">logging</span>.<span class="va">DEBUG</span>,
+    <span class="va">format</span>=<span class="st">'%(asctime)s [%(levelname)s] %(message)s'</span>,
+    <span class="va">filename</span>=<span class="st">'calculadora.log'</span>
 )
 
-<span class="kw">try</span>:
-    <span class="va">resultado</span> = <span class="num">10</span> <span class="op">/</span> <span class="num">0</span>
-<span class="kw">except</span> <span class="fn">ZeroDivisionError</span>:
-    <span class="cm"># Log técnico → al archivo (no al usuario)</span>
-    <span class="fn">logging</span>.<span class="fn">error</span>(<span class="st">"División por cero detectada."</span>)
-    <span class="cm"># ❌ NO: logging.error(f"Error: {e} datos: {datos}")</span>
-    <span class="fn">print</span>(<span class="st">"Ocurrió un error interno."</span>)  <span class="cm"># vago al usuario</span>
+<span class="kw">def</span> <span class="fn">dividir</span>(<span class="va">a</span>, <span class="va">b</span>):
+    <span class="fn">logging</span>.<span class="fn">debug</span>(<span class="st">f"Intentando dividir </span>{<span class="va">a</span>}<span class="st"> / </span>{<span class="va">b</span>}<span class="st">"</span>)
+    <span class="kw">try</span>:
+        <span class="va">resultado</span> = <span class="va">a</span> <span class="op">/</span> <span class="va">b</span>
+        <span class="fn">logging</span>.<span class="fn">info</span>(<span class="st">f"División exitosa: </span>{<span class="va">resultado</span>}<span class="st">"</span>)
+        <span class="kw">return</span> <span class="va">resultado</span>
+    <span class="kw">except</span> <span class="fn">ZeroDivisionError</span>:
+        <span class="cm"># registro técnico → al archivo (no al usuario)</span>
+        <span class="fn">logging</span>.<span class="fn">error</span>(<span class="st">"División por cero: b=0"</span>)
+        <span class="cm"># mensaje genérico → al usuario</span>
+        <span class="fn">print</span>(<span class="st">"No puedes dividir entre cero."</span>)
+        <span class="kw">return</span> <span class="kw">None</span>
 
-<span class="cm"># Niveles de logging (de menor a mayor severidad)</span>
-<span class="cm"># DEBUG → INFO → WARNING → ERROR → CRITICAL</span>
-<span class="fn">logging</span>.<span class="fn">debug</span>(<span class="st">"Mensaje de depuración"</span>)
-<span class="fn">logging</span>.<span class="fn">info</span>(<span class="st">"Operación completada"</span>)
-<span class="fn">logging</span>.<span class="fn">warning</span>(<span class="st">"Alerta: recurso bajo"</span>)
-<span class="fn">logging</span>.<span class="fn">error</span>(<span class="st">"Error recuperable"</span>)
-<span class="fn">logging</span>.<span class="fn">critical</span>(<span class="st">"Error crítico del sistema"</span>)</pre></div>
+<span class="fn">dividir</span>(<span class="num">10</span>, <span class="num">2</span>)   <span class="cm"># INFO  → log</span>
+<span class="fn">dividir</span>(<span class="num">10</span>, <span class="num">0</span>)   <span class="cm"># ERROR → log  +  print al usuario</span>
+
+<span class="cm"># Niveles: DEBUG → INFO → WARNING → ERROR → CRITICAL</span>
+<span class="fn">logging</span>.<span class="fn">warning</span>(<span class="st">"Resultado muy grande, revisar"</span>)
+<span class="fn">logging</span>.<span class="fn">critical</span>(<span class="st">"Fallo inesperado del sistema"</span>)</pre></div>
                 </div>
             </div>
         </div>
@@ -207,22 +215,43 @@
             <div class="type-info active" id="info-try">
                 <div style="background:linear-gradient(135deg,rgba(248,113,113,0.18),rgba(248,113,113,0.04));border:1px solid rgba(248,113,113,0.3);border-radius:1rem;padding:1.5rem;">
                     <h2 style="color:#f87171;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">try / except</h2>
-                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">captura específica · never catch all · finally siempre</span>
-                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Capturar excepciones genéricas (Exception) puede ocultar errores reales y exponer información sensible. Siempre captura lo más específico posible.</p>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">captura · manejo · recuperación</span>
                 </div>
+
+                <!-- Definición -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;border-left:3px solid #f87171;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:#f87171;margin-bottom:0.6rem;font-family:'Inter',sans-serif;">¿Qué es?</h3>
+                    <p style="color:var(--text-dim);font-size:0.88rem;line-height:1.6">Bloque que <strong style="color:var(--text-main)">intenta ejecutar código que puede fallar</strong> y captura el error si ocurre, evitando que el programa se detenga bruscamente.</p>
+                </div>
+
+                <!-- Cuándo usarlo -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;border-left:3px solid #fbbf24;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:#fbbf24;margin-bottom:0.7rem;font-family:'Inter',sans-serif;">¿Cuándo usarlo?</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <div class="sec-rule"><span class="rule-icon">⌨️</span><div class="rule-text">El usuario ingresa datos que pueden ser de tipo incorrecto (<strong>ValueError</strong>)</div></div>
+                        <div class="sec-rule"><span class="rule-icon">➗</span><div class="rule-text">Se realiza una operación aritmética que puede ser inválida (<strong>ZeroDivisionError</strong>)</div></div>
+                        <div class="sec-rule"><span class="rule-icon">🌐</span><div class="rule-text">Se conecta a internet, lee archivos o accede a recursos externos que pueden fallar</div></div>
+                    </div>
+                </div>
+
+                <!-- Bloques -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.7rem;font-family:'Inter',sans-serif;">Bloques disponibles</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <div class="sec-rule"><span class="rule-icon" style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#f87171;font-weight:700">try</span><div class="rule-text">Código que <strong>puede lanzar una excepción</strong></div></div>
+                        <div class="sec-rule"><span class="rule-icon" style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#f87171;font-weight:700">except</span><div class="rule-text">Código que se ejecuta <strong>solo si ocurre el error indicado</strong></div></div>
+                        <div class="sec-rule"><span class="rule-icon" style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#fbbf24;font-weight:700">else</span><div class="rule-text">Código que se ejecuta <strong>solo si NO hubo ningún error</strong></div></div>
+                        <div class="sec-rule"><span class="rule-icon" style="font-family:'Fira Code',monospace;font-size:0.8rem;color:#38bdf8;font-weight:700">finally</span><div class="rule-text">Código que se ejecuta <strong>siempre</strong>, haya o no haya error</div></div>
+                    </div>
+                </div>
+
                 <div class="compare-card compare-unsafe">
-                    <div class="compare-label">❌ Anti-patrón peligroso</div>
-                    <p>Usar <strong style="color:#f87171">except Exception as e: print(e)</strong> imprime trazas del sistema al usuario, lo que puede revelar rutas de archivos, versiones, estructura interna.</p>
+                    <div class="compare-label">❌ Anti-patrón</div>
+                    <p>Usar <strong style="color:#f87171">except Exception as e: print(e)</strong> captura cualquier error sin distinción y muestra detalles técnicos al usuario.</p>
                 </div>
                 <div class="compare-card compare-safe">
-                    <div class="compare-label">✅ Patrón seguro</div>
-                    <p>Captura <strong style="color:#34d399">FileNotFoundError, ValueError, PermissionError</strong> por separado. Muestra mensajes genéricos al usuario; registra los detalles en un log interno.</p>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                    <div class="sec-rule"><span class="rule-icon">🎯</span><div class="rule-text"><strong>Captura específica</strong> — identifica qué puede fallar y captura solo eso</div></div>
-                    <div class="sec-rule"><span class="rule-icon">🔒</span><div class="rule-text"><strong>Mensajes genéricos al usuario</strong> — no reveles rutas, variables o versiones</div></div>
-                    <div class="sec-rule"><span class="rule-icon">🧹</span><div class="rule-text"><strong>finally</strong> — garantiza limpieza de recursos siempre (archivos, conexiones)</div></div>
-                    <div class="sec-rule"><span class="rule-icon">📁</span><div class="rule-text"><strong>with open()</strong> — cierra archivos automáticamente aunque haya excepción</div></div>
+                    <div class="compare-label">✅ Buena práctica</div>
+                    <p>Captura <strong style="color:#34d399">ValueError</strong> y <strong style="color:#34d399">ZeroDivisionError</strong> por separado con mensajes claros para cada caso.</p>
                 </div>
             </div>
 
@@ -230,21 +259,35 @@
             <div class="type-info" id="info-raise">
                 <div style="background:linear-gradient(135deg,rgba(167,139,250,0.18),rgba(167,139,250,0.04));border:1px solid rgba(167,139,250,0.3);border-radius:1rem;padding:1.5rem;">
                     <h2 style="color:#a78bfa;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">raise</h2>
-                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">validación activa · fail fast · excepciones propias</span>
-                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">Lanzar excepciones de forma controlada permite validar datos al entrada, garantizando que el programa no continúe con datos inválidos o peligrosos.</p>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">lanzar · validar · fail fast</span>
                 </div>
+
+                <!-- Definición -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;border-left:3px solid #a78bfa;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:#a78bfa;margin-bottom:0.6rem;font-family:'Inter',sans-serif;">¿Qué es?</h3>
+                    <p style="color:var(--text-dim);font-size:0.88rem;line-height:1.6"><strong style="color:var(--text-main)">Lanza una excepción de forma intencional</strong>. Lo usa el programador para detener la ejecución cuando detecta que los datos de entrada son inválidos, antes de que causen un error más difícil de rastrear.</p>
+                </div>
+
+                <!-- Cuándo usarlo -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;border-left:3px solid #fbbf24;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:#fbbf24;margin-bottom:0.7rem;font-family:'Inter',sans-serif;">¿Cuándo usarlo?</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <div class="sec-rule"><span class="rule-icon">🛡️</span><div class="rule-text">Al inicio de una función, para <strong>validar los parámetros</strong> que recibe</div></div>
+                        <div class="sec-rule"><span class="rule-icon">➗</span><div class="rule-text">Cuando una condición haría la operación <strong>matemáticamente inválida</strong> (ej. divisor = 0)</div></div>
+                        <div class="sec-rule"><span class="rule-icon">🏷️</span><div class="rule-text">Cuando ninguna excepción de Python describe el error; crea <strong>una propia</strong></div></div>
+                    </div>
+                </div>
+
                 <div class="exc-hierarchy">
                     <h3>Jerarquía de excepciones Python</h3>
                     <div class="exc-node"><span class="exc-name exc-base">BaseException</span>
                         <div class="exc-children">
                             <div class="exc-node"><span class="exc-name exc-base">Exception</span>
                                 <div class="exc-children">
-                                    <div class="exc-node"><span class="exc-name exc-std">ValueError</span> <span style="color:var(--text-dim);font-size:0.75rem">— valor incorrecto</span></div>
-                                    <div class="exc-node"><span class="exc-name exc-std">TypeError</span> <span style="color:var(--text-dim);font-size:0.75rem">— tipo incorrecto</span></div>
-                                    <div class="exc-node"><span class="exc-name exc-std">FileNotFoundError</span></div>
-                                    <div class="exc-node"><span class="exc-name exc-std">PermissionError</span></div>
-                                    <div class="exc-node"><span class="exc-name exc-std">ZeroDivisionError</span></div>
-                                    <div class="exc-node"><span class="exc-name exc-other">ErrorValidacion</span> <span style="color:var(--text-dim);font-size:0.75rem">— propia</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">ValueError</span> <span style="color:var(--text-dim);font-size:0.75rem">— valor correcto tipo, contenido inválido</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">TypeError</span> <span style="color:var(--text-dim);font-size:0.75rem">— tipo de dato incorrecto</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-std">ZeroDivisionError</span> <span style="color:var(--text-dim);font-size:0.75rem">— división entre 0</span></div>
+                                    <div class="exc-node"><span class="exc-name exc-other">DivisorNegativoError</span> <span style="color:var(--text-dim);font-size:0.75rem">— propia</span></div>
                                 </div>
                             </div>
                             <div class="exc-node"><span class="exc-name" style="color:#38bdf8">KeyboardInterrupt</span></div>
@@ -252,10 +295,14 @@
                         </div>
                     </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                    <div class="sec-rule"><span class="rule-icon">🛡️</span><div class="rule-text"><strong>Fail Fast</strong> — detecta y lanza el error lo antes posible en el flujo</div></div>
-                    <div class="sec-rule"><span class="rule-icon">📐</span><div class="rule-text"><strong>isinstance()</strong> — verifica tipo antes de operar con el valor</div></div>
-                    <div class="sec-rule"><span class="rule-icon">🏷️</span><div class="rule-text"><strong>Excepciones propias</strong> — crea clases que heredan de Exception para tu dominio</div></div>
+
+                <div class="compare-card compare-unsafe">
+                    <div class="compare-label">❌ Sin raise</div>
+                    <p>Si pasas <strong style="color:#f87171">dividir(10, 0)</strong> sin validación, Python lanza el error en la línea de la división — lejos de donde está el problema real.</p>
+                </div>
+                <div class="compare-card compare-safe">
+                    <div class="compare-label">✅ Con raise</div>
+                    <p>La función valida primero y lanza <strong style="color:#34d399">ValueError</strong> con un mensaje claro. El error señala exactamente qué salió mal y dónde.</p>
                 </div>
             </div>
 
@@ -263,26 +310,43 @@
             <div class="type-info" id="info-logging">
                 <div style="background:linear-gradient(135deg,rgba(56,189,248,0.18),rgba(56,189,248,0.04));border:1px solid rgba(56,189,248,0.3);border-radius:1rem;padding:1.5rem;">
                     <h2 style="color:#38bdf8;font-family:'Outfit',sans-serif;font-size:1.8rem;margin-bottom:0.4rem">logging</h2>
-                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">separar log técnico del mensaje al usuario · niveles</span>
-                    <p style="color:var(--text-dim);font-size:0.9rem;margin-top:0.5rem">El módulo <code style="font-family:'Fira Code',monospace">logging</code> permite registrar eventos del sistema de forma segura, sin exponer información al usuario final.</p>
+                    <span style="font-size:0.8rem;font-family:'Fira Code',monospace;background:rgba(0,0,0,0.2);padding:0.2rem 0.6rem;border-radius:4px">registrar · diagnosticar · auditar</span>
                 </div>
-                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;">
-                    <h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.9rem;font-family:'Inter',sans-serif;">Niveles de severidad</h3>
-                    <div class="severity-bar">
-                        <div class="sev-row"><div class="sev-dot" style="background:#94a3b8"></div><span class="sev-label" style="color:#94a3b8">DEBUG</span><span class="sev-desc">Información de depuración detallada</span></div>
-                        <div class="sev-row"><div class="sev-dot" style="background:#38bdf8"></div><span class="sev-label" style="color:#38bdf8">INFO</span><span class="sev-desc">Confirmación de operación normal</span></div>
-                        <div class="sev-row"><div class="sev-dot" style="background:#fbbf24"></div><span class="sev-label" style="color:#fbbf24">WARNING</span><span class="sev-desc">Alerta de comportamiento inesperado</span></div>
-                        <div class="sev-row"><div class="sev-dot" style="background:#f87171"></div><span class="sev-label" style="color:#f87171">ERROR</span><span class="sev-desc">Error grave, función falla</span></div>
-                        <div class="sev-row"><div class="sev-dot" style="background:#ef4444"></div><span class="sev-label" style="color:#ef4444">CRITICAL</span><span class="sev-desc">Error crítico, sistema puede detenerse</span></div>
+
+                <!-- Definición -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;border-left:3px solid #38bdf8;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:#38bdf8;margin-bottom:0.6rem;font-family:'Inter',sans-serif;">¿Qué es?</h3>
+                    <p style="color:var(--text-dim);font-size:0.88rem;line-height:1.6">Módulo de Python que <strong style="color:var(--text-main)">guarda mensajes técnicos en un archivo</strong> (o consola) para que el programador pueda diagnosticar errores, sin mostrar esa información al usuario final.</p>
+                </div>
+
+                <!-- Cuándo usarlo -->
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;border-left:3px solid #fbbf24;">
+                    <h3 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:#fbbf24;margin-bottom:0.7rem;font-family:'Inter',sans-serif;">¿Cuándo usarlo?</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <div class="sec-rule"><span class="rule-icon">🔍</span><div class="rule-text">Para <strong>registrar qué operaciones</strong> se ejecutaron y con qué valores</div></div>
+                        <div class="sec-rule"><span class="rule-icon">🚨</span><div class="rule-text">Para <strong>guardar el detalle técnico</strong> de un error sin mostrárselo al usuario</div></div>
+                        <div class="sec-rule"><span class="rule-icon">📊</span><div class="rule-text">En aplicaciones reales donde necesitas <strong>auditar el comportamiento</strong> del sistema</div></div>
                     </div>
                 </div>
+
+                <div style="background:rgba(255,255,255,0.04);border-radius:0.75rem;padding:1.1rem;">
+                    <h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:0.9rem;font-family:'Inter',sans-serif;">Niveles de severidad (menor → mayor)</h3>
+                    <div class="severity-bar">
+                        <div class="sev-row"><div class="sev-dot" style="background:#94a3b8"></div><span class="sev-label" style="color:#94a3b8">DEBUG</span><span class="sev-desc">Detalles de desarrollo (valores, pasos)</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#38bdf8"></div><span class="sev-label" style="color:#38bdf8">INFO</span><span class="sev-desc">Confirmación: operación completada</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#fbbf24"></div><span class="sev-label" style="color:#fbbf24">WARNING</span><span class="sev-desc">Alerta: algo inusual pero no crítico</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#f87171"></div><span class="sev-label" style="color:#f87171">ERROR</span><span class="sev-desc">Una función falló, requiere revisión</span></div>
+                        <div class="sev-row"><div class="sev-dot" style="background:#ef4444"></div><span class="sev-label" style="color:#ef4444">CRITICAL</span><span class="sev-desc">Fallo grave, el sistema puede detenerse</span></div>
+                    </div>
+                </div>
+
                 <div class="compare-card compare-unsafe">
                     <div class="compare-label">❌ Nunca hagas esto</div>
-                    <p>Loggear datos del usuario, contraseñas, tokens o trazas completas con variables sensibles: <strong style="color:#f87171">logging.error(f"datos: {datos_usuario}")</strong></p>
+                    <p>Mostrar el error directamente al usuario con <strong style="color:#f87171">print(e)</strong> expone detalles técnicos que no le son útiles y pueden revelar la estructura interna del programa.</p>
                 </div>
                 <div class="compare-card compare-safe">
-                    <div class="compare-label">✅ Forma correcta</div>
-                    <p>Loggear solo el tipo de error y contexto mínimo necesario. Al usuario: mensaje genérico. Al log: evento sin datos privados.</p>
+                    <div class="compare-label">✅ Buena práctica</div>
+                    <p>Usa <strong style="color:#34d399">logging.error()</strong> para guardar el detalle técnico y <strong style="color:#34d399">print()</strong> solo para un mensaje genérico y amigable al usuario.</p>
                 </div>
             </div>
 
